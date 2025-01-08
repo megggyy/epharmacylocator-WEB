@@ -6,6 +6,9 @@ import million from "million/compiler";
 const srcPath = fileURLToPath(new URL("./src", import.meta.url));
 
 export default defineConfig({
+  optimizeDeps: {
+    include: ["react-leaflet", "leaflet"],
+  },
   plugins: [million.vite({ auto: true, mute: true }), react()],
   resolve: {
     alias: {

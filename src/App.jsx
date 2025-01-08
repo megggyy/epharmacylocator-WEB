@@ -4,10 +4,10 @@ import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } 
 import { RootLayout, NotFound, Welcome, HomeLayoutBlock } from "@/layouts";
 import { useMediaQuery } from "react-responsive";
 import { MobileChecker } from "@components";
-// import RootLayout from "./layouts/RootLayout"
-// import HomeLayout from "./layouts/HomeLayout"
-// import Welcome from "./layouts/Welcome"
-// import NotFound from "./layouts/NotFound"
+// pages
+import Pharmacies from "./pages/Pharmacies";
+import Medicines from "./pages/Medicines";
+import Maps from "./pages/Maps";
 
 const MOBILE_BREAKPOINT = 767;
 const router = createBrowserRouter(
@@ -15,6 +15,24 @@ const router = createBrowserRouter(
     <Route path="/" element={<RootLayout />}>
       <Route element={<HomeLayoutBlock />}>
         <Route index element={<Welcome />} />
+        <Route
+          path="pharmacies"
+          element={
+              <Pharmacies />
+          }
+        />
+        <Route
+          path="medicines"
+          element={
+              <Medicines />
+          }
+        />
+         <Route
+          path="maps"
+          element={
+              <Maps />
+          }
+        />
       </Route>
       <Route path="*" element={<NotFound />} />
     </Route>

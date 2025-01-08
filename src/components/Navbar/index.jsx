@@ -18,24 +18,24 @@ const Navbar = () => {
         </div>
 
         {/* Navbar links */}
-        <div className="flex space-x-8">
+        <div className="flex space-x-8 items-center">
           <a href="/" className="hover:text-gray-300">Home</a>
           <a href="/pharmacies" className="hover:text-gray-300">Pharmacies</a>
           
           {/* Medicines Dropdown */}
-          <div className="relative">
+          <div className="relative flex items-center">
+            <a href="/medicines" className="hover:text-gray-300">Medicines</a>
             <button
-              className="flex items-center space-x-2 hover:text-gray-300"
+              className="ml-2 flex items-center space-x-1 focus:outline-none"
               onClick={toggleDropdown}
             >
-              <span>Medicines</span>
-              <IoIosArrowDown />
+              <IoIosArrowDown className="hover:text-gray-300" />
             </button>
             {isDropdownOpen && (
               <div className="absolute bg-white text-black py-2 mt-1 w-40 rounded-lg shadow-lg top-full left-0">
-                <a href="/medicines/category1" className="block px-4 py-2">Category 1</a>
-                <a href="/medicines/category2" className="block px-4 py-2">Category 2</a>
-                <a href="/medicines/category3" className="block px-4 py-2">Category 3</a>
+                <a href="/medicines/category1" className="block px-4 py-2 hover:bg-gray-200">Category 1</a>
+                <a href="/medicines/category2" className="block px-4 py-2 hover:bg-gray-200">Category 2</a>
+                <a href="/medicines/category3" className="block px-4 py-2 hover:bg-gray-200">Category 3</a>
               </div>
             )}
           </div>
