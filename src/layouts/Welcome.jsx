@@ -1,19 +1,26 @@
 import React, { useState, useEffect } from "react";
-import { FaMapMarkerAlt, FaSearch, FaUpload, FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import {
+  FaMapMarkerAlt,
+  FaSearch,
+  FaUpload,
+  FaChevronLeft,
+  FaChevronRight,
+} from "react-icons/fa";
 import PillsImage from "@assets/employee.png";
 import PharmacistImage from "@assets/customer.png";
 import CapsulesImage from "@assets/admin.png";
 import { FaPills, FaMedkit, FaCapsules } from "react-icons/fa";
+import axios from "axios"; // Ensure axios is installed and imported
+import { API_URL } from "../env";
 
-export default function () {
+export default function WelcomePage() {
   const [categories, setCategories] = useState([]);
   const [pharmacies, setPharmacies] = useState([]);
   const [medications, setMedications] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("");
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const carouselImages = [PillsImage, PharmacistImage, CapsulesImage];
-
+  
   useEffect(() => {
     // Fetch categories
     setCategories([
@@ -21,31 +28,31 @@ export default function () {
       { id: 2, name: "Vitamins" },
       { id: 3, name: "Antibiotics" },
     ]);
-    // Fetch pharmacies
-    setPharmacies([
-      {
-        id: 1,
-        name: "Health First Pharmacy",
-        location: "123 Main St, Cityville",
-        contact: "123-456-7890",
-        image: "https://via.placeholder.com/300x200?text=Pharmacy+1", // Replace with actual image URLs
-      },
-      {
-        id: 2,
-        name: "Pharma Care",
-        location: "456 Elm St, Townsville",
-        contact: "987-654-3210",
-        image: "https://via.placeholder.com/300x200?text=Pharmacy+2",
-      },
-    ]);
 
-    // Fetch medications
-    setMedications([
-      { id: 1, name: "Paracetamol", description: "Pain reliever and fever reducer" },
-      { id: 2, name: "Vitamin C", description: "Immune system support" },
-    ]);
+    // Fetch pharmacies from the API
+    axios
+      .get(`${API_URL}pharmacies`)
+      .then((response) => {
+        // Filter only approved pharmacies
+        const approvedPharmacies = response.data.filter((pharmacy) => pharmacy.approved);
+        setPharmacies(approvedPharmacies);
+      })
+      .catch((error) => console.error("Error fetching pharmacies:", error));
+
+    // Fetch medications from the API
+    axios
+      .get(`${API_URL}medicine`)
+      .then((response) => {
+        // Filter unique medications by name
+        const uniqueMedications = Array.from(
+          new Map(response.data.map((med) => [med.name, med])).values()
+        );
+        setMedications(uniqueMedications);
+      })
+      .catch((error) => console.error("Error fetching medications:", error));
   }, []);
 
+ 
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % carouselImages.length);
@@ -54,7 +61,9 @@ export default function () {
   }, [carouselImages.length]);
 
   const handlePrevious = () => {
-    setCurrentSlide((prev) => (prev === 0 ? carouselImages.length - 1 : prev - 1));
+    setCurrentSlide((prev) =>
+      prev === 0 ? carouselImages.length - 1 : prev - 1
+    );
   };
 
   const handleNext = () => {
@@ -204,56 +213,71 @@ export default function () {
 </div>
 
 
-  {/* Pharmacies Section */}
-    <div className="max-w-7xl mx-auto mt-16">
-      <h2 className="text-2xl font-bold text-primary-default mb-8 text-center">Pharmacies</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {pharmacies.map((pharmacy) => (
-          <div
-            key={pharmacy.id}
-            className="bg-white rounded-lg shadow-lg overflow-hidden transition-transform transform hover:scale-105"
-          >
-            {/* Pharmacy Image */}
-            <div className="w-full aspect-square">
-              <img
-                src={pharmacy.image}
-                alt={pharmacy.name}
-                className="w-full h-full object-cover"
-              />
+{/* Pharmacies Section */}
+<div className="max-w-7xl mx-auto mt-16">
+        <h2 className="text-2xl font-bold text-primary-default mb-8 text-center">Pharmacies</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          {pharmacies.slice(0, 3).map((pharmacy) => (
+            <div
+              key={pharmacy._id}
+              className="bg-white rounded-lg shadow-lg overflow-hidden transition-transform transform hover:scale-105"
+            >
+              {/* Pharmacy Image */}
+              <div className="w-full aspect-square">
+                <img
+                  src={pharmacy.images?.[0] || "https://via.placeholder.com/300x200?text=Pharmacy"}
+                  alt={pharmacy.userInfo.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              {/* Pharmacy Info */}
+              <div className="p-6">
+                <h3 className="text-xl font-semibold text-primary-default mb-2">
+                  {pharmacy.userInfo.name}
+                </h3>
+                <p className="text-gray-600 text-sm mb-4">
+                  <strong>Location:</strong> {pharmacy.userInfo.barangay}, {pharmacy.userInfo.city}
+                </p>
+                <p className="text-gray-600 text-sm mb-4">
+                  <strong>Contact:</strong> {pharmacy.userInfo.contactNumber}
+                </p>
+                <button
+                  className="bg-primary-variant text-white px-4 py-2 rounded-md shadow hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300"
+                >
+                  View Details
+                </button>
+              </div>
             </div>
-            {/* Pharmacy Info */}
-            <div className="p-6">
-              <h3 className="text-xl font-semibold text-primary-default mb-2">{pharmacy.name}</h3>
-              <p className="text-gray-600 text-sm mb-4">
-                <strong>Location:</strong> {pharmacy.location}
-              </p>
-              <p className="text-gray-600 text-sm mb-4">
-                <strong>Contact:</strong> {pharmacy.contact}
-              </p>
-              <button
-                className="bg-primary-variant text-white px-4 py-2 rounded-md shadow hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300"
-              >
-                View Details
-              </button>
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
+        <div className="flex justify-center mt-8">
+        <a
+        href="/pharmacies"
+        className="inline-block bg-primary-default text-white font-semibold py-3 px-8 rounded-lg shadow-md hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300"
+      >
+        See all
+      </a>
+        </div>
       </div>
-    </div>
 
-
-
-
-      {/* Medicines Section */}
-      <div className="max-w-7xl mx-auto mt-16">
+   {/* Medicines Section */}
+   <div className="max-w-7xl mx-auto mt-16">
         <h2 className="text-2xl font-bold text-primary-default mb-8 text-center">Medicines</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {medications.map((medication) => (
+          {medications.slice(0, 6).map((medication) => (
             <div key={medication.id} className="bg-white p-6 rounded-lg shadow-lg">
               <h3 className="text-lg font-semibold mb-2">{medication.name}</h3>
               <p className="text-gray-600">{medication.description}</p>
             </div>
           ))}
+        </div>
+        <div className="flex justify-center mt-8">
+        <a
+        href="/medicines"
+        className="inline-block bg-primary-default text-white font-semibold py-3 px-8 rounded-lg shadow-md hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300"
+      >
+        See all
+      </a>
         </div>
       </div>
     </section>
