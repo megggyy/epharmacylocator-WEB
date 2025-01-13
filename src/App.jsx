@@ -9,6 +9,7 @@ import Pharmacies from "./pages/Pharmacies";
 import Medicines from "./pages/Medicines";
 import Maps from "./pages/Maps";
 import PharmacyDetails from "./pages/PharmacyDetails";
+import MedicationDetails from "./pages/MedicationDetails";
 
 const MOBILE_BREAKPOINT = 767;
 const router = createBrowserRouter(
@@ -28,16 +29,22 @@ const router = createBrowserRouter(
               <Medicines />
           }
         />
-         <Route
+        <Route
           path="maps"
           element={
               <Maps />
           }
         />
-          <Route
+        <Route
           path="PharmacyDetails/:id"
           element={
               <PharmacyDetails />
+          }
+        />
+         <Route
+          path="MedicationDetails/:name"
+          element={
+              <MedicationDetails />
           }
         />
       </Route>

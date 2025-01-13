@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios'; // Make sure to install axios if not already
+import axios from 'axios'; 
 import { API_URL } from '../../env';
-import { Link } from 'react-router-dom'; // Import Link from React Router DOM
+import { Link } from 'react-router-dom';
 
 const PharmacyScreen = () => {
   const [pharmacies, setPharmacies] = useState([]);

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { API_URL } from "../../env";
+import { Link } from 'react-router-dom';
 
 const MedicinePage = () => {
   const [categories, setCategories] = useState([]);
@@ -94,7 +95,7 @@ const MedicinePage = () => {
             ))}
           </div>
         </div>
-
+      
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {filteredMedications.map((med) => (
             <div
@@ -103,9 +104,16 @@ const MedicinePage = () => {
             >
               <h3 className="text-lg font-bold text-gray-800 mb-2">{med.name}</h3>
               <p className="text-sm text-gray-600">{med.description}</p>
+              <Link to={`/MedicationDetails/${med.name}`}>
+                  <button className="mt-4 bg-primary-variant text-white px-4 py-2 rounded-lg">
+                                  View Availability
+                  </button>
+              </Link>    
             </div>
+            
           ))}
         </div>
+       
       </main>
     </div>
   );
