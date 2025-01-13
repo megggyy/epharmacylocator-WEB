@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate, Link } from "react-router-dom";
 import { IoIosArrowDown } from 'react-icons/io'; // Importing the arrow icon
 import logo2 from "@assets/epharmacynavbar.png";
 
@@ -14,7 +15,9 @@ const Navbar = () => {
       <div className="flex items-center justify-between">
         {/* Logo */}
         <div className="text-xl font-bold">
-          <img src={logo2} alt="Logo" className="h-16" />
+          <Link to="/">
+          <img src={logo2} alt="Logo" className="h-16" href="/" />
+          </Link>
         </div>
 
         {/* Navbar links */}
@@ -45,7 +48,7 @@ const Navbar = () => {
 
         {/* Get Started Button */}
         <div>
-          <a href="/get-started" className="bg-primary-t2 text-black py-2 px-6 rounded-lg hover:bg-yellow-400">
+          <a href="/get-started" className="bg-primary-t2 text-black py-2 px-6 rounded-lg hover:bg-white">
             Get Started
           </a>
         </div>

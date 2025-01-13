@@ -30,7 +30,7 @@ export default function () {
        
         </p>
 
-        <ul className="mt-8 flex justify-center gap-6 sm:justify-start md:gap-8">
+        {/* <ul className="mt-8 flex justify-center gap-6 sm:justify-start md:gap-8">
           <li>
             <a
               href="#"
@@ -118,7 +118,7 @@ export default function () {
               </svg>
             </a>
           </li>
-        </ul>
+        </ul> */}
       </div>
 
       <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-4 lg:col-span-2">
@@ -139,13 +139,13 @@ export default function () {
 
           <ul className="mt-8 space-y-4 text-sm">
             <li>
-              <a className="text-white transition hover:text-gray-700/75" href="/customer/barangayslist">
-                Barangays
+              <a className="text-white transition hover:text-gray-700/75" href="/medicines">
+                Medicine
               </a>
             </li>
 
             <li>
-              <a className="text-white transition hover:text-gray-700/75" href="/customer/parkingSpaces"> Parking Spaces </a>
+              <a className="text-white transition hover:text-gray-700/75" href="/pharmacies"> Pharmacies </a>
             </li>
 
           </ul>

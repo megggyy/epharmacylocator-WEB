@@ -6,9 +6,9 @@ import {
   FaChevronLeft,
   FaChevronRight,
 } from "react-icons/fa";
-import PillsImage from "@assets/employee.png";
-import PharmacistImage from "@assets/customer.png";
-import CapsulesImage from "@assets/admin.png";
+import carousel1 from "@assets/medicine1.png";
+import carousel2 from "@assets/pharmacy1.jpg";
+import carousel3 from "@assets/pharmacy2.png";
 import { FaPills, FaMedkit, FaCapsules } from "react-icons/fa";
 import axios from "axios"; // Ensure axios is installed and imported
 import { API_URL } from "../env";
@@ -19,7 +19,7 @@ export default function WelcomePage() {
   const [medications, setMedications] = useState([]);
   const [currentSlide, setCurrentSlide] = useState(0);
 
-  const carouselImages = [PillsImage, PharmacistImage, CapsulesImage];
+  const carouselImages = [carousel1, carousel2, carousel3];
   
   useEffect(() => {
     // Fetch categories
