@@ -86,7 +86,7 @@ export default function WelcomePage() {
         Find the right medicines, nearby pharmacies, and explore health products with ease!
       </p>
       <a
-        href="#shop"
+        href="/maps"
         className="inline-block bg-primary-default text-white font-semibold py-3 px-8 rounded-lg shadow-md hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300"
       >
         Locate Now
