@@ -12,6 +12,7 @@ import carousel3 from "@assets/pharmacy2.png";
 import { FaPills, FaMedkit, FaCapsules } from "react-icons/fa";
 import axios from "axios"; // Ensure axios is installed and imported
 import { API_URL } from "../env";
+import { Link } from 'react-router-dom';
 
 export default function WelcomePage() {
   const [categories, setCategories] = useState([]);
@@ -241,11 +242,13 @@ export default function WelcomePage() {
                 <p className="text-gray-600 text-sm mb-4">
                   <strong>Contact:</strong> {pharmacy.userInfo.contactNumber}
                 </p>
+                <Link to={`/PharmacyDetails/${pharmacy._id}`}>
                 <button
                   className="bg-primary-variant text-white px-4 py-2 rounded-md shadow hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300"
                 >
                   View Details
                 </button>
+                </Link>
               </div>
             </div>
           ))}

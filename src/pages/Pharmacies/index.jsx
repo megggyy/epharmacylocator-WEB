@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios'; // Make sure to install axios if not already
 import { API_URL } from '../../env';
+import { Link } from 'react-router-dom'; // Import Link from React Router DOM
 
 const PharmacyScreen = () => {
   const [pharmacies, setPharmacies] = useState([]);
@@ -65,14 +66,14 @@ const PharmacyScreen = () => {
     <div className="min-h-screen bg-blue-50">
       {/* Top Section */}
       <div className="bg-blue-50 px-8 py-6 text-white">
-      <input
-        type="text"
-        placeholder="Search pharmacies"
-        className="w-full p-3 rounded-lg text-gray-900 shadow-md"
-        value={searchQuery}
-        onChange={(e) => handleSearch(e.target.value)}
-        onKeyUp={(e) => handleSearch(e.target.value)}
-      />
+        <input
+          type="text"
+          placeholder="Search pharmacies"
+          className="w-full p-3 rounded-lg text-gray-900 shadow-md"
+          value={searchQuery}
+          onChange={(e) => handleSearch(e.target.value)}
+          onKeyUp={(e) => handleSearch(e.target.value)}
+        />
       </div>
 
       {/* Barangay Filter */}
@@ -140,6 +141,13 @@ const PharmacyScreen = () => {
                 <p className="text-sm text-gray-600">
                   🕒 {pharmacy.businessDays} ({pharmacy?.openingHour || 'N/A'} - {pharmacy?.closingHour || 'N/A'})
                 </p>
+
+                {/* View Details Button */}
+                <Link to={`/PharmacyDetails/${pharmacy._id}`}>
+                  <button className="mt-4 bg-primary-variant text-white px-4 py-2 rounded-lg">
+                    View Details
+                  </button>
+                </Link>           
               </div>
             </div>
           ))}

@@ -8,6 +8,7 @@ import { MobileChecker } from "@components";
 import Pharmacies from "./pages/Pharmacies";
 import Medicines from "./pages/Medicines";
 import Maps from "./pages/Maps";
+import PharmacyDetails from "./pages/PharmacyDetails";
 
 const MOBILE_BREAKPOINT = 767;
 const router = createBrowserRouter(
@@ -31,6 +32,12 @@ const router = createBrowserRouter(
           path="maps"
           element={
               <Maps />
+          }
+        />
+          <Route
+          path="PharmacyDetails/:id"
+          element={
+              <PharmacyDetails />
           }
         />
       </Route>
