@@ -10,6 +10,9 @@ import Medicines from "./pages/Medicines";
 import Maps from "./pages/Maps";
 import PharmacyDetails from "./pages/PharmacyDetails";
 import MedicationDetails from "./pages/MedicationDetails";
+import RoleSelectionScreen from "./pages/SignUpRole";
+import CustomerSignup from "./pages/CustomerSignUp";
+import PharmacyOwnerSignupScreen from "./pages/PharmacyOwnerSignUp";
 
 const MOBILE_BREAKPOINT = 767;
 const router = createBrowserRouter(
@@ -45,6 +48,24 @@ const router = createBrowserRouter(
           path="MedicationDetails/:name"
           element={
               <MedicationDetails />
+          }
+        />
+         <Route
+          path="SignUpRole"
+          element={
+              <RoleSelectionScreen />
+          }
+        />
+         <Route
+          path="CustomerSignup"
+          element={
+              <CustomerSignup />
+          }
+        />
+        <Route
+          path="PharmacyOwnerSignUp"
+          element={
+              <PharmacyOwnerSignupScreen />
           }
         />
       </Route>
