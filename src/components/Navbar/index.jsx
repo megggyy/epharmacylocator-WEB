@@ -48,7 +48,7 @@ const Navbar = () => {
 
         {/* Get Started Button */}
         <div>
-          <a href="/get-started" className="bg-primary-t2 text-black py-2 px-6 rounded-lg hover:bg-white">
+          <a href="/SignUpRole" className="bg-primary-t2 text-black py-2 px-6 rounded-lg hover:bg-white">
             Get Started
           </a>
         </div>
