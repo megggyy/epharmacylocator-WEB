@@ -4,6 +4,7 @@ import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } 
 import { RootLayout, NotFound, Welcome, HomeLayoutBlock } from "@/layouts";
 import { useMediaQuery } from "react-responsive";
 import { MobileChecker } from "@components";
+
 // pages
 import Pharmacies from "./pages/Pharmacies";
 import Medicines from "./pages/Medicines";
@@ -13,6 +14,8 @@ import MedicationDetails from "./pages/MedicationDetails";
 import RoleSelectionScreen from "./pages/SignUpRole";
 import CustomerSignup from "./pages/CustomerSignUp";
 import PharmacyOwnerSignupScreen from "./pages/PharmacyOwnerSignUp";
+import LoginScreen from "./pages/Login";
+import { AuthProvider } from "./context/AuthGlobal";
 
 const MOBILE_BREAKPOINT = 767;
 const router = createBrowserRouter(
@@ -68,6 +71,12 @@ const router = createBrowserRouter(
               <PharmacyOwnerSignupScreen />
           }
         />
+        <Route
+          path="login"
+          element={
+              <LoginScreen />
+          }
+        />
       </Route>
       <Route path="*" element={<NotFound />} />
     </Route>
@@ -78,11 +87,13 @@ export default function App() {
   const isMobile = useMediaQuery({ maxWidth: MOBILE_BREAKPOINT });
   return (
     <>
+    <AuthProvider>
       {isMobile ? (
         <MobileChecker />
       ) : (
         <RouterProvider router={router} />
       )}
+      </AuthProvider>
     </>
   );
 }
