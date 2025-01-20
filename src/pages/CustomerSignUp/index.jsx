@@ -181,42 +181,42 @@ const CustomerSignup = () => {
         {/* Split Layout: Map on the left and Image Upload on the right */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Left Side: Map and Location Button */}
-          <div>
-            <label className="block text-gray-700 font-semibold mt-4">Pin Exact Location</label>
+          <div className="flex flex-col h-auto mb-4">
             <MapContainer
-            center={region || [14.5547, 121.0509]} 
-            zoom={13}
-            className="h-64 w-full rounded-md mb-4"
-            whenCreated={(mapInstance) => {
-                useMapEvents({
-                click: handleMapClick,
-                });
-            }}
+                center={region || [14.5547, 121.0509]} 
+                zoom={13}
+                className="h-64 w-full rounded-md mb-4"
+                whenCreated={(mapInstance) => {
+                    useMapEvents({
+                    click: handleMapClick,
+                    });
+                }}
             >
-            <MapResize />
-            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-            {latitude && longitude && (
+                <MapResize />
+                <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                {latitude && longitude && (
                 <>
-                <Marker position={[latitude, longitude]} />
-                <CenterMapView latitude={latitude} longitude={longitude} />
+                    <Marker position={[latitude, longitude]} />
+                    <CenterMapView latitude={latitude} longitude={longitude} />
                 </>
-            )}
+                )}
             </MapContainer>
 
             {latitude && longitude && (
-              <div className="flex justify-between mb-4">
+                <div className="flex justify-between mb-4">
                 <p className="bg-gray-200 p-3 rounded-md">Latitude: {latitude.toFixed(5)}</p>
                 <p className="bg-gray-200 p-3 rounded-md">Longitude: {longitude.toFixed(5)}</p>
-              </div>
+                </div>
             )}
 
             <button
-              onClick={getCurrentLocation}
-              className="w-full bg-primary-variant text-white p-3 rounded-md mb-4"
+                onClick={getCurrentLocation}
+                className="w-full bg-primary-variant text-white p-3 rounded-md mb-4"
             >
-              Use Current Location
-            </button>
-          </div>
+            Use Current Location
+        </button>
+        </div>
+
 
           {/* Right Side: Image Upload and Register Button */}
           <div>

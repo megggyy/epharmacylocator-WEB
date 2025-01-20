@@ -254,12 +254,11 @@ export default function WelcomePage() {
           ))}
         </div>
         <div className="flex justify-center mt-8">
-        <a
-        href="/pharmacies"
+         <Link to="/pharmacies"
         className="inline-block bg-primary-default text-white font-semibold py-3 px-8 rounded-lg shadow-md hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300"
       >
         See all
-      </a>
+      </Link>
         </div>
       </div>
 
@@ -280,12 +279,11 @@ export default function WelcomePage() {
           ))}
         </div>
         <div className="flex justify-center mt-8">
-        <a
-        href="/medicines"
+         <Link to="/medicines"
         className="inline-block bg-primary-default text-white font-semibold py-3 px-8 rounded-lg shadow-md hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300"
       >
         See all
-      </a>
+      </Link>
         </div>
       </div>
     </section>
