@@ -7,7 +7,7 @@ const srcPath = fileURLToPath(new URL("./src", import.meta.url));
 
 export default defineConfig({
   optimizeDeps: {
-    include: ["react-leaflet", "leaflet"],
+    include: ["react-leaflet", "leaflet", 'jwt-decode'],
   },
   plugins: [million.vite({ auto: true, mute: true }), react()],
   resolve: {
@@ -15,6 +15,7 @@ export default defineConfig({
       "@": srcPath,
       "@assets": `${srcPath}/assets`,
       "@components": `${srcPath}/components`,
+      "@context": `${srcPath}/context`,
       "@layouts": `${srcPath}/layouts`,
       "@pages": `${srcPath}/pages`,
       "@api": `${srcPath}/state/api/reducer`,
