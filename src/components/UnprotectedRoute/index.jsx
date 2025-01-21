@@ -1,21 +1,20 @@
 import React from "react";
-import { useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
 
-export default function ({ children, unprotected = false }) {
-  const auth = useSelector((state) => state.auth);
+export default function UnprotectedRoute({ children, unprotected = false }) {
+  // Get authentication details from sessionStorage
+  const authData = JSON.parse(localStorage.getItem("auth"));
+  const isAuthenticated = authData?.authenticated || false;
+  const userRole = authData?.user?.role;
 
-  const userRoles = auth.user?.roles || [];
+  if (unprotected || !isAuthenticated) {
+    return children; // Allow unauthenticated users to access
+  }
 
-  return unprotected || !auth?.authenticated ? (
-    children
-  ) : userRoles.includes("Admin") ? (
-    <Navigate to="/admin" replace />
-  ) : userRoles.includes("Employee") ? (
-    <Navigate to="/employee" replace />
-  ) : userRoles.includes("Customer") ? (
-    <Navigate to="/Customer" replace />
-  ) : (
-    <Navigate to="/" replace />
-  );
+  // Redirect authenticated users based on their role
+  if (userRole === "Admin") return <Navigate to="/admin" replace />;
+  if (userRole === "PharmacyOwner") return <Navigate to="/pharmacy-owner" replace />;
+  if (userRole === "Customer") return <Navigate to="/customer" replace />;
+
+  return <Navigate to="/" replace />; // Fallback
 }

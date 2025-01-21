@@ -1,17 +1,19 @@
 import React from "react";
-import { useSelector } from "react-redux";
 import { Navigate, useLocation } from "react-router-dom";
 
-export default function ({ children, userRoles = [] }) {
-  const auth = useSelector((state) => state.auth);
+export default function ProtectedRoute({ children, userRoles = [] }) {
   const location = useLocation();
 
-  const isAuth =
-    !auth?.authenticated ||
-    (userRoles?.length > 0 &&
-      !userRoles?.some((role) => auth?.user?.roles?.includes(role)));
+  // Get authentication details from sessionStorage
+  const authData = JSON.parse(localStorage.getItem("auth"));
+  const isAuthenticated = authData?.authenticated || false;
+  const userRole = authData?.user?.role;
 
-  return isAuth ? (
+  const isNotAuthorized =
+    !isAuthenticated || // User is not authenticated
+    (userRoles.length > 0 && !userRoles.includes(userRole)); // Role mismatch
+
+  return isNotAuthorized ? (
     <Navigate to="/login" state={{ from: location }} replace />
   ) : (
     children
