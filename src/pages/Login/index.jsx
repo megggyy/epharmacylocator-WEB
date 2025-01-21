@@ -8,7 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { jwtDecode } from "jwt-decode";
 import { API_URL } from "../../env";
 import epharmacylogoblue from "@assets/epharmacylogoblue.png";
-import loginbanner from "@assets/loginbanner.png";
+import loginbanner2 from "@assets/loginbanner2.png";
 
 const LoginScreen = () => {
   const { state, dispatch } = useContext(AuthGlobal);
@@ -43,6 +43,13 @@ const LoginScreen = () => {
       }
 
       if (response.success) {
+        // Store authentication data in localStorage
+        const authData = {
+          authenticated: true,
+          user: { role: response.role }, // Include user role
+        };
+        localStorage.setItem("auth", JSON.stringify(authData));
+      
         const role = response.role;
         switch (role) {
           case "Customer":       
@@ -61,7 +68,7 @@ const LoginScreen = () => {
 
             if (data.pharmacyDetails?.approved) {
                 setTimeout(() => {
-                    navigate("/dashboard/pharmacyowner");
+                    navigate("/pharmacy-owner/dashboard");
                 }, 1500); 
             } else {
               localStorage.removeItem("jwt");
@@ -74,7 +81,7 @@ const LoginScreen = () => {
             break;
           case "Admin":
             setTimeout(() => {
-                navigate("/dashboard/admin");
+                navigate("/admin");
             }, 1500); 
             break;
           default:
@@ -181,7 +188,7 @@ const LoginScreen = () => {
         <div className="flex-1 hidden text-center bg-gray-100 lg:flex">
           <div className="flex items-center justify-center">
             <img
-              src={loginbanner}
+              src={loginbanner2}
               alt="Login Illustration"
               className="object-cover h-full w-ful24 rounded-md"
             />

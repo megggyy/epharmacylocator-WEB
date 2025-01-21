@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   FaMapMarkerAlt,
   FaSearch,
@@ -12,17 +12,22 @@ import carousel3 from "@assets/pharmacy2.png";
 import { FaPills, FaMedkit, FaCapsules } from "react-icons/fa";
 import axios from "axios"; // Ensure axios is installed and imported
 import { API_URL } from "../env";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import AuthGlobal from "../context/AuthGlobal";
 
 export default function WelcomePage() {
   const [categories, setCategories] = useState([]);
   const [pharmacies, setPharmacies] = useState([]);
   const [medications, setMedications] = useState([]);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [userProfile, setUserProfile] = useState(null);
+  const { state, dispatch } = useContext(AuthGlobal);
+  const navigate = useNavigate();
 
   const carouselImages = [carousel1, carousel2, carousel3];
   
   useEffect(() => {
+
     // Fetch categories
     setCategories([
       { id: 1, name: "Pain Relievers" },
@@ -52,6 +57,33 @@ export default function WelcomePage() {
       })
       .catch((error) => console.error("Error fetching medications:", error));
   }, []);
+
+  useEffect(() => {
+    if (!state.isAuthenticated) {
+      navigate("/login");
+      return;
+    }
+
+    const token = localStorage.getItem("jwt");
+    if (token) {
+      axios
+        .get(`${API_URL}users/${state.user.userId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((user) => {
+          setUserProfile(user.data);
+        })
+        .catch((error) => {
+          console.error("Error fetching user data:", error);
+        });
+    } else {
+      navigate("/login");
+    }
+
+    return () => {
+      setUserProfile(null);
+    };
+  }, [state.isAuthenticated, state.user?.userId, navigate]);
 
  
   useEffect(() => {
@@ -254,11 +286,12 @@ export default function WelcomePage() {
           ))}
         </div>
         <div className="flex justify-center mt-8">
-         <Link to="/pharmacies"
-        className="inline-block bg-primary-default text-white font-semibold py-3 px-8 rounded-lg shadow-md hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300"
-      >
-        See all
-      </Link>
+        <Link
+          to={state.isAuthenticated ? "/customer/pharmacies" : "/pharmacies"}
+          className="inline-block bg-primary-default text-white font-semibold py-3 px-8 rounded-lg shadow-md hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300"
+        >
+          See All Pharmacies
+        </Link>
         </div>
       </div>
 
@@ -279,11 +312,12 @@ export default function WelcomePage() {
           ))}
         </div>
         <div className="flex justify-center mt-8">
-         <Link to="/medicines"
-        className="inline-block bg-primary-default text-white font-semibold py-3 px-8 rounded-lg shadow-md hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300"
-      >
-        See all
-      </Link>
+        <Link
+            to={state.isAuthenticated ? "/customer/medicines" : "/medicines"}
+            className="inline-block bg-primary-default text-white font-semibold py-3 px-8 rounded-lg shadow-md hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300"
+          >
+            See all
+          </Link>
         </div>
       </div>
     </section>
