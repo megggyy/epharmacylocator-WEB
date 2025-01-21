@@ -2,6 +2,7 @@ import RootLayout from "./RootLayout";
 import NotFound from "./NotFound";
 import Welcome from "./Welcome";
 import HomeLayoutBlock from "./HomeLayout";
+import AdminLayout from "./AdminLayout";
 
 
 export {
@@ -9,5 +10,5 @@ export {
   NotFound,
   Welcome,
   HomeLayoutBlock,
-
+  AdminLayout,
 };
