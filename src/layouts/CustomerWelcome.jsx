@@ -15,7 +15,7 @@ import { API_URL } from "../env";
 import { Link, useNavigate } from 'react-router-dom';
 import AuthGlobal from "../context/AuthGlobal";
 
-export default function WelcomePage() {
+export default function CustomerWelcome() {
   const [categories, setCategories] = useState([]);
   const [pharmacies, setPharmacies] = useState([]);
   const [medications, setMedications] = useState([]);
@@ -58,33 +58,6 @@ export default function WelcomePage() {
       .catch((error) => console.error("Error fetching medications:", error));
   }, []);
 
-  useEffect(() => {
-    if (!state.isAuthenticated) {
-      navigate("/login");
-      return;
-    }
-
-    const token = localStorage.getItem("jwt");
-    if (token) {
-      axios
-        .get(`${API_URL}users/${state.user.userId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        .then((user) => {
-          setUserProfile(user.data);
-        })
-        .catch((error) => {
-          console.error("Error fetching user data:", error);
-        });
-    } else {
-      navigate("/login");
-    }
-
-    return () => {
-      setUserProfile(null);
-    };
-  }, [state.isAuthenticated, state.user?.userId, navigate]);
-
  
   useEffect(() => {
     const interval = setInterval(() => {
@@ -117,8 +90,7 @@ export default function WelcomePage() {
       <p className="text-gray-700 text-lg leading-relaxed mb-6">
         Find the right medicines, nearby pharmacies, and explore health products with ease!
       </p>
-      <Link to
-        ="/maps"
+      <Link to="/customer/maps"
         className="inline-block bg-primary-default text-white font-semibold py-3 px-8 rounded-lg shadow-md hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300"
       >
         Locate Now
@@ -274,7 +246,7 @@ export default function WelcomePage() {
                 <p className="text-gray-600 text-sm mb-4">
                   <strong>Contact:</strong> {pharmacy.userInfo.contactNumber}
                 </p>
-                <Link to={`/PharmacyDetails/${pharmacy._id}`}>
+                <Link to={`/customer/PharmacyDetails/${pharmacy._id}`}>
                 <button
                   className="bg-primary-variant text-white px-4 py-2 rounded-md shadow hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300"
                 >
@@ -287,7 +259,7 @@ export default function WelcomePage() {
         </div>
         <div className="flex justify-center mt-8">
         <Link
-          to={state.isAuthenticated ? "/customer/pharmacies" : "/pharmacies"}
+          to="/customer/pharmacies"
           className="inline-block bg-primary-default text-white font-semibold py-3 px-8 rounded-lg shadow-md hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300"
         >
           See All Pharmacies
@@ -303,7 +275,7 @@ export default function WelcomePage() {
             <div key={medication.id} className="bg-white p-6 rounded-lg shadow-lg">
               <h3 className="text-lg font-semibold mb-2">{medication.name}</h3>
               <p className="text-gray-600">{medication.description}</p>
-               <Link to={`/MedicationDetails/${medication.name}`}>
+               <Link to={`/customer/MedicationDetails/${medication.name}`}>
                   <button className="mt-4 bg-primary-variant text-white px-4 py-2 rounded-lg">
                     View Availability
                   </button>
@@ -313,7 +285,7 @@ export default function WelcomePage() {
         </div>
         <div className="flex justify-center mt-8">
         <Link
-            to={state.isAuthenticated ? "/customer/medicines" : "/medicines"}
+            to="/customer/medicines"
             className="inline-block bg-primary-default text-white font-semibold py-3 px-8 rounded-lg shadow-md hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300"
           >
             See all
