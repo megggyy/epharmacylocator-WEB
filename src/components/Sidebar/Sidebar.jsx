@@ -8,29 +8,28 @@ import {
   faChartPie,
   faChartLine,
 } from "@fortawesome/free-solid-svg-icons";
-import admin from "@assets/admin.png";
+import logo from "@assets/epharmacy-logo.png";
 
 export default function Sidebar() {
   
   return (
     <nav
-      className="fixed top-0 left-0 h-screen w-64 bg-primary-default text-white shadow-lg flex flex-col justify-between"
+      className="fixed top-0 left-0 h-screen w-64 bg-primary-variant text-white shadow-lg flex flex-col justify-between"
     >
       {/* Logo and Admin Info */}
       <div className="px-6 py-4">
         <div className="flex flex-col items-center">
           <img
-            src={admin}
+            src={logo}
             alt="Admin Avatar"
-            className="w-14 h-14 rounded-full border-2 border-white mb-2"
+            className="w-14 h-14 full mb-2"
           />
-          <h1 className="text-xl font-bold uppercase">Admin Dashboard</h1>
         </div>
       </div>
 
       {/* Navigation Links */}
       <div className="flex-1 overflow-y-auto">
-        <h6 className="px-6 py-2 text-sm font-bold uppercase text-green-200">
+        <h6 className="px-6 py-2 text-sm font-bold uppercase text-primary-t3">
           Analytics
         </h6>
         <ul className="space-y-1 px-4">
@@ -47,23 +46,23 @@ export default function Sidebar() {
             },
             {
               icon: faChartPie,
-              label: "Parking Spaces Chart",
-              link: "/admin/parkingSpacesPerBarangay",
+              label: "Monthly Pharmacy Registrations",
+              link: "/admin/monthlyPharmacyRegistrations",
             },
             {
               icon: faChartArea,
-              label: "Monthly Transactions",
-              link: "/admin/monthlyTransactions",
+              label: "Most Scanned Medicines",
+              link: "/admin/mostScannedMedicines",
             },
             {
               icon: faChartLine,
-              label: "Yearly Transactions",
-              link: "/admin/yearlyTransactions",
+              label: "Pharmacies Per Barangay",
+              link: "/admin/pharmaciesPerBarangay",
             },
             {
               icon: faChartSimple,
-              label: "Maps",
-              link: "/admin/maps",
+              label: "Medicines Per Category",
+              link: "/admin/medicinesPerCategory",
             },
           ].map((item, index) => (
             <li key={index}>
@@ -72,8 +71,8 @@ export default function Sidebar() {
                 className={({ isActive }) =>
                   `flex items-center gap-3 py-2 px-4 rounded-lg transition-all ${
                     isActive
-                      ? "bg-green-700 text-white font-bold"
-                      : "hover:bg-primary-variant text-white-200"
+                      ? "bg-primary-t2 text-black font-bold"
+                      : "hover:bg-primary-default text-white-200"
                   }`
                 }
               >
@@ -85,20 +84,18 @@ export default function Sidebar() {
         </ul>
 
         {/* Divider */}
-        <hr className="my-4 border-green-400" />
+        <hr className="my-4 border-primary-default" />
 
         {/* Other Links */}
-        <h6 className="px-6 py-2 text-sm font-bold uppercase text-green-200">
+        <h6 className="px-6 py-2 text-sm font-bold uppercase text-primary-t3">
           Navigation
         </h6>
         <ul className="space-y-1 px-4">
           {[
-            { label: "Barangay", link: "/admin/barangay" },
-            { label: "Parking Spaces", link: "/admin/parkingspace" },
-            { label: "Parking Slots", link: "/admin/slot" },
+            { label: "Medicine Categories", link: "/admin/medication-category" },
+            { label: "Barangays", link: "/admin/barangays" },
             { label: "Users", link: "/admin/users" },
-            { label: "Feedback", link: "/admin/feedback" },
-            { label: "Transactions", link: "/admin/transactionall" },
+            { label: "Pharmacies", link: "/admin/pharmacies" },
           ].map((item, index) => (
             <li key={index}>
               <NavLink
@@ -106,8 +103,8 @@ export default function Sidebar() {
                 className={({ isActive }) =>
                   `flex items-center gap-3 py-2 px-4 rounded-lg transition-all ${
                     isActive
-                      ? "bg-green-700 text-white font-bold"
-                      : "hover:bg-primary-variant text-white"
+                      ? "bg-primary-t2 text-black font-bold"
+                      : "hover:bg-primary-default text-white"
                   }`
                 }
               >
@@ -117,11 +114,37 @@ export default function Sidebar() {
             </li>
           ))}
         </ul>
-      </div>
 
-      {/* Footer */}
-      <div className="px-6 py-4 text-center text-green-200 text-sm">
-        © {new Date().getFullYear()} Admin Panel
+    {/* Divider */}
+    <hr className="my-4 border-primary-default" />
+
+    {/* Other Links */}
+    <h6 className="px-6 py-2 text-sm font-bold uppercase text-primary-t3">
+      Others
+    </h6>
+    <ul className="space-y-1 px-4">
+      {[
+        { label: "Settings", link: "/admin/settings" },
+        { label: "FAQs", link: "/admin/faqs" },
+        { label: "", link: "/admin/faqs" },
+      ].map((item, index) => (
+        <li key={index}>
+          <NavLink
+            to={item.link}
+            className={({ isActive }) =>
+              `flex items-center gap-3 py-2 px-4 rounded-lg transition-all ${
+                isActive
+                  ? "bg-primary-t2 text-black font-bold"
+                  : "hover:bg-primary-default text-white"
+              }`
+            }
+          >
+            <i className="fas fa-clipboard-list text-lg"></i>
+            <span>{item.label}</span>
+          </NavLink>
+        </li>
+      ))}
+    </ul>
       </div>
     </nav>
   );
