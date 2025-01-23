@@ -128,7 +128,7 @@ const CustomerSignup = () => {
     data.append("password", password);
     data.append("street", street);
     data.append("city", city);
-    data.append("barangay", barangay);
+    data.append("barangay", barangay.value);
     data.append("region", JSON.stringify(region)); // Optional if needed
     data.append("latitude", latitude);
     data.append("longitude", longitude);
@@ -193,9 +193,9 @@ const CustomerSignup = () => {
         otp: otpValue,
       });
       if (response.status === 200) {
-        toast.success("OTP verified successfully!");
         setIsOtpModalOpen(false);
         navigate('/login');
+        toast.success("OTP verified successfully!");
       }
     } catch (error) {
       toast.error("Invalid OTP. Please try again.");
