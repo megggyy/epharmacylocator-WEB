@@ -26,8 +26,9 @@ const UserTableScreen = () => {
   const fetchUsers = useCallback(async () => {
     try {
       const response = await axios.get(`${API_URL}users`);
-      setUserList(response.data);
-      setUserFilter(response.data);
+      const customers = response.data.filter(user => user.role === 'Customer'); // Filter users with role 'customer'
+      setUserList(customers);
+      setUserFilter(customers);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -67,7 +68,7 @@ const UserTableScreen = () => {
       name: "Actions",
       cell: (row) => (
         <button
-          onClick={() => navigate(`/screens/Admin/Users/ReadUser?id=${row._id}`)}
+          onClick={() => navigate(`/admin/users/read/${row._id}`)}
           className="text-blue-600 hover:text-blue-800"
         >
           View

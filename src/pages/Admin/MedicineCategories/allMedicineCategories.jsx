@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import DataTable from "react-data-table-component";
 import PulseSpinner from "../../../assets/common/spinner";
+import DataTable from "react-data-table-component";
+import { ToastContainer, toast } from "react-toastify"; // Import toast and ToastContainer
+import "react-toastify/dist/ReactToastify.css"; // Import styles
 import { API_URL } from "../../../env";
 
 const MedicationCategoriesScreen = () => {
@@ -48,19 +50,27 @@ const MedicationCategoriesScreen = () => {
         setCategoriesFilter((prev) =>
           prev.filter((category) => category._id !== categoryId)
         );
-        alert("Category deleted successfully");
+        toast.success("Category deleted successfully"); // Success toast
       } catch (error) {
         console.error("Error deleting category:", error);
-        alert("Failed to delete category");
+        toast.error("Failed to delete category"); // Error toast
       }
     }
   };
 
   const columns = [
     {
-      name: "Name",
+      name: "NAME",
       selector: (row) => row.name,
       sortable: true,
+      cell: (row) => (
+        <button
+          className="text-black hover:underline"
+          onClick={() => navigate(`/admin/medication-category/read/${row._id}`)} // Navigate to Read Barangay screen
+        >
+          {row.name}
+        </button>
+      ),
     },
     {
       name: "Description",
@@ -74,7 +84,7 @@ const MedicationCategoriesScreen = () => {
           <button
             className="text-blue-500 hover:underline"
             onClick={() =>
-              navigate(`/screens/Admin/MedicationCategory/EditCategory?id=${row._id}`)
+              navigate(`/admin/medication-category/edit/${row._id}`)
             }
           >
             Edit
@@ -110,13 +120,14 @@ const MedicationCategoriesScreen = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
+          <ToastContainer />
       <div className="bg-[#0B607E] text-white p-4 rounded-lg flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">ePharmacy</h1>
         </div>
         <button
           className="bg-white text-[#0B607E] px-4 py-2 rounded-md font-medium"
-          onClick={() => navigate("/screens/Admin/MedicationCategory/CreateCategory")}
+          onClick={() => navigate("/admin/medication-category/create")}
         >
           Create Category
         </button>

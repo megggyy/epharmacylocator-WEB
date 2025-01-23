@@ -14,6 +14,8 @@ import axios from "axios"; // Ensure axios is installed and imported
 import { API_URL } from "../env";
 import { Link, useNavigate } from 'react-router-dom';
 import AuthGlobal from "../context/AuthGlobal";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"; 
 
 export default function WelcomePage() {
   const [categories, setCategories] = useState([]);
@@ -59,11 +61,6 @@ export default function WelcomePage() {
   }, []);
 
   useEffect(() => {
-    if (!state.isAuthenticated) {
-      navigate("/login");
-      return;
-    }
-
     const token = localStorage.getItem("jwt");
     if (token) {
       axios
@@ -76,9 +73,7 @@ export default function WelcomePage() {
         .catch((error) => {
           console.error("Error fetching user data:", error);
         });
-    } else {
-      navigate("/login");
-    }
+    } 
 
     return () => {
       setUserProfile(null);
@@ -106,6 +101,7 @@ export default function WelcomePage() {
 
   return (
     <section className="bg-blue-50 py-16 px-8">
+    <ToastContainer />
    {/* Hero Section */}
    <div className="max-w-full mx-auto bg-blue-50 py-20 lg:py-15 px-4 lg:px-8">
   <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center">

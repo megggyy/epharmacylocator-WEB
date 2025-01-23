@@ -4,6 +4,8 @@ import axios from "axios";
 import { API_URL } from "../../../env";
 import PulseSpinner from "../../../assets/common/spinner";
 import DataTable from "react-data-table-component";
+import { ToastContainer, toast } from "react-toastify"; 
+import "react-toastify/dist/ReactToastify.css";
 
 const BarangaysScreen = () => {
   const navigate = useNavigate();
@@ -39,13 +41,20 @@ const BarangaysScreen = () => {
   }, [fetchBarangays]);
 
   const handleDelete = async (barangayId) => {
-    try {
-      await axios.delete(`${API_URL}barangays/delete/${barangayId}`);
-      setBarangayList(barangayList.filter(barangay => barangay._id !== barangayId));
-      alert("Success", "Barangay deleted successfully");
-    } catch (error) {
-      console.error("Error deleting barangay:", error);
-      alert("Error", "Failed to delete barangay");
+    if (window.confirm("Are you sure you want to delete this barangay?")) {
+      try {
+        await axios.delete(`${API_URL}barangays/delete/${barangayId}`);
+        setBarangayList((prev) =>
+          prev.filter((barangay) => barangay._id !== barangayId)
+        );
+        setBarangayFilter((prev) =>
+          prev.filter((barangay) => barangay._id !== barangayId)
+        );
+        toast.success("Barangay deleted successfully"); // Success toast
+      } catch (error) {
+        console.error("Error deleting barangay:", error);
+        toast.error("Failed to delete barangay"); // Error toast
+      }
     }
   };
 
@@ -54,17 +63,25 @@ const BarangaysScreen = () => {
       name: "NAME",
       selector: (row) => row.name,
       sortable: true,
+      cell: (row) => (
+        <button
+          className="text-black hover:underline"
+          onClick={() => navigate(`/admin/barangays/read/${row._id}`)} // Navigate to Read Barangay screen
+        >
+          {row.name}
+        </button>
+      ),
     },
     {
       name: "ACTIONS",
       cell: (row) => (
         <div className="flex items-center space-x-4">
-          <button
-            className="text-blue-500 hover:underline"
-            onClick={() => navigate(`/screens/Admin/Barangay/EditBarangay?id=${row._id}`)}
-          >
-            Edit
-          </button>
+         <button
+          className="text-blue-500 hover:underline"
+          onClick={() => navigate(`/admin/barangays/edit/${row._id}`)} // Directly pass the id as part of the URL
+        >
+          Edit
+        </button>
           <button
             className="text-red-500 hover:underline"
             onClick={() => handleDelete(row._id)}
@@ -102,7 +119,7 @@ const BarangaysScreen = () => {
         </div>
         <button
           className="bg-white text-[#0B607E] px-4 py-2 rounded-md font-medium"
-          onClick={() => navigate("/screens/Admin/Barangay/CreateBarangay")}
+          onClick={() => navigate("/admin/barangays/create")}
         >
           Create Barangay
         </button>

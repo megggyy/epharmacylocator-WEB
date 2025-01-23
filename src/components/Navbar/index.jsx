@@ -5,6 +5,8 @@ import logo2 from "@assets/epharmacynavbar.png";
 import AuthGlobal from "../../context/AuthGlobal";
 import axios from "axios";
 import { API_URL } from "../../env";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Navbar = () => {
   const [openDropdown, setOpenDropdown] = useState(null); // Track the currently open dropdown
@@ -44,16 +46,20 @@ const Navbar = () => {
   }, [state.isAuthenticated, state.user?.userId, navigate]);
 
   const handleLogout = () => {
+    const toastProps = {
+      autoClose: 3000,
+    };
     localStorage.removeItem("jwt");
     localStorage.removeItem("auth");
     dispatch({ type: "LOGOUT_USER" });
     setOpenDropdown(null);
+    toast.success("You have been logged out!", toastProps);
     navigate("/login");
   };
 
   const authLinks = (
     <div className="flex space-x-8 items-center">
-      <Link to="/" className="hover:text-gray-300">
+      <Link to="/customer" className="hover:text-gray-300">
         Home
       </Link>
       <Link to="/customer/pharmacies" className="hover:text-gray-300">

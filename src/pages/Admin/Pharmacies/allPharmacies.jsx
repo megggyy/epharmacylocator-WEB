@@ -88,22 +88,12 @@ const PharmaciesScreen = () => {
     {
       name: "Actions",
       cell: (row) => (
-        <div className="flex space-x-2">
-          <button
-            className="text-blue-500 hover:underline"
-            onClick={() =>
-              navigate(`/screens/Admin/Pharmacies/EditPharmacy?id=${row._id}`)
-            }
-          >
-            Edit
-          </button>
-          <button
-            className="text-red-500 hover:underline"
-            onClick={() => handleDelete(row._id)}
-          >
-            Delete
-          </button>
-        </div>
+        <button
+          onClick={() => navigate(`/admin/pharmacies/read/${row._id}`)}
+          className="text-blue-600 hover:text-blue-800"
+        >
+          View
+        </button>
       ),
     },
   ];
