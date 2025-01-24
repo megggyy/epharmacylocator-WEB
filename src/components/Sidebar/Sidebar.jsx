@@ -35,32 +35,32 @@ export default function Sidebar() {
         <ul className="space-y-1 px-4">
           {[
             {
-              icon: faChartLine,
+              icon: faChartArea,
               label: "Summary of Reports",
               link: "/admin/summaryReports",
             },
+            // {
+            //   icon: faChartSimple,
+            //   label: "New Users Chart",
+            //   link: "/admin/newUsersChart",
+            // },
             {
-              icon: faChartSimple,
-              label: "New Users Chart",
-              link: "/admin/newUsersChart",
-            },
-            {
-              icon: faChartPie,
+              icon: faChartLine,
               label: "Monthly Pharmacy Registrations",
               link: "/admin/monthlyPharmacyRegistrations",
             },
+            // {
+            //   icon: faChartArea,
+            //   label: "Most Scanned Medicines",
+            //   link: "/admin/mostScannedMedicines",
+            // },
             {
-              icon: faChartArea,
-              label: "Most Scanned Medicines",
-              link: "/admin/mostScannedMedicines",
-            },
-            {
-              icon: faChartLine,
+              icon: faChartSimple,
               label: "Pharmacies Per Barangay",
               link: "/admin/pharmaciesPerBarangay",
             },
             {
-              icon: faChartSimple,
+              icon: faChartPie,
               label: "Medicines Per Category",
               link: "/admin/medicinesPerCategory",
             },

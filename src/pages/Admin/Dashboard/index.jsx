@@ -10,6 +10,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import { API_URL } from "../../../env";
+import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
 const Dashboard = () => {
   const [counts, setCounts] = useState({
@@ -21,6 +22,9 @@ const Dashboard = () => {
     pendingPharmacies: 0
   });
 
+  const [customersData, setCustomersData] = useState([]);
+  const [scannedData, setScannedData] = useState([]);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -30,32 +34,64 @@ const Dashboard = () => {
           axios.get(`${API_URL}medication-category`),
           axios.get(`${API_URL}medicine`),
         ]);
-  
-        // Debugging the pharmacies data
-        console.log("Pharmacies Data:", pharmaciesRes.data);
-  
-        // Safely filter pending pharmacies
-        const pendingPharmacies = pharmaciesRes.data.filter((pharmacy) => {
-          return pharmacy?.approved === false;
-        });
-  
-        console.log("Pending Pharmacies:", pendingPharmacies);
-  
+
+        const pendingPharmacies = pharmaciesRes.data.filter((pharmacy) => pharmacy?.approved === false);
+
         const uniqueMedicines = [...new Set(medicinesRes.data.map((med) => med.name))];
-  
+
         setCounts({
           users: usersRes.data.length,
           pharmacies: pharmaciesRes.data.length,
           categories: categoriesRes.data.length,
           medicines: uniqueMedicines.length,
-          pendingPharmacies: pendingPharmacies.length, // Count of pending pharmacies
+          pendingPharmacies: pendingPharmacies.length,
         });
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
-  
+
+    const fetchCustomersData = async () => {
+      try {
+        const response = await axios.get(`${API_URL}users/customersPerMonth`);
+        const result = response.data;
+    
+        if (result.success) {
+          const data = result.getUsersPerMonth.map((item) => ({
+            month: item.month,
+            total: item.total,
+            year: item.year,
+            monthIndex: new Date(`${item.month} 1`).getMonth(), // Convert month name to index
+          }));
+    
+          // Sort by year and then by month index
+          const sortedData = data.sort(
+            (a, b) => a.year - b.year || a.monthIndex - b.monthIndex
+          );
+    
+          // Remove unnecessary fields for final state
+          setCustomersData(
+            sortedData.map(({ month, total }) => ({ month, total }))
+          );
+        }
+      } catch (error) {
+        console.error("Error fetching customers data:", error);
+      }
+    };
+    
+    
+    
     fetchData();
+    fetchCustomersData();
+
+    // Simulated most scanned prescriptions data
+    setScannedData([
+      { name: "Paracetamol", total: 120 },
+      { name: "Ibuprofen", total: 95 },
+      { name: "Amoxicillin", total: 80 },
+      { name: "Cetirizine", total: 75 },
+      { name: "Loratadine", total: 60 },
+    ]);
   }, []);
   
   
@@ -132,7 +168,40 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+        {/* Charts Section */}
+            <div className="grid grid-cols-2 gap-6 p-6">
+       {/* Line Chart for Monthly New Customers */}
+        <div className="bg-white shadow rounded-lg p-4">
+          <h2 className="text-lg font-semibold mb-4">Monthly New Customers</h2>
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={customersData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Line type="monotone" dataKey="total" stroke="#8884d8" />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      
+              {/* Line Chart */}
+              <div className="bg-white shadow rounded-lg p-4">
+                <h2 className="text-lg font-semibold mb-4">Most Scanned Prescriptions</h2>
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={scannedData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="total" fill="#82ca9d" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
     </div>
+    
   );
 };
 

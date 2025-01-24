@@ -40,6 +40,13 @@ import UserTableScreen from "./pages/Admin/Users/allUsers";
 import ReadUserScreen from "./pages/Admin/Users/readUsers";
 import PharmaciesScreen from "./pages/Admin/Pharmacies/allPharmacies";
 import ReadPharmacyScreen from "./pages/Admin/Pharmacies/readPharmacy";
+import MedicinePieChart from "./pages/Admin/Charts/MedicinesPerCategory";
+import PharmacyBarChart from "./pages/Admin/Charts/PharmaciesPerBarangay";
+import MonthlyPharmacyRegistrationChart from "./pages/Admin/Charts/MonthlyPharmacyRegistration";
+import SummaryOfReports from "./pages/Admin/SummaryOfReports";
+import AdminViewProfile from "./pages/Admin/Profile/AdminViewProfile";
+import AdminEditProfile from "./pages/Admin/Profile/AdminEditProfile";
+import AdminChangePasswordScreen from "./pages/Admin/Profile/AdminChangePassword";
 
 // Pharmacy Owner pages
 
@@ -276,6 +283,64 @@ const router = createBrowserRouter(
         element={
           <ProtectedRoute userRoles={["Admin"]}>
             <ReadPharmacyScreen />
+          </ProtectedRoute>
+        }
+      />
+      {/* Charts */}
+      <Route
+        path="medicinesPerCategory"
+        element={
+          <ProtectedRoute userRoles={["Admin"]}>
+            <MedicinePieChart />
+          </ProtectedRoute>
+        }
+      />
+       <Route
+        path="pharmaciesPerBarangay"
+        element={
+          <ProtectedRoute userRoles={["Admin"]}>
+            <PharmacyBarChart />
+          </ProtectedRoute>
+        }
+      />
+       <Route
+        path="monthlyPharmacyRegistrations"
+        element={
+          <ProtectedRoute userRoles={["Admin"]}>
+            <MonthlyPharmacyRegistrationChart />
+          </ProtectedRoute>
+        }
+      />
+       <Route
+        path="summaryReports"
+        element={
+          <ProtectedRoute userRoles={["Admin"]}>
+            <SummaryOfReports />
+          </ProtectedRoute>
+        }
+      />
+      {/* Profile */}
+      <Route
+        path="viewProfile"
+        element={
+          <ProtectedRoute userRoles={["Admin"]}>
+            <AdminViewProfile />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="editProfile"
+        element={
+          <ProtectedRoute userRoles={["Admin"]}>
+            <AdminEditProfile />
+          </ProtectedRoute>
+        }
+      />
+       <Route
+        path="changePassword"
+        element={
+          <ProtectedRoute userRoles={["Admin"]}>
+            <AdminChangePasswordScreen />
           </ProtectedRoute>
         }
       />

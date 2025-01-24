@@ -59,7 +59,7 @@ export default function Navbar() {
               className="hidden absolute right-0 mt-2 w-40 bg-white shadow-lg rounded-md py-2 text-sm"
             >
               <li className="px-4 py-2 hover:bg-gray-100">
-                <Link to="/profile" className="text-gray-800">
+                <Link to="/admin/viewProfile" className="text-gray-800">
                   View Profile
                 </Link>
               </li>
