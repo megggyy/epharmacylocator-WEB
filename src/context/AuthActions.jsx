@@ -15,8 +15,6 @@ export const loginUser = async (user, dispatch) => {
             },
         });
         const data = await response.json();
-        console.log("Login response:", data);
-        console.log("Decoded token:", jwtDecode(data.token));
         
         if (response.ok && data.success && typeof data.token === "string") {
             const token = data.token;
@@ -27,7 +25,6 @@ export const loginUser = async (user, dispatch) => {
             
           }
            else {
-            // Return error message for handling in LoginScreen
             return { success: false, message: data.message };
         }
     } catch (error) {
