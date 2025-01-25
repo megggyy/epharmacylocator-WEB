@@ -1,10 +1,11 @@
 
 import React from "react";
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from "react-router-dom";
-import { RootLayout, NotFound, Welcome, HomeLayoutBlock, AdminLayout, CustomerLayout } from "@/layouts";
+import { RootLayout, NotFound, Welcome, HomeLayoutBlock, AdminLayout, CustomerLayout, PharmacyOwnerLayout } from "@/layouts";
 import { useMediaQuery } from "react-responsive";
 import { MobileChecker, UnprotectedRoute, ProtectedRoute } from "@components";
 import { ToastContainer } from "react-toastify";
+import { AuthProvider } from "./context/AuthGlobal";
 import "react-toastify/dist/ReactToastify.css";
 
 // pages
@@ -51,9 +52,14 @@ import AdminEditProfile from "./pages/Admin/Profile/AdminEditProfile";
 import AdminChangePasswordScreen from "./pages/Admin/Profile/AdminChangePassword";
 
 // Pharmacy Owner pages
-
-
-import { AuthProvider } from "./context/AuthGlobal";
+import PharmacyOwnerDashboard from "./pages/PharmacyOwner/PharmacyOwnerDashboard";
+import MedicationScreen from "./pages/PharmacyOwner/Medicines/allMedicines";
+import CreateMedicines from "./pages/PharmacyOwner/Medicines/createMedicine";
+import OwnerViewProfile from "./pages/PharmacyOwner/Profile/pharmacyViewProfile";
+import OwnerEditProfile from "./pages/PharmacyOwner/Profile/pharmacyEditProfile";
+import PharmacyChangePasswordScreen from "./pages/PharmacyOwner/Profile/pharmacyChangePassword";
+import EditMedicationScreen from "./pages/PharmacyOwner/Medicines/editMedicine";
+import ReadMedicationScreen from "./pages/PharmacyOwner/Medicines/readMedicine";
 
 const MOBILE_BREAKPOINT = 767;
 const router = createBrowserRouter(
@@ -354,6 +360,72 @@ const router = createBrowserRouter(
           </ProtectedRoute>
         }
       />
+      </Route>
+      <Route path="pharmacy-owner" element={<PharmacyOwnerLayout />}>
+      <Route
+          index
+          element={
+            <ProtectedRoute userRole={["PharmacyOwner"]}>
+              <PharmacyOwnerDashboard />
+            </ProtectedRoute>
+          }
+        />
+      <Route
+          path="medicines"
+          element={
+            <ProtectedRoute userRoles={["PharmacyOwner"]}>
+              <MedicationScreen />
+            </ProtectedRoute>
+          }
+        />
+      <Route
+          path="medicines/create"
+          element={
+            <ProtectedRoute userRoles={["PharmacyOwner"]}>
+              <CreateMedicines />
+            </ProtectedRoute>
+          }
+        />
+       <Route
+          path="medicines/edit/:id"
+          element={
+            <ProtectedRoute userRoles={["PharmacyOwner"]}>
+              <EditMedicationScreen />
+            </ProtectedRoute>
+          }
+        />
+         <Route
+          path="medicines/read/:id"
+          element={
+            <ProtectedRoute userRoles={["PharmacyOwner"]}>
+              <ReadMedicationScreen />
+            </ProtectedRoute>
+          }
+        />
+      <Route
+          path="viewProfile"
+          element={
+            <ProtectedRoute userRoles={["PharmacyOwner"]}>
+              <OwnerViewProfile />
+            </ProtectedRoute>
+          }
+        />
+         <Route
+          path="editProfile"
+          element={
+            <ProtectedRoute userRoles={["PharmacyOwner"]}>
+              <OwnerEditProfile />
+            </ProtectedRoute>
+          }
+        />
+         <Route
+          path="change-password"
+          element={
+            <ProtectedRoute userRoles={["PharmacyOwner"]}>
+              <PharmacyChangePasswordScreen />
+            </ProtectedRoute>
+          }
+        />
       </Route>
       <Route path="*" element={<NotFound />} />
     </Route>

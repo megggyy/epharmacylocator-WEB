@@ -113,7 +113,7 @@ const LoginScreen = () => {
 
             if (data.pharmacyDetails?.approved) {
               setTimeout(() => {
-                navigate("/pharmacy-owner/dashboard");
+                navigate("/pharmacy-owner");
               }, 1500);
             } else {
               localStorage.removeItem("jwt");

@@ -3,8 +3,10 @@ import ProtectedRoute from "./ProtectedRoute";
 import UnprotectedRoute from "./UnprotectedRoute";
 import MobileChecker from "./MobileChecker"
 import Footer from "./Footer";
-import Sidebar from "./Sidebar/Sidebar";
+import AdminSidebar from "./AdminSidebar";
 import AdminNavbar from "./Navbar/AdminNavbar";
+import PharmacyOwnerSidebar from "./PharmacyOwnerSidebar";
+import PharmacyOwnerNavbar from "./Navbar/PharmacyOwnerNavbar";
 
 export {
   Navbar,
@@ -12,7 +14,9 @@ export {
   UnprotectedRoute,
   MobileChecker,
   Footer,
-  Sidebar,
-  AdminNavbar
+  AdminSidebar,
+  AdminNavbar,
+  PharmacyOwnerNavbar,
+  PharmacyOwnerSidebar,
 
 };

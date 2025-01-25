@@ -10,7 +10,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import logo from "@assets/epharmacy-logo.png";
 
-export default function Sidebar() {
+export default function AdminSidebar() {
   
   return (
     <nav

@@ -1,13 +1,13 @@
 import React from "react";
-import { AdminNavbar, AdminSidebar, Footer } from "@components";
+import { PharmacyOwnerNavbar, PharmacyOwnerSidebar, Footer } from "@components";
 import { Outlet } from "react-router-dom";
 
-const AdminLayout = () => {
+const PharmacyOwnerLayout = () => {
   return (
     <div className="bg-white-100">
-    <AdminSidebar />
+    <PharmacyOwnerSidebar />
     <div className="relative md:ml-64 bg-blueGray-100">
-      <AdminNavbar />
+      <PharmacyOwnerNavbar />
       <div className="mx-auto w-full">
         <Outlet />
       </div>
@@ -16,4 +16,4 @@ const AdminLayout = () => {
   );
 };
 
-export default AdminLayout;
+export default PharmacyOwnerLayout;
