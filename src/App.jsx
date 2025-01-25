@@ -25,6 +25,8 @@ import CustomerMedicines from "./pages/Customer/Medicines";
 import CustomerMaps from "./pages/Customer/Maps";
 import CustomerPharmacyDetails from "./pages/Customer/PharmacyDetails";
 import CustomerMedicationDetails from "./pages/Customer/MedicationDetails";
+import PrescriptionUpload from "./pages/PrescriptionUpload";
+
 
 // Admin Pages
 import Dashboard from "./pages/Admin/Dashboard";
@@ -177,6 +179,14 @@ const router = createBrowserRouter(
           element={
             <ProtectedRoute userRoles={["Customer"]}>
               <CustomerMedicationDetails />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="prescription-upload"
+          element={
+            <ProtectedRoute userRoles={["Customer"]}>
+              <PrescriptionUpload />
             </ProtectedRoute>
           }
         />

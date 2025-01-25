@@ -7,6 +7,9 @@ import axios from "axios";
 import { API_URL } from "../../env";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import {
+  FaUpload
+} from "react-icons/fa";
 
 const Navbar = () => {
   const [openDropdown, setOpenDropdown] = useState(null); // Track the currently open dropdown
@@ -156,6 +159,10 @@ const Navbar = () => {
         <div>
           {state.isAuthenticated ? (
             <div className="relative flex items-center">
+              <Link to="/customer/prescription-upload" className="hover:text-gray-300">
+                <FaUpload className="text-primary-variant text-3xl mr-4" />
+              </Link>
+
               <img
                 src={
                   userProfile?.customerDetails?.images?.[0] ||
