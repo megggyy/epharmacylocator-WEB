@@ -426,7 +426,7 @@ const LoginScreen = () => {
               </button>
             </>
           )}
-        </Modal>;
+        </Modal>
 
         {/* Reset Password Modal */}
         <Modal open={isResetPasswordModalOpen} onClose={() => setIsResetPasswordModalOpen(false)} center>

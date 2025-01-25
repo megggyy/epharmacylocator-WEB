@@ -3,6 +3,9 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import axios from "axios";
 import { API_URL } from "../../env";
+import { ToastContainer, toast } from "react-toastify"; // Import ToastContainer and toast
+import "react-toastify/dist/ReactToastify.css"; // Import styles
+import redpin from "@assets/redpinloc.png";
 
 const TaguigCityMap = () => {
   const [pharmacies, setPharmacies] = useState([]);
@@ -22,7 +25,14 @@ const TaguigCityMap = () => {
     };
 
     fetchPharmacies();
-  }, []);
+
+    // Check if user is logged in and show toast if not
+    const user = localStorage.getItem("user"); // Or use your authentication logic
+    if (!user) {
+      
+      toast.info("Login to see your location."); // Show the toast if not logged in
+    }
+  }, []); // Empty dependency array ensures this effect runs only once
 
   const handleMarkerClick = (pharmacy) => {
     setSelectedPharmacy(pharmacy);
@@ -32,8 +42,19 @@ const TaguigCityMap = () => {
     setSelectedPharmacy(null);
   };
 
+    // Create a red icon for pharmacies
+    const pharmacyIcon = new L.Icon({
+      iconUrl: redpin, // Correctly reference the imported image
+      iconSize: [41, 38], // Size of the marker
+      iconAnchor: [12, 41], // Anchor point of the icon
+      popupAnchor: [1, -34], // Popup position
+    });
+
   return (
     <div className="relative h-screen">
+      {/* ToastContainer for toasts */}
+      <ToastContainer />
+
       {/* Map Container */}
       <MapContainer
         center={[14.520445, 121.053886]} // Taguig City Coordinates
@@ -52,6 +73,7 @@ const TaguigCityMap = () => {
               parseFloat(pharmacy.location.latitude),
               parseFloat(pharmacy.location.longitude),
             ]}
+            icon={pharmacyIcon}
             eventHandlers={{
               click: () => handleMarkerClick(pharmacy),
             }}
