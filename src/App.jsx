@@ -30,6 +30,7 @@ import CustomerMedicationDetails from "./pages/Customer/MedicationDetails";
 import PrescriptionUpload from "./pages/PrescriptionUpload";
 import CustomerViewProfile from "./pages/Customer/Profile/viewProfile";
 import CustomerEditProfile from "./pages/Customer/Profile/editProfile";
+import CustomerChangePasswordScreen from "./pages/Customer/Profile/changePassword";
 
 // Admin Pages
 import Dashboard from "./pages/Admin/Dashboard";
@@ -220,6 +221,14 @@ const router = createBrowserRouter(
           element={
             <ProtectedRoute userRoles={["Customer"]}>
               <CustomerEditProfile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="change-password"
+          element={
+            <ProtectedRoute userRoles={["Customer"]}>
+              <CustomerChangePasswordScreen />
             </ProtectedRoute>
           }
         />

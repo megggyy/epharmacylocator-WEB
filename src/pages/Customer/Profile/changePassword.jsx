@@ -9,7 +9,7 @@ import { API_URL } from "../../../env";
 
 
 
-const AdminChangePasswordScreen = () => {
+const CustomerChangePasswordScreen = () => {
   const [userId, setUserId] = useState(null);
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -207,4 +207,4 @@ const AdminChangePasswordScreen = () => {
   );
 };
 
-export default AdminChangePasswordScreen;
+export default CustomerChangePasswordScreen;

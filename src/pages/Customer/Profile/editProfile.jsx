@@ -233,7 +233,7 @@ export default function CustomerEditProfile() {
                 Confirm
               </button>
               <button
-                onClick={() => navigate('/customer/changePassword')} // Replace with your route
+                onClick={() => navigate('/customer/change-password')} // Replace with your route
                 className="w-full bg-secondary-variant text-white py-2 rounded-lg font-semibold hover:bg-blue-800"
               >
                 Change Password

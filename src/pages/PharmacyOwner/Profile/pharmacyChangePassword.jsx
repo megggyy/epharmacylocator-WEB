@@ -1,8 +1,11 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
+import { ToastContainer, toast } from "react-toastify";
 import AuthGlobal from "@/context/AuthGlobal";
 import PulseSpinner from "../../../assets/common/spinner";
+import { API_URL } from "../../../env";
 
 const PharmacyChangePasswordScreen = () => {
   const [userId, setUserId] = useState(null);
@@ -18,21 +21,53 @@ const PharmacyChangePasswordScreen = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchUserId = async () => {
-      const storedUserId = localStorage.getItem("userId");
-      setUserId(storedUserId);
+    const fetchUserData = async () => {
+      try {
+        const token = localStorage.getItem("jwt");
+        if (!token) throw new Error("User not logged in");
+
+        const decoded = jwtDecode(token);
+        const userId = decoded?.userId;
+
+        if (!userId) throw new Error("User ID not found in token");
+
+        const response = await axios.get(`${API_URL}users/${userId}`, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        setUserId(response.data);
+      } catch (error) {
+        alert(error.response?.data || error.message);
+      } finally {
+        setLoading(false);
+      }
     };
-    fetchUserId();
+
+    fetchUserData();
   }, []);
 
   const validate = () => {
     let errorMessages = {};
-    if (!newPassword) errorMessages.newPassword = "New password is required";
-    if (!confirmPassword) errorMessages.confirmPassword = "Confirm password is required";
-    if (!oldPassword) errorMessages.oldPassword = "Old password is required";
-    if (newPassword && confirmPassword && newPassword !== confirmPassword) {
-      errorMessages.confirmPassword = "Passwords do not match";
+    if (!newPassword) {
+      errorMessages.newPassword = "PASSWORD IS REQUIRED";
+    } else if (newPassword.length < 8) {
+      errorMessages.newPassword = "PASSWORD MUST BE AT LEAST 8 CHARACTERS";
     }
+    if (!confirmPassword) {
+      errorMessages.confirmPassword = "PASSWORD IS REQUIRED";
+    } else if (confirmPassword.length < 8) {
+      errorMessages.confirmPassword = "PASSWORD MUST BE AT LEAST 8 CHARACTERS";
+    }
+    if (!oldPassword) {
+      errorMessages.oldPassword = "PASSWORD IS REQUIRED";
+    }
+    if (newPassword && confirmPassword && newPassword !== confirmPassword) {
+      errorMessages.confirmPassword = "PASSWORD DO NOT MATCH";
+    }
+
     return errorMessages;
   };
 
@@ -43,9 +78,10 @@ const PharmacyChangePasswordScreen = () => {
       return;
     }
 
+    console.log(userId)
     setLoading(true);
     try {
-      const response = await axios.put(`${baseURL}users/change-password`, {
+      const response = await axios.put(`${API_URL}users/change-password`, {
         userId,
         oldPassword,
         newPassword,
@@ -55,11 +91,20 @@ const PharmacyChangePasswordScreen = () => {
       if (response.status === 200) {
         alert("Password successfully updated. Please login.");
         localStorage.removeItem("jwt");
+        localStorage.removeItem("auth");
         dispatch({ type: "LOGOUT_USER" });
         navigate("/login");
       }
+      else {
+        console.log(data.message)
+        if (data.message === 'NOT_MATCH') {
+          toast.error("OLD PASSWORD IS INCORRECT!");
+        } else {
+          // Handle other server errors
+          toast.error("UPDATING PASSWORD FAILED!")
+        }
+      }
     } catch (err) {
-      alert(err.response?.data?.message || "An error occurred. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -78,6 +123,7 @@ const PharmacyChangePasswordScreen = () => {
             >
               &larr; Back
             </button>
+            <ToastContainer />
             <h1 className="text-2xl font-bold text-center flex-grow">
               Change Password
             </h1>
