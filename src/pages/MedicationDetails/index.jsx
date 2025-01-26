@@ -59,6 +59,13 @@ const MedicationDetails = () => {
     );
   }
 
+  const formatDateTime = (date) => {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = date.toLocaleString('default', { month: 'long' }); // Get full month name
+    const year = String(date.getFullYear());
+    return `${month} ${day}, ${year}`;
+  };
+
   const { name: medicationName } = medications[0];
 
   return (
@@ -119,6 +126,9 @@ const MedicationDetails = () => {
                   <div className="flex items-center space-x-2">
                     <IoCubeOutline size={20} className="text-gray-500" />
                     <p className="text-green-600">{medication.stock} in stock</p>
+                    <p className="text-black italic">
+                      (Last updated on {medication.timeStamps ? formatDateTime(new Date(medication.timeStamps)) : 'No Date Available'})</p>
+
                   </div>
 
                   {/* Map Section */}
