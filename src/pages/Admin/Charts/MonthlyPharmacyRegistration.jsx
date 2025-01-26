@@ -16,7 +16,8 @@ const MonthlyPharmacyRegistrationChart = () => {
 
         // Map the response data to chart-friendly format
         const formattedData = getUsersPerMonth.map((item) => ({
-          month: item.month, // X-axis
+          month: item.month, // X-axis 
+          year: item.year,
           total: item.total, // Y-axis
         }));
 
