@@ -59,7 +59,7 @@ const MedicationDetails = () => {
     );
   }
 
-  const { name: medicationName, description } = medications[0];
+  const { name: medicationName } = medications[0];
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -75,90 +75,84 @@ const MedicationDetails = () => {
       </div>
 
       <div className="p-6 space-y-6">
-        {/* Medication Description */}
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-lg font-semibold mb-4">Description</h2>
-          <p className="text-gray-700">{description}</p>
-        </div>
 
         {/* Available Pharmacies */}
-     {/* Available Pharmacies */}
-<div>
-  <h2 className="text-lg font-semibold mb-4 text-center text-white bg-primary-variant p-4 rounded-lg">
-    Available Pharmacies
-  </h2>
+        <div>
+          <h2 className="text-lg font-semibold mb-4 text-center text-white bg-primary-variant p-4 rounded-lg">
+            Available Pharmacies
+          </h2>
 
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-    {medications.map((medication, index) => {
-      const pharmacy = medication.pharmacy || {};
-      const userInfo = pharmacy.userInfo || {};
-      const location = pharmacy.location || {};
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {medications.map((medication, index) => {
+              const pharmacy = medication.pharmacy || {};
+              const userInfo = pharmacy.userInfo || {};
+              const location = pharmacy.location || {};
 
-      return (
-        <div
-          key={index}
-          className="bg-white p-6 rounded-lg shadow-md space-y-4"
-        >
-          <h3 className="text-xl font-semibold text-center text-primary-variant">
-            {userInfo.name || "Unknown Pharmacy"}
-          </h3>
+              return (
+                <div
+                  key={index}
+                  className="bg-white p-6 rounded-lg shadow-md space-y-4"
+                >
+                  <h3 className="text-xl font-semibold text-center text-primary-variant">
+                    {userInfo.name || "Unknown Pharmacy"}
+                  </h3>
 
-          <div className="flex items-center space-x-2">
-            <IoLocationOutline size={20} className="text-gray-500" />
-            <p className="text-gray-700">
-              {`${userInfo.street || ""}, ${userInfo.barangay || ""}, ${userInfo.city || ""}`
-                .replace(/(, )+/g, ", ")
-                .trim()}
-            </p>
-          </div>
+                  <div className="flex items-center space-x-2">
+                    <IoLocationOutline size={20} className="text-gray-500" />
+                    <p className="text-gray-700">
+                      {`${userInfo.street || ""}, ${userInfo.barangay || ""}, ${userInfo.city || ""}`
+                        .replace(/(, )+/g, ", ")
+                        .trim()}
+                    </p>
+                  </div>
 
-          <div className="flex items-center space-x-2">
-            <IoCallOutline size={20} className="text-gray-500" />
-            <a
-              href={`tel:${userInfo.contactNumber || ""}`}
-              className="text-blue-600 hover:underline"
-            >
-              {userInfo.contactNumber || "N/A"}
-            </a>
-          </div>
+                  <div className="flex items-center space-x-2">
+                    <IoCallOutline size={20} className="text-gray-500" />
+                    <a
+                      href={`tel:${userInfo.contactNumber || ""}`}
+                      className="text-blue-600 hover:underline"
+                    >
+                      {userInfo.contactNumber || "N/A"}
+                    </a>
+                  </div>
 
-          <div className="flex items-center space-x-2">
-            <IoCubeOutline size={20} className="text-gray-500" />
-            <p className="text-green-600">{medication.stock} in stock</p>
-          </div>
+                  <div className="flex items-center space-x-2">
+                    <IoCubeOutline size={20} className="text-gray-500" />
+                    <p className="text-green-600">{medication.stock} in stock</p>
+                  </div>
 
-          {/* Map Section */}
-          <div className="w-full h-64 rounded-lg overflow-hidden">
-            <MapContainer
-              center={[
-                parseFloat(location.latitude) || 0,
-                parseFloat(location.longitude) || 0,
-              ]}
-              zoom={15}
-              style={{ height: "100%", width: "100%" }}
-            >
-              <MapResize />
-              <TileLayer
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                attribution="&copy; OpenStreetMap contributors"
-              />
-              <Marker
-                position={[
-                  parseFloat(location.latitude) || 0,
-                  parseFloat(location.longitude) || 0,
-                ]}
-              >
-                <Popup>
-                  {userInfo.name || "Pharmacy"}
-                </Popup>
-              </Marker>
-            </MapContainer>
+                  {/* Map Section */}
+                  <div className="w-full h-64 rounded-lg overflow-hidden">
+                    <MapContainer
+                      center={[
+                        parseFloat(location.latitude) || 0,
+                        parseFloat(location.longitude) || 0,
+                      ]}
+                      zoom={15}
+                      style={{ height: "100%", width: "100%" }}
+                    >
+                      <MapResize />
+                      <TileLayer
+                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        attribution="&copy; OpenStreetMap contributors"
+                      />
+                      <Marker
+                        position={[
+                          parseFloat(location.latitude) || 0,
+                          parseFloat(location.longitude) || 0,
+                        ]}
+                      >
+                        <Popup>
+                          {userInfo.name || "Pharmacy"}
+                        </Popup>
+                      </Marker>
+                    </MapContainer>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
-      );
-    })}
-  </div>
-</div>
 
       </div>
     </div>

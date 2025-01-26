@@ -133,21 +133,21 @@ const PrescriptionUpload = () => {
         });
 
 
-    const getMatchedMedicines = () => {
-        if (!ocrText) return [];
-
-        const ocrWords = ocrText.split(/\s+|\n+/).map(word => word.toLowerCase()).filter(Boolean);
-
-        const matchedMedicines = medicinesList.filter(medicine => {
-            return ocrWords.some(word => {
+        const getMatchedMedicines = () => {
+            if (!ocrText) return [];
+            
+            const ocrWords = ocrText.split(/\s+|\n+/).map(word => word.toLowerCase()).filter(Boolean);
+            
+            const matchedMedicines = medicinesList.filter(medicine => {
+              return ocrWords.some(word => {
                 const medicineName = medicine.name.toLowerCase();
                 const lowerWord = word.toLowerCase();
-                return medicineName.startsWith(lowerWord);
+                return lowerWord.length >= 5 && medicineName.includes(lowerWord); // Match consecutive substring
+              });
             });
-        });
-
-        return matchedMedicines;
-    };
+            
+            return matchedMedicines;
+          };
 
     const handleSelectText = (text) => {
         setIsMedicineFound(false);
@@ -198,6 +198,13 @@ const PrescriptionUpload = () => {
             </div>
         );
     }
+
+    const formatDateTime = (date) => {
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = date.toLocaleString('default', { month: 'long' }); // Get full month name
+        const year = String(date.getFullYear());
+        return `${month} ${day}, ${year}`;
+    }; 
 
     return (
         <div className="min-h-screen bg-gray-100 ">
@@ -330,10 +337,6 @@ const PrescriptionUpload = () => {
                     </div>
 
                     <div className="p-6 space-y-6">
-                        <div className="bg-white p-6 rounded-lg shadow-md">
-                            <h2 className="text-lg font-semibold mb-4">Description</h2>
-                            <p className="text-gray-700">{medicine[0].description}</p>
-                        </div>
 
                         <div>
                             <h2 className="text-lg font-semibold mb-4 text-center text-white bg-primary-variant p-4 rounded-lg">
@@ -377,6 +380,9 @@ const PrescriptionUpload = () => {
                                             <div className="flex items-center space-x-2">
                                                 <IoCubeOutline size={20} className="text-gray-500" />
                                                 <p className="text-green-600">{medication.stock} in stock</p>
+                                                <p className="text-black italic">
+                                                    (Last updated on {medication.timeStamps ? formatDateTime(new Date(medication.timeStamps)) : 'No Date Available'})</p>
+
                                             </div>
 
                                             <div className="w-full h-64 rounded-lg overflow-hidden">

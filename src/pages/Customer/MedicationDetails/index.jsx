@@ -59,7 +59,7 @@ const MedicationDetails = () => {
     );
   }
 
-  const { name: medicationName, description } = medications[0];
+  const { name: medicationName } = medications[0];
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -78,7 +78,6 @@ const MedicationDetails = () => {
         {/* Medication Description */}
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h2 className="text-lg font-semibold mb-4">Description</h2>
-          <p className="text-gray-700">{description}</p>
         </div>
 
         {/* Available Pharmacies */}

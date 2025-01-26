@@ -192,7 +192,6 @@ const Home = () => {
           {medications.map((medication) => (
             <div key={medication.id} className="bg-white p-6 rounded-lg shadow-lg">
               <h3 className="text-lg font-semibold mb-2">{medication.name}</h3>
-              <p className="text-gray-600">{medication.description}</p>
             </div>
           ))}
         </div>

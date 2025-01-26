@@ -103,7 +103,6 @@ const MedicinePage = () => {
               className="bg-white p-4 shadow-md rounded-md hover:shadow-lg transition-shadow"
             >
               <h3 className="text-lg font-bold text-gray-800 mb-2">{med.name}</h3>
-              <p className="text-sm text-gray-600">{med.description}</p>
               <Link to={`/customer/MedicationDetails/${med.name}`}>
                   <button className="mt-4 bg-primary-variant text-white px-4 py-2 rounded-lg">
                                   View Availability

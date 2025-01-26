@@ -274,7 +274,6 @@ export default function CustomerWelcome() {
           {medications.slice(0, 6).map((medication) => (
             <div key={medication.id} className="bg-white p-6 rounded-lg shadow-lg">
               <h3 className="text-lg font-semibold mb-2">{medication.name}</h3>
-              <p className="text-gray-600">{medication.description}</p>
                <Link to={`/customer/MedicationDetails/${medication.name}`}>
                   <button className="mt-4 bg-primary-variant text-white px-4 py-2 rounded-lg">
                     View Availability

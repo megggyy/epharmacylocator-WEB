@@ -72,11 +72,7 @@ const MedicationCategoriesScreen = () => {
         </button>
       ),
     },
-    {
-      name: "Description",
-      selector: (row) => row.description,
-      sortable: true,
-    },
+
     {
       name: "Actions",
       cell: (row) => (
