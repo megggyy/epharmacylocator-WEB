@@ -183,7 +183,7 @@ const Navbar = () => {
                   className="absolute bg-white text-black py-2 mt-1 w-40 rounded-lg shadow-lg top-full right-0"
                   style={{ zIndex: 9999 }}
                 >
-                  <Link to="/profile" className="block px-4 py-2 hover:bg-gray-200">
+                  <Link to="/customer/viewProfile" className="block px-4 py-2 hover:bg-gray-200">
                     View Profile
                   </Link>
                   <button
