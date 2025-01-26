@@ -49,6 +49,8 @@ const CustomerSignup = () => {
   const [otp, setOtp] = useState(new Array(4).fill(""));
   const [isOtpModalOpen, setIsOtpModalOpen] = useState(false);
   const [userId, setUserId] = useState(null);
+  const [isTermsOpen, setIsTermsOpen] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   useEffect(() => {
     const fetchBarangays = async () => {
@@ -94,6 +96,7 @@ const CustomerSignup = () => {
     if (contactNumber.length !== 11) errorMessages.contactNumber = "CONTACT NUMBER MUST BE 11 DIGITS";
     if (!barangay) errorMessages.barangay = "PLEASE SELECT YOUR BARANGAY";
     if (images.length === 0) errorMessages.images = "PLEASE UPLOAD AT LEAST ONE IMAGE";
+    if (!agreedToTerms) errorMessages.terms = "YOU MUST AGREE TO THE TERMS AND CONDITIONS";
     return errorMessages;
   };
 
@@ -373,6 +376,25 @@ const CustomerSignup = () => {
         {errors.images && (
           <p className="text-xs text-red-500 mt-1">{errors.images}</p>
         )}
+        <div className="mt-4 mb-4">
+          <label className="flex items-center">
+            <input
+              type="checkbox"
+              checked={agreedToTerms}
+              onChange={(e) => setAgreedToTerms(e.target.checked)}
+              className="mr-2"
+            />
+            <span className="text-gray-700">I agree to the</span>
+            <button
+              type="button"
+              onClick={() => setIsTermsOpen(true)}
+              className="text-blue-500 underline ml-1"
+            >
+              Terms and Conditions
+            </button>
+          </label>
+          {errors.terms && <p className="text-xs text-red-500 mt-1">{errors.terms}</p>}
+        </div>
         <button
           onClick={register}
           className="w-full bg-secondary-variant text-white p-3 rounded-md"
@@ -380,7 +402,102 @@ const CustomerSignup = () => {
           Register
         </button>
       </div>
+      <Modal
+        open={isTermsOpen}
+        onClose={() => setIsTermsOpen(false)}
+        center
+        classNames={{
+          modal: "modal-content",
+          closeButton: "modal-close-button",
+        }}
+        styles={{
+          modal: {
+            width: "90%",
+            maxWidth: "600px",
+            padding: "20px",
+            borderRadius: "8px",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+          },
+          overlay: {
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+          },
+        }}
+      >
+        <h3 className="text-2xl font-semibold mb-4 text-center">Terms and Conditions</h3>
+        <p className="text-sm text-gray-700 mb-4">
+          Welcome to ePharmacy Locator. By using our service, you agree to the following terms:
+        </p>
+        
+        <div className="space-y-4">
+          <div>
+            <h4 className="font-semibold text-gray-800">1. User Privacy</h4>
+            <p className="text-sm text-gray-700">
+              We are committed to protecting your privacy. All personal data shared with us will be stored securely and
+              will only be used for the purpose of providing services related to ePharmacy Locator.
+            </p>
+          </div>
 
+          <div>
+            <h4 className="font-semibold text-gray-800">2. Pharmacy Responsibility</h4>
+            <p className="text-sm text-gray-700">
+              Pharmacies are responsible for providing accurate and up-to-date information regarding their locations,
+              stock of medicines, and operating hours. Pharmacies must submit their permits for approval before being listed
+              in the system. We encourage pharmacies to regularly update their stock to ensure accurate information is available
+              to customers.
+            </p>
+          </div>
+
+          <div>
+            <h4 className="font-semibold text-gray-800">3. Medicine Stock Information</h4>
+            <p className="text-sm text-gray-700">
+              The system displays medicine stock information provided by pharmacies. We are not responsible for any inaccuracies
+              or discrepancies in stock data. The last update date for each pharmacy's medicine stock will be displayed, ensuring
+              transparency. 
+            </p>
+          </div>
+
+          <div>
+            <h4 className="font-semibold text-gray-800">4. Limitation of Liability</h4>
+            <p className="text-sm text-gray-700">
+              ePharmacy Locator is not responsible for any consequences arising from the use of the information provided by pharmacies.
+              While we strive to ensure the accuracy of the data, we cannot guarantee that all information is free from errors.
+            </p>
+          </div>
+
+          <div>
+            <h4 className="font-semibold text-gray-800">5. User Actions</h4>
+            <p className="text-sm text-gray-700">
+              Users of ePharmacy Locator are verified and are restricted to the following actions:
+              <ul className="list-disc pl-5 text-gray-700">
+                <li>Searching for medicines and pharmacies.</li>
+                <li>Locating pharmacies by search, nearby, or all pharmacies.</li>
+                <li>Uploading prescriptions for pharmacy verification.</li>
+                <li>Managing their profile information.</li>
+              </ul>
+            </p>
+          </div>
+
+          <div>
+            <h4 className="font-semibold text-gray-800">6. Terms of Use</h4>
+            <p className="text-sm text-gray-700">
+              By agreeing to these terms, you confirm that you will not misuse the system, provide false or misleading information,
+              or engage in any activity that could harm the functionality of the platform or other users.
+            </p>
+          </div>
+        </div>
+
+        <div className="flex justify-center mt-6">
+        <button
+          onClick={() => {
+            setAgreedToTerms(true);
+            setIsTermsOpen(false); // Close the modal
+          }}
+          className="px-6 py-2 bg-primary-default text-white rounded-full hover:bg-blue-600 focus:outline-none"
+        >
+            I Agree
+          </button>
+        </div>
+      </Modal>
       {/* OTP Modal */}
       <Modal open={isOtpModalOpen} onClose={() => setIsOtpModalOpen(false)} center>
         <h2 className="text-xl font-bold text-center">OTP Verification</h2>

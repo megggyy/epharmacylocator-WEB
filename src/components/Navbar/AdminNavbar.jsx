@@ -2,18 +2,23 @@ import React, { useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import adminavatar from "@assets/adminepharmacy.png";
 import AuthGlobal from "../../context/AuthGlobal";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function Navbar() {
   const { state, dispatch } = useContext(AuthGlobal);
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    localStorage.removeItem("jwt");
-    localStorage.removeItem("auth");
-    dispatch({ type: "LOGOUT_USER" });
-    navigate("/login");
-  };
-
+   const handleLogout = () => {
+     const toastProps = {
+       autoClose: 3000,
+     };
+     localStorage.removeItem("jwt");
+     localStorage.removeItem("auth");
+     dispatch({ type: "LOGOUT_USER" });
+     toast.success("You have been logged out!", toastProps);
+     navigate("/login");
+   };
   return (
     <div className="navbar bg-primary-t3 text-primary px-4 py-2 shadow-md flex justify-between items-center">
       {/* Logo and Title */}

@@ -82,7 +82,7 @@ export default function PharmacyOwnerDashboard() {
       {/* Manage Medications Button */}
       <div className="flex justify-center mt-8">
         <button
-          onClick={() => navigate('/screens/PharmacyOwner/Medications/ListMedications')}
+          onClick={() => navigate('/pharmacy-owner/medicines')}
           className="flex items-center bg-primary-variant text-white py-3 px-6 rounded-lg shadow-md hover:bg-blue-700 transition duration-300"
         >
           <span className="font-bold mr-2">Manage Medications</span>

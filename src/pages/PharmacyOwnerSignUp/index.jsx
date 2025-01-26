@@ -58,7 +58,8 @@ const PharmacyOwnerSignupScreen = () => {
   const [userId, setUserId] = useState(null);
   const [showOpeningTime, setShowOpeningTime] = useState(false);
   const [showClosingTime, setShowClosingTime] = useState(false);
-
+  const [isTermsOpen, setIsTermsOpen] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   const handleMapClick = (event) => {
     const { lat, lng } = event.latlng;
@@ -135,7 +136,7 @@ const PharmacyOwnerSignupScreen = () => {
     if (permits.length === 0) errorMessages.permits = "PLEASE UPLOAD YOUR BUSINESS PERMIT";
     if (!businessDays) errorMessages.businessDays = "PLEASE SELECT BUSINESS DAYS";
     if (!openingHour || !closingHour) errorMessages.hours = "PLEASE SELECT OPENING AND CLOSING HOURS";
-
+    if (!agreedToTerms) errorMessages.terms = "YOU MUST AGREE TO THE TERMS AND CONDITIONS";
     return errorMessages;
   };
 
@@ -523,14 +524,81 @@ const PharmacyOwnerSignupScreen = () => {
 
           </div>
         </div>
-
+        <div className="mt-4 mb-4">
+          <label className="flex items-center">
+            <input
+              type="checkbox"
+              checked={agreedToTerms}
+              onChange={(e) => setAgreedToTerms(e.target.checked)}
+              className="mr-2"
+            />
+            <span className="text-gray-700">I agree to the</span>
+            <button
+              type="button"
+              onClick={() => setIsTermsOpen(true)}
+              className="text-blue-500 underline ml-1"
+            >
+              Terms and Conditions
+            </button>
+          </label>
+          {errors.terms && <p className="text-xs text-red-500 mt-1">{errors.terms}</p>}
+        </div>
         <button
           onClick={register}
           className="w-full bg-secondary-variant text-white p-3 rounded-md"
         >
           Register
         </button>
+      <Modal
+        open={isTermsOpen}
+        onClose={() => setIsTermsOpen(false)}
+        center
+        classNames={{
+          modal: "modal-content",
+          closeButton: "modal-close-button",
+        }}
+        styles={{
+          modal: {
+            width: "90%",
+            maxWidth: "600px",
+            padding: "20px",
+            borderRadius: "8px",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+          },
+          overlay: {
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+          },
+        }}
+      >
+        <h3 className="text-2xl font-semibold mb-4 text-center">Pharmacy Owner Terms and Conditions</h3>
+        <p className="text-sm text-gray-700 mb-4">
+          Welcome to ePharmacy Locator. By using our service, you agree to the following terms:
+        </p>    
+        <p className="mb-2">
+      By signing up as a Pharmacy Owner, you agree to the following terms:
+    </p>
+    <ul className="list-disc pl-6 mb-4">
+      <li>You are required to upload your valid business permit, which will be subject to approval by the admins.</li>
+      <li>Your account must be verified before access is granted to the platform. An email will be sent once approved.</li>
+      <li>Once approved, you will be able to pin your pharmacy location on the map and provide your pharmacy's address for users to find.</li>
+      <li>You will manage your own medicines, including adding, editing, and deleting them as necessary.</li>
+      <li>You will update your stock regularly. The stock update details, including the last update time, will be visible to users for transparency.</li>
+      <li>As a Pharmacy Owner, you are responsible for keeping your pharmacy's information accurate and up to date.</li>
+      <li>You are responsible for managing your profile and editing your details as needed.</li>
+    </ul>
 
+        <div className="flex justify-center mt-6">
+        <button
+          onClick={() => {
+            setAgreedToTerms(true);
+            setIsTermsOpen(false); // Close the modal
+          }}
+          className="px-6 py-2 bg-primary-default text-white rounded-full hover:bg-blue-600 focus:outline-none"
+        >
+            I Agree
+          </button>
+        </div>
+      </Modal>
         {/* OTP Modal */}
         <Modal open={isOtpModalOpen} onClose={() => setIsOtpModalOpen(false)} center>
           <h2 className="text-xl font-bold text-center">OTP Verification</h2>
