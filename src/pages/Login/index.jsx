@@ -100,40 +100,44 @@ const LoginScreen = () => {
           case "Customer":
             setTimeout(() => {
               navigate("/");
-            }, 1500); // Adjust as needed
+            }, 1500); 
+            toast.success("Login successful");
             break;
-          case "PharmacyOwner":
-            const token = localStorage.getItem("jwt");
-            const decoded = jwtDecode(token);
-            const userId = decoded?.userId;
-
-            const { data } = await axios.get(`${API_URL}users/${userId}`, {
-              headers: { Authorization: `Bearer ${token}` },
-            });
-
-            if (data.pharmacyDetails?.approved) {
+            case "PharmacyOwner":
+              const token = localStorage.getItem("jwt");
+              const decoded = jwtDecode(token);
+              const userId = decoded?.userId;
+    
+              const { data } = await axios.get(`${API_URL}users/${userId}`, {
+                headers: { Authorization: `Bearer ${token}` },
+              });
+    
+              if (data.pharmacyDetails?.approved) {
+                setTimeout(() => {
+                  navigate("/pharmacy-owner");
+                }, 1500);
+                toast.success("Login successful");
+              } else {
+                // If the pharmacy is not approved, redirect without showing login success
+                localStorage.removeItem("jwt");
+                localStorage.removeItem("auth");
+                dispatch({ type: "LOGOUT_USER" });
+                toast.info("Pharmacy not approved. Redirecting to approval status.");
+                setTimeout(() => {
+                  navigate("/pharmacy-status");
+                }, 1500);
+              }
+              break;
+            case "Admin":
               setTimeout(() => {
-                navigate("/pharmacy-owner");
+                navigate("/admin");
               }, 1500);
-            } else {
-              localStorage.removeItem("jwt");
-              dispatch({ type: "LOGOUT_USER" });
-              toast.error("Pharmacy not approved. Redirecting to approval status.");
-              setTimeout(() => {
-                navigate("/pharmacy-status");
-              }, 1500);
-            }
-            break;
-          case "Admin":
-            setTimeout(() => {
-              navigate("/admin");
-            }, 1500);
-            break;
-          default:
-            navigate("/");
-        }
-        toast.success("Login successful");
-      } else {
+              toast.success("Login successful");
+              break;
+            default:
+              navigate("/");
+          }
+        } else {
         switch (response.message) {
           case "EMAIL_NOT_FOUND":
             toast.error("Email not found. Please check your email and try again.");

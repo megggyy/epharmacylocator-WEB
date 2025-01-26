@@ -4,25 +4,13 @@ import axios from 'axios';
 import adminavatar from "@assets/adminepharmacy.png";
 import AuthGlobal from "../../context/AuthGlobal";
 import { API_URL } from "../../env";
-import { toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 export default function PharmacyOwnerNavbar() {
   const [userProfile, setUserProfile] = useState({});
   const { state, dispatch } = useContext(AuthGlobal);
   const navigate = useNavigate();
-
-   const handleLogout = () => {
-     const toastProps = {
-       autoClose: 3000,
-     };
-     localStorage.removeItem("jwt");
-     localStorage.removeItem("auth");
-     dispatch({ type: "LOGOUT_USER" });
-     setOpenDropdown(null);
-     toast.success("You have been logged out!", toastProps);
-     navigate("/login");
-   };
 
   useEffect(() => {
     if (state.isAuthenticated) {
@@ -40,6 +28,17 @@ export default function PharmacyOwnerNavbar() {
       navigate('/login'); 
     }
   }, [state.isAuthenticated, state.user.userId]);
+
+  const handleLogout = () => {
+    const toastProps = {
+      autoClose: 3000,
+    };
+    localStorage.removeItem("jwt");
+    localStorage.removeItem("auth");
+    dispatch({ type: "LOGOUT_USER" });
+    toast.success("You have been logged out!", toastProps);
+    navigate("/login");
+  };
 
   const profileImage = 
   userProfile?.pharmacyDetails?.images?.[0] && typeof userProfile.pharmacyDetails.images[0] === 'string'

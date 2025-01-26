@@ -19,6 +19,7 @@ import CustomerSignup from "./pages/CustomerSignUp";
 import PharmacyOwnerSignupScreen from "./pages/PharmacyOwnerSignUp";
 import LoginScreen from "./pages/Login";
 import CustomerWelcome from "./layouts/CustomerWelcome";
+import PharmacyStatus from "./pages/PharmacyStatus";
 
 // customer pages
 import CustomerPharmacies from "./pages/Customer/Pharmacies";
@@ -134,6 +135,14 @@ const router = createBrowserRouter(
           element={
             <UnprotectedRoute>
               <LoginScreen />
+            </UnprotectedRoute>
+          }
+        />
+        <Route
+          path="pharmacy-status"
+          element={
+            <UnprotectedRoute>
+              <PharmacyStatus />
             </UnprotectedRoute>
           }
         />
