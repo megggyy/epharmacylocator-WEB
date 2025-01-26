@@ -75,12 +75,7 @@ const MedicationDetails = () => {
       </div>
 
       <div className="p-6 space-y-6">
-        {/* Medication Description */}
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-lg font-semibold mb-4">Description</h2>
-        </div>
-
-        {/* Available Pharmacies */}
+        
      {/* Available Pharmacies */}
 <div>
   <h2 className="text-lg font-semibold mb-4 text-center text-white bg-primary-variant p-4 rounded-lg">
