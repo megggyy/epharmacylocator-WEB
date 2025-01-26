@@ -29,11 +29,9 @@ export default function CustomerWelcome() {
   useEffect(() => {
 
     // Fetch categories
-    setCategories([
-      { id: 1, name: "Pain Relievers" },
-      { id: 2, name: "Vitamins" },
-      { id: 3, name: "Antibiotics" },
-    ]);
+    axios.get(`${API_URL}medication-category`)
+    .then(response => setCategories(response.data))
+    .catch(error => console.error('Error fetching categories:', error));
 
     // Fetch pharmacies from the API
     axios
@@ -200,9 +198,10 @@ export default function CustomerWelcome() {
       }
       return (
         <div
-          key={category.id}
-          className="flex flex-col items-center"
-        >
+        key={category.id}
+        className="flex flex-col items-center cursor-pointer"
+        onClick={() => navigate(`/customer/category/${category.id}/${category.name}`)}
+      >
           {/* Icon with Gradient Background */}
           <div className={`${gradient} rounded-full p-6 flex items-center justify-center`}>
             <div className="p-6 rounded-full">

@@ -20,6 +20,7 @@ import PharmacyOwnerSignupScreen from "./pages/PharmacyOwnerSignUp";
 import LoginScreen from "./pages/Login";
 import CustomerWelcome from "./layouts/CustomerWelcome";
 import PharmacyStatus from "./pages/PharmacyStatus";
+import CategoryFilterMedications from "./pages/FilterMedicineByCategory";
 
 // customer pages
 import CustomerPharmacies from "./pages/Customer/Pharmacies";
@@ -31,6 +32,7 @@ import PrescriptionUpload from "./pages/PrescriptionUpload";
 import CustomerViewProfile from "./pages/Customer/Profile/viewProfile";
 import CustomerEditProfile from "./pages/Customer/Profile/editProfile";
 import CustomerChangePasswordScreen from "./pages/Customer/Profile/changePassword";
+import CustomerCategoryFilterMedications from "./pages/Customer/FilterMedicineByCategory";
 
 // Admin Pages
 import Dashboard from "./pages/Admin/Dashboard";
@@ -148,6 +150,22 @@ const router = createBrowserRouter(
             </UnprotectedRoute>
           }
         />
+        <Route
+          path="pharmacy-status"
+          element={
+            <UnprotectedRoute>
+              <PharmacyStatus />
+            </UnprotectedRoute>
+          }
+        />
+         <Route
+          path="/category/:id/:name"
+          element={
+            <UnprotectedRoute>
+              <CategoryFilterMedications />
+            </UnprotectedRoute>
+          }
+        />
       </Route>
       {/* Customer Routes */}
       <Route path="customer" element={<CustomerLayout />}>
@@ -164,6 +182,14 @@ const router = createBrowserRouter(
           element={
             <ProtectedRoute userRoles={["Customer"]}>
               <CustomerPharmacies />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="category/:id/:name"
+          element={
+            <ProtectedRoute userRoles={["Customer"]}>
+              <CustomerCategoryFilterMedications />
             </ProtectedRoute>
           }
         />
