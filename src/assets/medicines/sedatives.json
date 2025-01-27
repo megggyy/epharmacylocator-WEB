@@ -66,5 +66,25 @@
   {
     "name": "Propofol",
     "description": "Commonly used for induction and maintenance of anesthesia or sedation in medical procedures."
+  },
+  {
+    "name": "Pioglitazone Hydrochloride",
+    "description": "Commonly used for induction and maintenance of anesthesia or sedation in medical procedures."
+  },
+  {
+    "name": "Saxagliptin + Dapaglifozin",
+    "description": "Commonly used for induction and maintenance of anesthesia or sedation in medical procedures."
+  },
+  {
+    "name": "Irbesartan + Amlodipine Besilate",
+    "description": "Commonly used for induction and maintenance of anesthesia or sedation in medical procedures."
+  },
+  {
+    "name": "Rosuvastatin Calcium",
+    "description": "Commonly used for induction and maintenance of anesthesia or sedation in medical procedures."
+  },
+  {
+    "name": "Aspirin",
+    "description": "Commonly used for induction and maintenance of anesthesia or sedation in medical procedures."
   }
 ]
