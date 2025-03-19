@@ -2,19 +2,24 @@ import React from "react";
 import { Navigate } from "react-router-dom";
 
 export default function UnprotectedRoute({ children, unprotected = false }) {
-  // Get authentication details from sessionStorage
   const authData = JSON.parse(localStorage.getItem("auth"));
   const isAuthenticated = authData?.authenticated || false;
   const userRole = authData?.user?.role;
 
+  // Restore last visited page on refresh
+  const lastVisitedPath = sessionStorage.getItem("lastVisitedPath");
+
   if (unprotected || !isAuthenticated) {
-    return children; // Allow unauthenticated users to access
+    return children; // Allow unauthenticated users
   }
 
-  // Redirect authenticated users based on their role
+  // Redirect to last visited path if available
+  if (lastVisitedPath) return <Navigate to={lastVisitedPath} replace />;
+
+  // Otherwise, redirect based on role
   if (userRole === "Admin") return <Navigate to="/admin" replace />;
   if (userRole === "PharmacyOwner") return <Navigate to="/pharmacy-owner" replace />;
   if (userRole === "Customer") return <Navigate to="/customer" replace />;
 
-  return <Navigate to="/" replace />; // Fallback
+  return <Navigate to="/" replace />;
 }
