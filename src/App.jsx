@@ -48,6 +48,9 @@ import UserTableScreen from "./pages/Admin/Users/allUsers";
 import ReadUserScreen from "./pages/Admin/Users/readUsers";
 import PharmaciesScreen from "./pages/Admin/Pharmacies/allPharmacies";
 import ReadPharmacyScreen from "./pages/Admin/Pharmacies/readPharmacy";
+
+import LicensedPharmacies from "./pages/Admin/LicensedPharmacies/licensedPharmacies";
+
 import MedicinePieChart from "./pages/Admin/Charts/MedicinesPerCategory";
 import PharmacyBarChart from "./pages/Admin/Charts/PharmaciesPerBarangay";
 import MonthlyPharmacyRegistrationChart from "./pages/Admin/Charts/MonthlyPharmacyRegistration";
@@ -55,6 +58,11 @@ import SummaryOfReports from "./pages/Admin/SummaryOfReports";
 import AdminViewProfile from "./pages/Admin/Profile/AdminViewProfile";
 import AdminEditProfile from "./pages/Admin/Profile/AdminEditProfile";
 import AdminChangePasswordScreen from "./pages/Admin/Profile/AdminChangePassword";
+
+import AdminMedicationScreen from "./pages/Admin/Medicines/allMedicines";
+import AdminReadMedicationScreen from "./pages/Admin/Medicines/readMedicine";
+
+
 
 // Pharmacy Owner pages
 import PharmacyOwnerDashboard from "./pages/PharmacyOwner/PharmacyOwnerDashboard";
@@ -367,6 +375,14 @@ const router = createBrowserRouter(
             </ProtectedRoute>
           }
         />
+          <Route
+          path="licensedPharmacies"
+          element={
+            <ProtectedRoute userRoles={["Admin"]}>
+              <LicensedPharmacies />
+            </ProtectedRoute>
+          }
+        />
         {/* Charts */}
         <Route
           path="medicinesPerCategory"
@@ -422,6 +438,23 @@ const router = createBrowserRouter(
           element={
             <ProtectedRoute userRoles={["Admin"]}>
               <AdminChangePasswordScreen />
+            </ProtectedRoute>
+          }
+        />
+         {/* Medicines */}
+        <Route
+          path="medicines"
+          element={
+            <ProtectedRoute userRoles={["Admin"]}>
+              <AdminMedicationScreen />
+            </ProtectedRoute>
+          }
+        />
+         <Route
+          path="medicines/read/:id"
+          element={
+            <ProtectedRoute userRoles={["Admin"]}>
+              <AdminReadMedicationScreen />
             </ProtectedRoute>
           }
         />

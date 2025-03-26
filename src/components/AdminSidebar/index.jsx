@@ -96,6 +96,9 @@ export default function AdminSidebar() {
             { label: "Barangays", link: "/admin/barangays" },
             { label: "Users", link: "/admin/users" },
             { label: "Pharmacies", link: "/admin/pharmacies" },
+            { label: "Licensed Pharmacies", link: "/admin/licensedPharmacies" },
+
+            { label: "Medicines", link: "/admin/medicines" },
           ].map((item, index) => (
             <li key={index}>
               <NavLink
