@@ -67,6 +67,7 @@ import EditMedicationScreen from "./pages/PharmacyOwner/Medicines/editMedicine";
 import ReadMedicationScreen from "./pages/PharmacyOwner/Medicines/readMedicine";
 
 import ExpiringMedicationScreen from "./pages/PharmacyOwner/Medicines/expiringMedicines";
+import ListReviewsScreen from "./pages/PharmacyOwner/Reviews/listReviews";
 
 const MOBILE_BREAKPOINT = 767;
 const router = createBrowserRouter(
@@ -93,7 +94,7 @@ const router = createBrowserRouter(
         <Route
           path="maps"
           element={
-              <Maps />
+            <Maps />
           }
         />
         <Route
@@ -104,7 +105,7 @@ const router = createBrowserRouter(
             </UnprotectedRoute>
           }
         />
-         <Route
+        <Route
           path="MedicationDetails/:name"
           element={
             <UnprotectedRoute>
@@ -112,7 +113,7 @@ const router = createBrowserRouter(
             </UnprotectedRoute>
           }
         />
-         <Route
+        <Route
           path="SignUpRole"
           element={
             <UnprotectedRoute>
@@ -120,7 +121,7 @@ const router = createBrowserRouter(
             </UnprotectedRoute>
           }
         />
-         <Route
+        <Route
           path="CustomerSignup"
           element={
             <UnprotectedRoute>
@@ -160,7 +161,7 @@ const router = createBrowserRouter(
             </UnprotectedRoute>
           }
         />
-         <Route
+        <Route
           path="/category/:id/:name"
           element={
             <UnprotectedRoute>
@@ -212,7 +213,7 @@ const router = createBrowserRouter(
           }
         />
         <Route
-         path="PharmacyDetails/:id"
+          path="PharmacyDetails/:id"
           element={
             <ProtectedRoute userRoles={["Customer"]}>
               <CustomerPharmacyDetails />
@@ -220,7 +221,7 @@ const router = createBrowserRouter(
           }
         />
         <Route
-         path="MedicationDetails/:name"
+          path="MedicationDetails/:name"
           element={
             <ProtectedRoute userRoles={["Customer"]}>
               <CustomerMedicationDetails />
@@ -262,7 +263,7 @@ const router = createBrowserRouter(
         />
       </Route>
       <Route path="admin" element={<AdminLayout />}>
-      <Route
+        <Route
           index
           element={
             <ProtectedRoute userRole={["Admin"]}>
@@ -278,7 +279,7 @@ const router = createBrowserRouter(
             </ProtectedRoute>
           }
         />
-       <Route
+        <Route
           path="medication-category/create"
           element={
             <ProtectedRoute userRoles={["Admin"]}>
@@ -287,21 +288,21 @@ const router = createBrowserRouter(
           }
         />
         <Route
-        path="medication-category/edit/:id"
-        element={
-          <ProtectedRoute userRoles={["Admin"]}>
-            <EditCategory />
-          </ProtectedRoute>
-        }
-      />
-       <Route
-        path="medication-category/read/:id"
-        element={
-          <ProtectedRoute userRoles={["Admin"]}>
-            <ReadCategory />
-          </ProtectedRoute>
-        }
-      />
+          path="medication-category/edit/:id"
+          element={
+            <ProtectedRoute userRoles={["Admin"]}>
+              <EditCategory />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="medication-category/read/:id"
+          element={
+            <ProtectedRoute userRoles={["Admin"]}>
+              <ReadCategory />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="barangays"
           element={
@@ -318,22 +319,22 @@ const router = createBrowserRouter(
             </ProtectedRoute>
           }
         />
-      <Route
-        path="barangays/edit/:id"
-        element={
-          <ProtectedRoute userRoles={["Admin"]}>
-            <EditBarangay />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="barangays/read/:id"
-        element={
-          <ProtectedRoute userRoles={["Admin"]}>
-            <ReadBarangayScreen />
-          </ProtectedRoute>
-        }
-      />
+        <Route
+          path="barangays/edit/:id"
+          element={
+            <ProtectedRoute userRoles={["Admin"]}>
+              <EditBarangay />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="barangays/read/:id"
+          element={
+            <ProtectedRoute userRoles={["Admin"]}>
+              <ReadBarangayScreen />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="users"
           element={
@@ -343,13 +344,13 @@ const router = createBrowserRouter(
           }
         />
         <Route
-        path="users/read/:id"
-        element={
-          <ProtectedRoute userRoles={["Admin"]}>
-            <ReadUserScreen />
-          </ProtectedRoute>
-        }
-      />
+          path="users/read/:id"
+          element={
+            <ProtectedRoute userRoles={["Admin"]}>
+              <ReadUserScreen />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="pharmacies"
           element={
@@ -359,74 +360,74 @@ const router = createBrowserRouter(
           }
         />
         <Route
-        path="pharmacies/read/:id"
-        element={
-          <ProtectedRoute userRoles={["Admin"]}>
-            <ReadPharmacyScreen />
-          </ProtectedRoute>
-        }
-      />
-      {/* Charts */}
-      <Route
-        path="medicinesPerCategory"
-        element={
-          <ProtectedRoute userRoles={["Admin"]}>
-            <MedicinePieChart />
-          </ProtectedRoute>
-        }
-      />
-       <Route
-        path="pharmaciesPerBarangay"
-        element={
-          <ProtectedRoute userRoles={["Admin"]}>
-            <PharmacyBarChart />
-          </ProtectedRoute>
-        }
-      />
-       <Route
-        path="monthlyPharmacyRegistrations"
-        element={
-          <ProtectedRoute userRoles={["Admin"]}>
-            <MonthlyPharmacyRegistrationChart />
-          </ProtectedRoute>
-        }
-      />
-       <Route
-        path="summaryReports"
-        element={
-          <ProtectedRoute userRoles={["Admin"]}>
-            <SummaryOfReports />
-          </ProtectedRoute>
-        }
-      />
-      {/* Profile */}
-      <Route
-        path="viewProfile"
-        element={
-          <ProtectedRoute userRoles={["Admin"]}>
-            <AdminViewProfile />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="editProfile"
-        element={
-          <ProtectedRoute userRoles={["Admin"]}>
-            <AdminEditProfile />
-          </ProtectedRoute>
-        }
-      />
-       <Route
-        path="changePassword"
-        element={
-          <ProtectedRoute userRoles={["Admin"]}>
-            <AdminChangePasswordScreen />
-          </ProtectedRoute>
-        }
-      />
+          path="pharmacies/read/:id"
+          element={
+            <ProtectedRoute userRoles={["Admin"]}>
+              <ReadPharmacyScreen />
+            </ProtectedRoute>
+          }
+        />
+        {/* Charts */}
+        <Route
+          path="medicinesPerCategory"
+          element={
+            <ProtectedRoute userRoles={["Admin"]}>
+              <MedicinePieChart />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="pharmaciesPerBarangay"
+          element={
+            <ProtectedRoute userRoles={["Admin"]}>
+              <PharmacyBarChart />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="monthlyPharmacyRegistrations"
+          element={
+            <ProtectedRoute userRoles={["Admin"]}>
+              <MonthlyPharmacyRegistrationChart />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="summaryReports"
+          element={
+            <ProtectedRoute userRoles={["Admin"]}>
+              <SummaryOfReports />
+            </ProtectedRoute>
+          }
+        />
+        {/* Profile */}
+        <Route
+          path="viewProfile"
+          element={
+            <ProtectedRoute userRoles={["Admin"]}>
+              <AdminViewProfile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="editProfile"
+          element={
+            <ProtectedRoute userRoles={["Admin"]}>
+              <AdminEditProfile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="changePassword"
+          element={
+            <ProtectedRoute userRoles={["Admin"]}>
+              <AdminChangePasswordScreen />
+            </ProtectedRoute>
+          }
+        />
       </Route>
       <Route path="pharmacy-owner" element={<PharmacyOwnerLayout />}>
-      <Route
+        <Route
           index
           element={
             <ProtectedRoute userRole={["PharmacyOwner"]}>
@@ -434,7 +435,7 @@ const router = createBrowserRouter(
             </ProtectedRoute>
           }
         />
-      <Route
+        <Route
           path="medicines"
           element={
             <ProtectedRoute userRoles={["PharmacyOwner"]}>
@@ -442,7 +443,7 @@ const router = createBrowserRouter(
             </ProtectedRoute>
           }
         />
-      <Route
+        <Route
           path="medicines/create"
           element={
             <ProtectedRoute userRoles={["PharmacyOwner"]}>
@@ -450,7 +451,7 @@ const router = createBrowserRouter(
             </ProtectedRoute>
           }
         />
-       <Route
+        <Route
           path="medicines/edit/:id"
           element={
             <ProtectedRoute userRoles={["PharmacyOwner"]}>
@@ -458,7 +459,7 @@ const router = createBrowserRouter(
             </ProtectedRoute>
           }
         />
-         <Route
+        <Route
           path="medicines/read/:id"
           element={
             <ProtectedRoute userRoles={["PharmacyOwner"]}>
@@ -466,7 +467,7 @@ const router = createBrowserRouter(
             </ProtectedRoute>
           }
         />
-         <Route
+        <Route
           path="expiringMedicines"
           element={
             <ProtectedRoute userRoles={["PharmacyOwner"]}>
@@ -474,7 +475,15 @@ const router = createBrowserRouter(
             </ProtectedRoute>
           }
         />
-      <Route
+        <Route
+          path="listReviews"
+          element={
+            <ProtectedRoute userRoles={["PharmacyOwner"]}>
+              <ListReviewsScreen />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="viewProfile"
           element={
             <ProtectedRoute userRoles={["PharmacyOwner"]}>
@@ -482,7 +491,7 @@ const router = createBrowserRouter(
             </ProtectedRoute>
           }
         />
-         <Route
+        <Route
           path="editProfile"
           element={
             <ProtectedRoute userRoles={["PharmacyOwner"]}>
@@ -490,7 +499,7 @@ const router = createBrowserRouter(
             </ProtectedRoute>
           }
         />
-         <Route
+        <Route
           path="change-password"
           element={
             <ProtectedRoute userRoles={["PharmacyOwner"]}>
@@ -508,13 +517,13 @@ export default function App() {
   const isMobile = useMediaQuery({ maxWidth: MOBILE_BREAKPOINT });
   return (
     <>
-    <AuthProvider>
-    <ToastContainer />
-      {isMobile ? (
-        <MobileChecker />
-      ) : (
-        <RouterProvider router={router} />
-      )}
+      <AuthProvider>
+        <ToastContainer />
+        {isMobile ? (
+          <MobileChecker />
+        ) : (
+          <RouterProvider router={router} />
+        )}
       </AuthProvider>
     </>
   );

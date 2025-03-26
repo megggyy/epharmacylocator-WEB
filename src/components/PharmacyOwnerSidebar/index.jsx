@@ -5,6 +5,7 @@ import {
   faUserCircle,
   faEdit,
   faPills,
+  faStar,
   faClipboardList,
   faQuestionCircle,
   faFileContract,
@@ -117,6 +118,32 @@ export default function PharmacyOwnerSidebar() {
             </li>
           ))}
         </ul>
+        <ul className="space-y-1 px-4">
+          {[
+            {
+              icon: faStar,
+              label: "Reviews",
+              link: "/pharmacy-owner/listReviews",
+            },
+          ].map((item, index) => (
+            <li key={index}>
+              <NavLink
+                to={item.link}
+                className={({ isActive }) =>
+                  `flex items-center gap-3 py-2 px-4 rounded-lg transition-all ${
+                    isActive
+                      ? "bg-primary-t2 text-black font-bold"
+                      : "hover:bg-primary-default text-white"
+                  }`
+                }
+              >
+                <FontAwesomeIcon icon={item.icon} className="text-lg" />
+                <span>{item.label}</span>
+              </NavLink>
+            </li>
+          ))}
+        </ul>
+
 
         {/* Divider */}
         <hr className="my-4 border-primary-default" />
