@@ -26,6 +26,16 @@ const MedicationScreen = () => {
       console.error("Error fetching medications:", error);
       setLoading(false);
     }
+
+    fetchMedications();
+
+      const interval = setInterval(fetchMedications, 5000);
+  
+      return () => {
+        clearInterval(interval); 
+        fetchMedications()
+        setLoading(true);
+      };
   }, [state.user.userId]);
 
   useEffect(() => {
@@ -37,8 +47,9 @@ const MedicationScreen = () => {
       setMedicationsFilter(medicationsList);
     } else {
       setMedicationsFilter(
-        medicationsList.filter((med) =>
-          med.name.toLowerCase().includes(text.toLowerCase())
+        medicationsList.filter((i) =>
+          [i.medicine?.genericName, i.medicine?.brandName] // Ensure you're accessing the correct structure
+            .some((field) => field?.toLowerCase().includes(text.toLowerCase()))
         )
       );
     }
@@ -58,18 +69,23 @@ const MedicationScreen = () => {
 
   const columns = [
     {
+      name: "Generic Name",
+      selector: (row) => row.medicine.genericName,
+      sortable: true,
+    },
+    {
       name: "Name",
-      selector: (row) => row.name,
+      selector: (row) => row.medicine.brandName,
       sortable: true,
     },
     {
       name: "Category",
-      selector: (row) => row.category.name,
+      selector: (row) => row.medicine.category.map(cat => cat.name).join("/ "),
       sortable: true,
     },
     {
       name: "Stock",
-      selector: (row) => row.stock,
+      selector: (row) => row.expirationPerStock.reduce((sum, exp) => sum + exp.stock, 0),
       sortable: true,
     },
     {

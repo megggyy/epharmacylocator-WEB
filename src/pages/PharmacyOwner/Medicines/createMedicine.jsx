@@ -2,217 +2,436 @@ import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import AuthGlobal from "@/context/AuthGlobal";
-import antibioticsData from "@/assets/medicines/antibiotics.json";
-import sedativesData from "@/assets/medicines/sedatives.json";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import { toast, ToastContainer } from "react-toastify";
 import { API_URL } from "../../../env";
 
 const CreateMedicines = () => {
   const navigate = useNavigate();
+  const [filteredGeneric, setFilteredGeneric] = useState([]);
+  const [generics, setGenerics] = useState([]);
+  const [searchGeneric, setSearchGeneric] = useState("");
+  const [genericModalVisible, setGenericModalVisible] = useState(false);
+  const [selectedGeneric, setSelectedGeneric] = useState("");
+
   const [medicines, setMedicines] = useState([]);
   const [filteredMedicines, setFilteredMedicines] = useState([]);
-  const [filteredCategory, setFilteredCategory] = useState([]);
-  const [stockInput, setStockInput] = useState({});
-  const [categoryModalVisible, setCategoryModalVisible] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [categories] = useState(["Antibiotics", "Sedatives"]);
-  const [searchCategory, setSearchCategory] = useState("");
   const [searchMedicine, setSearchMedicine] = useState("");
+
+  const [items, setItems] = useState([]);
+
+  const [selectedMedicineIndex, setSelectedMedicineIndex] = useState(null);
+  const [datePickerVisible, setDatePickerVisible] = useState({});
+  const [expirationDates, setExpirationDates] = useState({});
+  const [stockInputs, setStockInputs] = useState({});
   const { state } = useContext(AuthGlobal);
 
   useEffect(() => {
+    fetchGenericNames()
     setFilteredMedicines(medicines);
-    setFilteredCategory(categories);
-  }, [medicines, categories]);
+    setFilteredGeneric(generics);
+  }, [medicines], [generics]);
+
+  const fetchGenericNames = async () => {
+    try {
+      const response = await axios.get(`${API_URL}medicine/json`);
+
+      const uniqueCompositionsMap = new Map();
+
+      response.data.forEach(item => {
+        const normalizedKey = item.genericName.replace(/\s+/g, '').toLowerCase();
+        if (!uniqueCompositionsMap.has(normalizedKey)) {
+          uniqueCompositionsMap.set(normalizedKey, item.genericName);
+        }
+      });
+
+      setGenerics(Array.from(uniqueCompositionsMap.values()));
+    } catch (error) {
+      console.error("Error fetching generic names: ", error);
+    }
+  };
+
+  const filterGeneric = (text) => {
+    setSearchGeneric(text);
+    const filtered = generics.filter((generic) =>
+      generic.toLowerCase().includes(text.toLowerCase())
+    );
+    setFilteredGeneric(filtered);
+  };
+  
+
+  const openModal = () => {
+    setGenericModalVisible(true);
+    setFilteredGeneric(generics); // Make sure the full list shows
+  };
+
+
+  const handleGenericSelect = async (generic) => {
+    setSelectedGeneric(generic);
+    setGenericModalVisible(false);
+
+    console.log('generic: ', generic)
+    try {
+      const response = await axios.get(`${API_URL}medicine/json`);
+
+      // Normalize the selected generic name
+      const normalizedGeneric = generic.trim().toLowerCase();
+
+      // Filter medicines by generic name (ignoring spaces and case)
+      const filteredMedicines = response.data.filter(item =>
+        item.genericName?.trim().toLowerCase() === normalizedGeneric
+      );
+
+      // Extract relevant details
+      const filteredMedicinesDetails = filteredMedicines.map(item => ({
+        brandName: item.brandName?.trim() || '',
+        dosageStrength: item.dosageStrength || '',
+        dosageForm: item.dosageForm || '',
+        classification: item.classification || '',
+        category: item.category || '',
+        description: item.description || '',
+      })).filter(item => item.brandName); // Ensure no empty brand names
+
+      // Fetch existing medicines and filter out those already in stock
+      fetchExistingMedicines(generic, filteredMedicinesDetails);
+
+    } catch (error) {
+      console.error("Error fetching generic select:", error);
+    }
+  };
+
+  // Fetch existing medicines from the pharmacy stock
+  const fetchExistingMedicines = async (generic, genericMedicines) => {
+    setSearchGeneric('');
+
+    try {
+      const response = await axios.get(`${API_URL}medicine/existing/${state.user.userId}/${generic}`);
+
+      if (response.data) {
+        const existingMedicines = response.data.map(item => item.medicine); // Extract medicines from stock
+
+        const nonExistingMedicines = genericMedicines.filter(med =>
+          !existingMedicines.some(existing =>
+            existing.brandName === med.brandName &&
+            existing.dosageStrength === med.dosageStrength &&
+            existing.dosageForm === med.dosageForm &&
+            existing.classification === med.classification
+          )
+        );
+
+
+        setMedicines(nonExistingMedicines); // Update state with non-existing medicines
+      }
+    } catch (error) {
+    }
+  };
+
 
   const filterMedicines = (text) => {
-    setSearchMedicine(text);
-    if (text === "") {
-      setFilteredMedicines(medicines);
-    } else {
-      const filtered = medicines.filter((medicine) =>
-        medicine.name.toLowerCase().includes(text.toLowerCase())
-      );
-      setFilteredMedicines(filtered);
-    }
+    setSearchMedicine(text); // keep input synced
+    const filtered = medicines.filter((medicine) =>
+      medicine.brandName.toLowerCase().includes(text.toLowerCase())
+    );
+    setFilteredMedicines(filtered);
+  };
+  
+
+  const handleMedicineSelect = (index) => {
+    setSelectedMedicineIndex(index);  // Set selected medicine index
   };
 
-  const filterCategory = (text) => {
-    setSearchCategory(text);
-    if (text === "") {
-      setFilteredCategory(categories);
-    } else {
-      const filtered = categories.filter((category) =>
-        category.toLowerCase().includes(text.toLowerCase())
-      );
-      setFilteredCategory(filtered);
-    }
-  };
+  const addNewItem = () => {
+    if (selectedMedicineIndex === null) return; // Prevent adding if no medicine is selected
 
-  const handleCategorySelect = (category) => {
-    setSelectedCategory(category);
-    setCategoryModalVisible(false);
-
-    let filteredMedicines = [];
-    if (category === "Antibiotics") {
-      filteredMedicines = antibioticsData;
-    } else if (category === "Sedatives") {
-      filteredMedicines = sedativesData;
-    }
-
-    fetchExistingMedicines(filteredMedicines);
-  };
-
-  const fetchExistingMedicines = async (categoryMedicines) => {
-    try {
-      const response = await axios.get(`${API_URL}medicine/${state.user.userId}`);
-      const existingMedicines = response.data;
-
-      const newMedicines = categoryMedicines.filter(
-        (medicine) =>
-          !existingMedicines.some(
-            (existingMedicine) => existingMedicine.name === medicine.name
-          )
-      );
-
-      setMedicines(newMedicines);
-    } catch (error) {
-      console.error("Error fetching existing medicines: ", error);
-    }
-  };
-
-  const handleStockChange = (index, value) => {
-    setStockInput((prev) => ({
+    const newIndex = items[selectedMedicineIndex] ? items[selectedMedicineIndex].length : 0;
+    setItems((prev) => ({
       ...prev,
-      [index]: value,
+      [selectedMedicineIndex]: [...(prev[selectedMedicineIndex] || []), newIndex],
+    }));
+    setStockInputs((prev) => ({
+      ...prev,
+      [`${selectedMedicineIndex}-${newIndex}`]: '',
+    }));
+    setExpirationDates((prev) => ({
+      ...prev,
+      [`${selectedMedicineIndex}-${newIndex}`]: '',
     }));
   };
 
+
+
+  const removeItem = (medicineIndex, subIndex) => {
+    setItems((prev) => ({
+      ...prev,
+      [medicineIndex]: prev[medicineIndex].filter((i) => i !== subIndex),
+    }));
+    setStockInputs((prev) => {
+      const updatedInputs = { ...prev };
+      delete updatedInputs[`${medicineIndex}-${subIndex}`];
+      return updatedInputs;
+    });
+    setExpirationDates((prev) => {
+      const updatedDates = { ...prev };
+      delete updatedDates[`${medicineIndex}-${subIndex}`];
+      return updatedDates;
+    });
+  };
+
+  const handleStockChange = (index, text) => {
+    setStockInputs((prevState) => {
+      const updatedState = { ...prevState, [index]: text };
+      return updatedState;
+    });
+  };
+
+  const handleExpirationChange = (index, event, selectedDate) => {
+    setDatePickerVisible((prev) => ({
+      ...prev,
+      [index]: false, // Hide picker after selection
+    }));
+
+    if (selectedDate) {
+      let isoDate = selectedDate.toISOString().split("T")[0]; // Format for saving (YYYY-MM-DD)
+
+      let formattedDate = new Intl.DateTimeFormat("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "2-digit",
+      }).format(selectedDate); // Display as "February 21, 2025"
+
+      setExpirationDates((prev) => ({
+        ...prev,
+        [index]: formattedDate, // Updates selected index
+      }));
+    }
+  };
+
   const handleSubmit = async (index) => {
+
+    if (!medicines || medicines.length === 0) {
+      console.error("Medicines array is empty or undefined.");
+      return;
+    }
+
     const selectedMedicine = medicines[index];
-    const stockValue = stockInput[index] || 0;
+
+    if (!selectedMedicine) {
+      console.error(`No medicine found at index: ${index}`);
+      return;
+    }
+
+
+    // Gather all stock and expiration date entries for the selected medicine
+    const stockEntries = [];
+    const expirationEntries = [];
+
+    if (items[index] && items[index].length > 0) {
+      items[index].forEach((subIndex) => {
+        const stockKey = `${index}-${subIndex}`;
+        const expirationKey = `${index}-${subIndex}`;
+
+        const stockValue = parseInt(stockInputs[stockKey], 10) || 0;
+        let rawDate = expirationDates[expirationKey] || '';
+
+        // Convert displayed date back to ISO format
+        let parsedDate = new Date(rawDate);
+        let isoDate = !isNaN(parsedDate) ? parsedDate.toISOString().split('T')[0] : rawDate;
+
+        if (stockValue && isoDate) {
+          stockEntries.push({ stock: stockValue, expirationDate: isoDate });
+        }
+      });
+    }
+
+    if (stockEntries.length === 0) {
+      toast.error('Please enter stock and expiration date.')
+      return;
+    }
+
 
     try {
-      await axios.post(`${API_URL}medicine/create`, {
-        name: selectedMedicine.name,
-        //description: selectedMedicine.description,
-        stock: stockValue,
+      const response = await axios.post(`${API_URL}medicine/create`, {
+        genericName: selectedGeneric,
+        brandName: selectedMedicine.brandName,
+        dosageStrength: selectedMedicine.dosageStrength,
+        dosageForm: selectedMedicine.dosageForm,
+        classification: selectedMedicine.classification,
+        category: selectedMedicine.category,
+        description: selectedMedicine.description,
+        expirationPerStock: stockEntries, // Use the collected stock & expiration data
         pharmacy: state.user.userId,
-        category: selectedCategory,
       });
 
-      setMedicines((prev) => prev.filter((_, i) => i !== index));
-      setStockInput((prev) => {
-        const updated = { ...prev };
-        delete updated[index];
-        return updated;
+
+      // Remove the added medicine from the list
+      setMedicines((prevMedicines) => prevMedicines.filter((_, i) => i !== index));
+
+      // Clear stock input and expiration date for this index
+      setStockInputs((prevStockInput) => {
+        const newStockInput = { ...prevStockInput };
+        items[index]?.forEach((subIndex) => delete newStockInput[`${index}-${subIndex}`]);
+        return newStockInput;
       });
 
-      toast.success("Medication added successfully!");
+      setExpirationDates((prevExpirationDates) => {
+        const newExpirationDates = { ...prevExpirationDates };
+        items[index]?.forEach((subIndex) => delete newExpirationDates[`${index}-${subIndex}`]);
+        return newExpirationDates;
+      });
+
+      setSelectedMedicineIndex(null);
+      setSearchMedicine('')
+
+      // Show success message
+      toast.success('The medication has been added successfully.')
+
     } catch (error) {
-      console.error("Error updating stock:", error);
-      toast.error("Failed to add medication.");
+      toast.error('Failed to add medication. Please try again.')
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col p-6">
-        <ToastContainer/>
-      <div className="bg-[#0B607E] text-white p-4 rounded-lg flex items-center justify-between">
+
+    <div className="container">
+      <ToastContainer />
+      <div className="header">
         <button
-          className="text-white font-medium text-lg"
-          onClick={() => navigate(-1)}
+          className="back-btn"
+          onClick={() => navigate('/pharmacy-owner/medicines')}
         >
           &larr; Back
         </button>
-        <div>
-          <h1 className="text-2xl font-bold">Create Medicine</h1>
-        </div>
+        <h1>Create Medicine</h1>
       </div>
-      <main className="p-4">
+
+      <main className="main-content">
         <button
-          className="bg-teal-600 text-white py-2 px-4 rounded mb-4"
-          onClick={() => setCategoryModalVisible(true)}
+          className="generic-btn"
+          onClick={openModal}
         >
-          {selectedCategory || "Select Category"}
+          {selectedGeneric || 'Select Generic Name'}
         </button>
 
-        {categoryModalVisible && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-            <div className="bg-white p-6 rounded shadow-lg">
+        {genericModalVisible && (
+          <div
+            className="modal-overlay"
+            onClick={() => setGenericModalVisible(false)}
+          >
+            <div
+              className="modal-content"
+              onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside
+            >
               <input
                 type="text"
-                placeholder="Search Category"
-                value={searchCategory}
-                onChange={(e) => filterCategory(e.target.value)}
-                className="w-full border px-3 py-2 rounded mb-4"
+                placeholder="Search Generic"
+                value={searchGeneric}
+                onChange={(e) => filterGeneric(e.target.value)}
+                className="search-input"
               />
-              <ul>
-                {filteredCategory.map((category, index) => (
+              <ul className="generic-list">
+                {filteredGeneric.map((generic, index) => (
                   <li
                     key={index}
-                    className="cursor-pointer hover:bg-gray-200 p-2"
-                    onClick={() => handleCategorySelect(category)}
+                    className="generic-item"
+                    onClick={() => handleGenericSelect(generic)}
                   >
-                    {category}
+                    {generic}
                   </li>
                 ))}
               </ul>
-              <button
-                onClick={() => setCategoryModalVisible(false)}
-                className="mt-4 bg-red-500 text-white py-2 px-4 rounded"
-              >
-                Close
-              </button>
             </div>
           </div>
         )}
+
 
         <input
           type="text"
           placeholder="Search Medicines"
           value={searchMedicine}
           onChange={(e) => filterMedicines(e.target.value)}
-          className="w-full border px-3 py-2 rounded mb-4"
+          className="search-input"
         />
 
-        {filteredMedicines.length === 0 && (
-          <p className="text-center text-gray-500">
-            No medicines available for the selected category.
-          </p>
-        )}
-
-        <div className="grid grid-cols-1 gap-4">
+        <div className="medicine-grid">
           {filteredMedicines.map((medicine, index) => (
-            <div key={index} className="bg-white p-4 rounded shadow">
-              <p>
-                <strong>Name:</strong> {medicine.name}
-              </p>
-              {/* <p>
-                <strong>Description:</strong> {medicine.description}
-              </p> */}
-              <p>
-                <strong>Stock:</strong> {medicine.stock || 0}
-              </p>
-              <input
-                type="number"
-                placeholder="Enter stock to add"
-                value={stockInput[index] || ""}
-                onChange={(e) => handleStockChange(index, e.target.value)}
-                className="border px-3 py-2 rounded w-full mt-2"
-              />
+            <div key={index} className="medicine-card">
+              <p><strong>Brand Name:</strong> {medicine.brandName}</p>
+              <p><strong>Dosage Strength:</strong> {medicine.dosageStrength}</p>
+              <p><strong>Dosage Form:</strong> {medicine.dosageForm}</p>
+              <p><strong>Classification:</strong> {medicine.classification}</p>
+              <p><strong>Category:</strong> {medicine.description}</p>
+
               <button
-                onClick={() => handleSubmit(index)}
-                className="bg-teal-600 text-white py-2 px-4 rounded mt-4"
+                onClick={() => handleMedicineSelect(index)}
+                className="add-stock-btn"
               >
-                ADD
+                ADD STOCK
               </button>
+
+              {selectedMedicineIndex === index && (
+                <div className="stock-section">
+                  {(items[index] || []).map((subIndex) => (
+                    <div key={`${index}-${subIndex}`} className="stock-row">
+                      <div className="input-group">
+                        <label>Expiration Date</label>
+                        <DatePicker
+                          selected={expirationDates[`${index}-${subIndex}`] || null}
+                          onChange={(date) => handleExpirationChange(`${index}-${subIndex}`, null, date)}
+                          dateFormat="MMMM dd, yyyy"
+                          placeholderText="Select Date"
+                          className="input"
+                        />
+                      </div>
+                      <div className="input-group">
+                        <label>Stock</label>
+                        <input
+                          type="number"
+                          placeholder="Enter stock"
+                          value={stockInputs[`${index}-${subIndex}`] || ""}
+                          onChange={(e) => handleStockChange(`${index}-${subIndex}`, e.target.value)}
+                          className="input"
+                        />
+                      </div>
+                      <button
+                        onClick={() => removeItem(index, subIndex)}
+                        className="delete-btn"
+                      >
+                        ❌
+                      </button>
+                    </div>
+                  ))}
+
+                  <button
+                    onClick={addNewItem}
+                    className="add-item-btn"
+                  >
+                    +
+                  </button>
+                </div>
+              )}
+
+              <div className="final-add-container">
+                <button
+                  onClick={() => handleSubmit(index)}
+                  className="final-add-btn"
+                  disabled={
+                    !(items[index] || []).some(
+                      (subIndex) => stockInputs[`${index}-${subIndex}`] > 0
+                    )
+                  }
+                >
+                  ADD
+                </button>
+              </div>
+
             </div>
           ))}
         </div>
       </main>
     </div>
   );
-};
+}
+
 
 export default CreateMedicines;
