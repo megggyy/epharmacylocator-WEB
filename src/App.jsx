@@ -66,6 +66,8 @@ import PharmacyChangePasswordScreen from "./pages/PharmacyOwner/Profile/pharmacy
 import EditMedicationScreen from "./pages/PharmacyOwner/Medicines/editMedicine";
 import ReadMedicationScreen from "./pages/PharmacyOwner/Medicines/readMedicine";
 
+import ExpiringMedicationScreen from "./pages/PharmacyOwner/Medicines/expiringMedicines";
+
 const MOBILE_BREAKPOINT = 767;
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -461,6 +463,14 @@ const router = createBrowserRouter(
           element={
             <ProtectedRoute userRoles={["PharmacyOwner"]}>
               <ReadMedicationScreen />
+            </ProtectedRoute>
+          }
+        />
+         <Route
+          path="expiringMedicines"
+          element={
+            <ProtectedRoute userRoles={["PharmacyOwner"]}>
+              <ExpiringMedicationScreen />
             </ProtectedRoute>
           }
         />

@@ -1,25 +1,27 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import DataTable from "react-data-table-component";
-import DateTimePicker from "@react-native-community/datetimepicker";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { API_URL } from "../../../env";
 import PulseSpinner from "../../../assets/common/spinner";
+import AuthGlobal from "@/context/AuthGlobal";
 
 const ExpiringMedicines = () => {
   const navigate = useNavigate();
+  const { state } = useContext(AuthGlobal);
   const [medicationsList, setMedicationsList] = useState([]);
   const [medicationsFilter, setMedicationsFilter] = useState([]);
   const [loading, setLoading] = useState(true);
   const [expiryFilter, setExpiryFilter] = useState("all");
-  const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedDates, setSelectedDates] = useState({ start: null, end: null });
 
   const fetchMedications = useCallback(async () => {
     try {
-      const response = await axios.get(`${API_URL}medicine/list`);
+      const response = await axios.get(`${API_URL}medicine/${state.user.userId}`);
       setMedicationsList(response.data);
       setMedicationsFilter(response.data);
       setLoading(false);
@@ -32,6 +34,19 @@ const ExpiringMedicines = () => {
   useEffect(() => {
     fetchMedications();
   }, [fetchMedications]);
+
+  const searchMedications = (text) => {
+    if (text === "") {
+      setMedicationsFilter(medicationsList);
+    } else {
+      setMedicationsFilter(
+        medicationsList.filter((i) =>
+          [i.medicine?.genericName, i.medicine?.brandName] // Ensure you're accessing the correct structure
+            .some((field) => field?.toLowerCase().includes(text.toLowerCase()))
+        )
+      );
+    }
+  };
 
   const applyExpiryFilter = (filter) => {
     const today = new Date();
@@ -79,8 +94,18 @@ const ExpiringMedicines = () => {
         <PulseSpinner />
       ) : (
         <>
-          <div className="flex justify-between items-center mb-4">
-            <h1 className="text-2xl font-bold">Expiring Medicines</h1>
+         <div className="flex justify-between items-center mb-4">
+            <div className="flex items-center gap-4">
+              <h1 className="text-2xl font-bold">Expiring Medicines</h1>
+            </div>
+            <div className="flex gap-3">
+              <input
+                type="text"
+                placeholder="Search by Generic Name or Brand Name"
+                onChange={(e) => searchMedications(e.target.value)}
+                className="border rounded px-3 py-2 w-96"
+              />
+            </div>
           </div>
           <div className="flex gap-4">
             {["all", "week", "month", "3months", "6months"].map((filter) => (
@@ -92,32 +117,35 @@ const ExpiringMedicines = () => {
                 {filter === "all" ? "All" : filter.replace(/(\d)(months?)/, "$1 $2")}
               </button>
             ))}
-            <button className="px-4 py-2 bg-gray-300 rounded" onClick={() => setShowDatePicker(true)}>📅 Custom Date</button>
           </div>
 
-          {showDatePicker && (
-            <div className="mt-4 p-4 bg-white border rounded">
-              <h3 className="text-lg font-bold">Select Date Range</h3>
-              <DateTimePicker
-                value={selectedDates.start || new Date()}
-                mode="date"
-                display="default"
-                onChange={(event, date) => setSelectedDates((prev) => ({ ...prev, start: date, end: null }))}
+          <div className="mt-4 p-4 bg-white border rounded">
+            <h3 className="text-lg font-bold">Select Date Range</h3>
+            <div className="flex gap-4">
+              <DatePicker
+                selected={selectedDates.start}
+                onChange={(date) => setSelectedDates((prev) => ({ ...prev, start: date, end: null }))}
+                selectsStart
+                startDate={selectedDates.start}
+                endDate={selectedDates.end}
+                placeholderText="Start Date"
               />
-              <DateTimePicker
-                value={selectedDates.end || new Date()}
-                mode="date"
-                display="default"
-                onChange={(event, date) => {
+              <DatePicker
+                selected={selectedDates.end}
+                onChange={(date) => {
                   if (date >= selectedDates.start) {
                     setSelectedDates((prev) => ({ ...prev, end: date }));
                     filterByCustomDates(selectedDates.start, date);
-                    setShowDatePicker(false);
                   }
                 }}
+                selectsEnd
+                startDate={selectedDates.start}
+                endDate={selectedDates.end}
+                minDate={selectedDates.start}
+                placeholderText="End Date"
               />
             </div>
-          )}
+          </div>
 
           <DataTable
             title="Medicines"
@@ -125,6 +153,15 @@ const ExpiringMedicines = () => {
             data={medicationsFilter}
             pagination
             highlightOnHover
+            customStyles={{
+              header: { style: { backgroundColor: "#0B607E", color: "white" } },
+              rows: {
+                style: {
+                  '&:nth-of-type(odd)': { backgroundColor: 'lightgray' },
+                  '&:nth-of-type(even)': { backgroundColor: 'white' }
+                }
+              }
+            }}
           />
         </>
       )}
