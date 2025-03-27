@@ -4,6 +4,7 @@ import axios from "axios";
 import DataTable from "react-data-table-component";
 import PulseSpinner from "../../../assets/common/spinner";
 import { API_URL } from "../../../env";
+import { toast } from "react-toastify";
 
 const UserTableScreen = () => {
   const navigate = useNavigate();
@@ -23,12 +24,11 @@ const UserTableScreen = () => {
     }
   };
 
-  const fetchUsers = useCallback(async () => {
+  const fetchAdmins = useCallback(async () => {
     try {
-      const response = await axios.get(`${API_URL}users`);
-      const customers = response.data.filter(user => user.role === 'Customer'); // Filter users with role 'customer'
-      setUserList(customers);
-      setUserFilter(customers);
+      const response = await axios.get(`${API_URL}users/admins`);
+      setUserList(response.data);
+      setUserFilter(response.data);
     } catch (error) {
       console.error("Error fetching users:", error);
     } finally {
@@ -37,21 +37,41 @@ const UserTableScreen = () => {
   }, []);
 
   useEffect(() => {
-    fetchUsers();
-  }, [fetchUsers]);
+    fetchAdmins();
+
+    // Set interval to fetch data every 10 seconds
+    const interval = setInterval(() => {
+      fetchAdmins();
+    }, 5000);
+
+    // Cleanup interval on component unmount
+    return () => clearInterval(interval);
+  }, [fetchAdmins]);
+
+  const updateRole = async (id) => {
+    setLoading(true);
+
+    try {
+      const res = await axios.put(`${API_URL}users/admins/updateRole/${id}`);
+
+      toast.success("User role updated!");
+      fetchAdmins()
+
+    } catch (err) {
+
+      // Show a specific error if it's about the last admin
+      if (err.response?.status === 400 && err.response?.data?.message.includes("MIN")) {
+        toast.error("THERE MUST BE ATLEAST ONE ADMIN REMAINING!");
+      } else {
+        toast.error("Failed to update user role");
+      }
+
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const columns = [
-    {
-      name: "Image",
-      selector: (row) => (
-        <img
-          src={row.customerDetails?.images?.[0] || "https://via.placeholder.com/150"}
-          alt="User"
-          className="w-10 h-10 rounded-full"
-        />
-      ),
-      width: "100px",
-    },
     {
       name: "Name",
       selector: (row) => row.name,
@@ -59,18 +79,23 @@ const UserTableScreen = () => {
       width: "200px",
     },
     {
-      name: "Address",
-      selector: (row) => row.address || "N/A",
+      name: "Contact Number",
+      selector: (row) => row.contactNumber || "N/A",
+      sortable: true,
+    },
+    {
+      name: "Email",
+      selector: (row) => row.email || "N/A",
       sortable: true,
     },
     {
       name: "Actions",
       cell: (row) => (
         <button
-          onClick={() => navigate(`/admin/users/read/${row._id}`)}
-          className="text-blue-600 hover:text-blue-800"
+          onClick={() => updateRole(row._id)}
+          className="text-red-600 hover:text-red-800"
         >
-          View
+          REMOVE AS AN ADMIN
         </button>
       ),
     },
@@ -97,14 +122,12 @@ const UserTableScreen = () => {
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       {loading ? (
-        <div className="flex justify-center items-center h-64">
           <PulseSpinner />
-        </div>
       ) : (
         <>
           {/* Header */}
           <div className="bg-[#0B607E] text-white p-4 rounded-lg flex items-center justify-between">
-            <h1 className="text-2xl font-bold">Customers</h1>
+            <h1 className="text-2xl font-bold">Admins</h1>
           </div>
 
           {/* Search Input */}

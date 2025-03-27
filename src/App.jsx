@@ -45,6 +45,8 @@ import CreateBarangay from "./pages/Admin/Barangays/createBarangays";
 import EditBarangay from "./pages/Admin/Barangays/editBarangays";
 import ReadBarangayScreen from "./pages/Admin/Barangays/readBarangays";
 import UserTableScreen from "./pages/Admin/Users/allUsers";
+import AdminScreen from "./pages/Admin/Admins/allAdmins";
+
 import ReadUserScreen from "./pages/Admin/Users/readUsers";
 import PharmaciesScreen from "./pages/Admin/Pharmacies/allPharmacies";
 import ReadPharmacyScreen from "./pages/Admin/Pharmacies/readPharmacy";
@@ -340,6 +342,14 @@ const router = createBrowserRouter(
           element={
             <ProtectedRoute userRoles={["Admin"]}>
               <ReadBarangayScreen />
+            </ProtectedRoute>
+          }
+        />
+         <Route
+          path="admins"
+          element={
+            <ProtectedRoute userRoles={["Admin"]}>
+              <AdminScreen />
             </ProtectedRoute>
           }
         />

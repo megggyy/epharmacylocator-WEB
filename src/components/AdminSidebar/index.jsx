@@ -94,7 +94,8 @@ export default function AdminSidebar() {
           {[
             { label: "Medicine Categories", link: "/admin/medication-category" },
             { label: "Barangays", link: "/admin/barangays" },
-            { label: "Users", link: "/admin/users" },
+            { label: "Admins", link: "/admin/admins" },
+            { label: "Customers", link: "/admin/users" },
             { label: "Pharmacies", link: "/admin/pharmacies" },
             { label: "Licensed Pharmacies", link: "/admin/licensedPharmacies" },
 

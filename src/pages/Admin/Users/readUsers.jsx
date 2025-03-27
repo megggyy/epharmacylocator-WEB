@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { API_URL } from "../../../env";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const ReadUserScreen = () => {
   const { id } = useParams();
@@ -35,6 +37,19 @@ const ReadUserScreen = () => {
   const closeImageModal = () => {
     setIsModalVisible(false);
     setSelectedImage(null);
+  };
+
+  const updateRole = async (id) => {
+    setLoading(true);
+    try {
+      await axios.put(`${API_URL}users/admins/updateRole/${id}`);
+      toast.success("USER ROLE UPDATED");
+      navigate('/admin/users');
+    } catch (err) {
+      toast.error("FAILED TO UPDATE USER ROLE");
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (loading) {
@@ -125,10 +140,18 @@ const ReadUserScreen = () => {
           <input
             type="text"
             className="border border-gray-300 rounded-md p-2 w-full mb-4"
-            value={`${user.street}, ${user.barangay}, ${user.city}` || "N/A"}
+            value={user.address || "N/A"}
             readOnly
           />
         </div>
+
+        {/* Make Admin Button */}
+        <button
+          className="bg-blue-500 text-white px-4 py-2 rounded"
+          onClick={() => updateRole(user._id)}
+        >
+          MAKE ADMIN
+        </button>
       </div>
     </div>
   );

@@ -116,44 +116,56 @@ const MedicationCategoriesScreen = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
-          <ToastContainer />
-      <div className="bg-[#0B607E] text-white p-4 rounded-lg flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">ePharmacy</h1>
-        </div>
-        <button
-          className="bg-white text-[#0B607E] px-4 py-2 rounded-md font-medium"
-          onClick={() => navigate("/admin/medication-category/create")}
-        >
-          Create Category
-        </button>
-      </div>
-
-      <div className="mt-6">
-        <input
-          type="text"
-          placeholder="Search Name"
-          className="border rounded-md p-2 w-full mb-4"
-          onChange={(e) => searchCategories(e.target.value)}
-          onKeyUp={(e) => searchCategories(e.target.value)}
-        />
-      </div>
-
+      <ToastContainer />
       {loading ? (
         <div className="flex justify-center items-center h-64">
-          <PulseSpinner /> {/* Replace with a TailwindCSS spinner or equivalent */}
+          <PulseSpinner /> {/* Spinner */}
         </div>
       ) : (
-        <DataTable
-          columns={columns}
-          data={categoriesFilter}
-          customStyles={customStyles}
-          pagination
-          highlightOnHover
-        />
+        <>
+          {/* Header Section */}
+          <div className="bg-[#0B607E] text-white p-4 rounded-lg flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold">Medicine Categories</h1>
+            </div>
+            <button
+              className="bg-white text-[#0B607E] px-4 py-2 rounded-md font-medium"
+              onClick={() => navigate("/admin/medication-category/create")}
+            >
+              Create Category
+            </button>
+          </div>
+
+          {/* Search Input */}
+          <div className="mt-6">
+            <input
+              type="text"
+              placeholder="Search Name"
+              className="border rounded-md p-2 w-full mb-4"
+              onChange={(e) => searchCategories(e.target.value)}
+              onKeyUp={(e) => searchCategories(e.target.value)}
+            />
+          </div>
+
+          {/* Data Table */}
+          {loading ? (
+            <div className="flex justify-center items-center h-64">
+              <PulseSpinner />
+            </div>
+          ) : (
+            <DataTable
+              columns={columns}
+              data={categoriesFilter}
+              customStyles={customStyles}
+              pagination
+              highlightOnHover
+            />
+          )}
+        </>
       )}
     </div>
   );
+
 };
 
 export default MedicationCategoriesScreen;

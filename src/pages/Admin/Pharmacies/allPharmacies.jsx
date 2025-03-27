@@ -28,9 +28,10 @@ const PharmaciesScreen = () => {
       const response = await axios.get(`${API_URL}pharmacies`);
       setPharmaciesList(response.data);
       setPharmaciesFilter(response.data);
-      setLoading(false);
     } catch (error) {
       console.error("Error fetching pharmacies:", error);
+    } finally {
+      setLoading(false);
     }
   }, []);
 
@@ -61,7 +62,7 @@ const PharmaciesScreen = () => {
       name: "Permits",
       selector: (row) => (
         <img
-          src={row.images[0]}
+          src={row.images?.[0] || "https://via.placeholder.com/100"}
           alt="Pharmacy"
           className="w-10 h-10 object-cover rounded-full"
         />
@@ -71,13 +72,13 @@ const PharmaciesScreen = () => {
     },
     {
       name: "Name",
-      selector: (row) => row.userInfo.name,
+      selector: (row) => row.userInfo?.name || "N/A",
       sortable: true,
     },
     {
       name: "Address",
       selector: (row) =>
-        `${row.userInfo.street}, ${row.userInfo.barangay}, ${row.userInfo.city}`,
+        `${row.userInfo?.street || "N/A"}, ${row.userInfo?.barangay || "N/A"}, ${row.userInfo?.city || "N/A"}`,
       sortable: true,
     },
     {
@@ -118,40 +119,33 @@ const PharmaciesScreen = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
-      <div className="bg-[#0B607E] text-white p-4 rounded-lg flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">ePharmacy</h1>
-        </div>
-        <button
-          className="bg-white text-[#0B607E] px-4 py-2 rounded-md font-medium"
-          onClick={() => navigate("/screens/Admin/Pharmacies/CreatePharmacy")}
-        >
-          Create Pharmacy
-        </button>
-      </div>
-
-      <div className="mt-6">
-        <input
-          type="text"
-          placeholder="Search Name"
-          className="border rounded-md p-2 w-full mb-4"
-          onChange={(e) => searchPharmacies(e.target.value)}
-          onKeyUp={(e) => searchPharmacies(e.target.value)}
-        />
-      </div>
-
       {loading ? (
         <div className="flex justify-center items-center h-64">
-          <PulseSpinner /> {/* Replace with a TailwindCSS spinner or equivalent */}
+          <PulseSpinner />
         </div>
       ) : (
-        <DataTable
-          columns={columns}
-          data={pharmaciesFilter}
-          customStyles={customStyles}
-          pagination
-          highlightOnHover
-        />
+        <>
+          <div className="bg-[#0B607E] text-white p-4 rounded-lg flex items-center justify-between">
+            <h1 className="text-2xl font-bold">Pharmacies</h1>
+          </div>
+
+          <div className="mt-6">
+            <input
+              type="text"
+              placeholder="Search Name"
+              className="border rounded-md p-2 w-full mb-4"
+              onChange={(e) => searchPharmacies(e.target.value)}
+            />
+          </div>
+
+          <DataTable
+            columns={columns}
+            data={pharmaciesFilter}
+            customStyles={customStyles}
+            pagination
+            highlightOnHover
+          />
+        </>
       )}
     </div>
   );
