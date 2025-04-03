@@ -29,6 +29,8 @@ import CustomerMaps from "./pages/Customer/Maps";
 import CustomerPharmacyDetails from "./pages/Customer/PharmacyDetails";
 import CustomerMedicationDetails from "./pages/Customer/MedicationDetails";
 import PrescriptionUpload from "./pages/PrescriptionUpload";
+import PrescriptionScan from "./pages/PrescriptionScan";
+import PrescriptionResultsScreen from "./pages/PrescriptionResults";
 import CustomerViewProfile from "./pages/Customer/Profile/viewProfile";
 import CustomerEditProfile from "./pages/Customer/Profile/editProfile";
 import CustomerChangePasswordScreen from "./pages/Customer/Profile/changePassword";
@@ -243,7 +245,23 @@ const router = createBrowserRouter(
           element={
             <ProtectedRoute userRoles={["Customer"]}>
               <PrescriptionUpload />
-            </ProtectedRoute>
+            </ProtectedRoute> 
+          }
+        />
+        <Route
+          path="prescription-scan"
+          element={
+            <ProtectedRoute userRoles={["Customer"]}>
+              <PrescriptionScan />
+            </ProtectedRoute> 
+          }
+        />
+        <Route
+          path="prescription-results"
+          element={
+            <ProtectedRoute userRoles={["Customer"]}>
+              <PrescriptionResultsScreen />
+            </ProtectedRoute> 
           }
         />
         {/* profile */}
