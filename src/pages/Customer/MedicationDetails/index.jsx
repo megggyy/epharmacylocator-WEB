@@ -33,7 +33,7 @@ const MedicationDetails = () => {
       axios
         .get(`${API_URL}medicine/available/${name}`)
         .then((response) => {
-          setMedications(response.data);
+          setMedications(response.data.data); // ✅ Access the actual array
           setLoading(false);
         })
         .catch((error) => {
@@ -65,7 +65,6 @@ const MedicationDetails = () => {
     const year = String(date.getFullYear());
     return `${month} ${day}, ${year}`;
   };
-  const { name: medicationName } = medications[0];
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -77,7 +76,7 @@ const MedicationDetails = () => {
         >
           <IoArrowBack />
         </button>
-        <h1 className="text-2xl font-bold mx-auto">{medicationName}</h1>
+        <h1 className="text-2xl font-bold mx-auto text-primary-default">{name}</h1>
       </div>
 
       <div className="p-6 space-y-6">

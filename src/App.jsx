@@ -35,6 +35,7 @@ import CustomerViewProfile from "./pages/Customer/Profile/viewProfile";
 import CustomerEditProfile from "./pages/Customer/Profile/editProfile";
 import CustomerChangePasswordScreen from "./pages/Customer/Profile/changePassword";
 import CustomerCategoryFilterMedications from "./pages/Customer/FilterMedicineByCategory";
+import ViewPharmacyMedicine from "./pages/Customer/ViewPharmacyMedicine";
 
 // Admin Pages
 import Dashboard from "./pages/Admin/Dashboard";
@@ -229,6 +230,14 @@ const router = createBrowserRouter(
           element={
             <ProtectedRoute userRoles={["Customer"]}>
               <CustomerPharmacyDetails />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="ViewPharmacyMedicine"
+          element={
+            <ProtectedRoute userRoles={["Customer"]}>
+              <ViewPharmacyMedicine />
             </ProtectedRoute>
           }
         />

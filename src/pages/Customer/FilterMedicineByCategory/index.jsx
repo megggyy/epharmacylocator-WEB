@@ -14,24 +14,21 @@ const CustomerCategoryFilterMedications = () => {
     const fetchMedications = async () => {
       try {
         setIsLoading(true);
-        setError(null); // Reset error state
-        const response = await axios.get(`${API_URL}medicine?category=${id}`);
-
-        // Filter the medications to match the current category
-        const filteredMedications = response.data.filter(
-          (medication) => medication.category._id === id
-        );
-
-        setMedications(filteredMedications);
+        setError(null);
+        const response = await axios.get(`${API_URL}medicine/category/${id}`);
+        console.log('Fetched meds:', response.data);
+        setMedications(response.data); // assuming response is already filtered
       } catch (err) {
+        console.error(err);
         setError('Failed to load medications. Please try again.');
       } finally {
         setIsLoading(false);
       }
     };
-
+  
     fetchMedications();
   }, [id]);
+  
 
   return (
     <div className="min-h-screen bg-white">
@@ -60,13 +57,19 @@ const CustomerCategoryFilterMedications = () => {
           <div className="grid grid-cols-2 gap-4">
             {medications.length > 0 ? (
               medications.map((medication) => (
-                <div
-                  key={medication._id}
-                  className="border rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow cursor-pointer"
-                  onClick={() => navigate(`/customer/MedicationDetails/${medication.name}`)}
-                >
-                  <h2 className="font-bold text-lg text-gray-800">{medication.name}</h2>
-                </div>
+        <div
+          key={medication._id}
+          className="border rounded-lg p-4 shadow-md hover:shadow-lg transition-shadow cursor-pointer"
+          onClick={() => navigate(`/customer/MedicationDetails/${encodeURIComponent(medication.genericName)}`)}
+        >
+          <h2 className="font-bold text-lg text-gray-800">{medication.brandName}</h2>
+          <p className="text-gray-700">💊 Generic: {medication.genericName}</p>
+          <p className="text-gray-600">💉 Dosage: {medication.dosageStrength} {medication.dosageForm}</p>
+          <p className="text-sm text-gray-500">
+            {Array.isArray(medication.description) ? medication.description.join(', ') : medication.description}
+          </p>
+        </div>
+
               ))
             ) : (
               <p className="col-span-2 text-center text-gray-600">No medications found in the "{name}" category.</p>

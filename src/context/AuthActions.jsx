@@ -59,6 +59,7 @@ export const getUserProfile = (id) => {
 
 export const logoutUser = (dispatch) => {
     localStorage.removeItem("jwt");
+    localStorage.removeItem("lastVisitedPath");
     dispatch(setCurrentUser({}));
     dispatch(resetFormFields()); 
 }
