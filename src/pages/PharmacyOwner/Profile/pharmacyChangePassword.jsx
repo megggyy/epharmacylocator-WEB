@@ -92,6 +92,7 @@ const PharmacyChangePasswordScreen = () => {
         alert("Password successfully updated. Please login.");
         localStorage.removeItem("jwt");
         localStorage.removeItem("auth");
+        localStorage.removeItem("lastVisitedPath");
         dispatch({ type: "LOGOUT_USER" });
         navigate("/login");
       }

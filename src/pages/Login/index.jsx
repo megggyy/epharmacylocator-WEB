@@ -121,6 +121,7 @@ const LoginScreen = () => {
                 // If the pharmacy is not approved, redirect without showing login success
                 localStorage.removeItem("jwt");
                 localStorage.removeItem("auth");
+                localStorage.removeItem("lastVisitedPath");
                 dispatch({ type: "LOGOUT_USER" });
                 toast.info("Pharmacy not approved. Redirecting to approval status.");
                 setTimeout(() => {

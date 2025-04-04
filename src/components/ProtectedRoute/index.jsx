@@ -6,7 +6,7 @@ export default function ProtectedRoute({ children, userRoles = [] }) {
 
   useEffect(() => {
     // Save the last visited path in sessionStorage
-    sessionStorage.setItem("lastVisitedPath", location.pathname);
+    localStorage.setItem("lastVisitedPath", location.pathname);
   }, [location]);
 
   // Get authentication details

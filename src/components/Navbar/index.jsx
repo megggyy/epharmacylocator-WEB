@@ -54,6 +54,7 @@ const Navbar = () => {
     };
     localStorage.removeItem("jwt");
     localStorage.removeItem("auth");
+    localStorage.removeItem("lastVisitedPath");
     dispatch({ type: "LOGOUT_USER" });
     setOpenDropdown(null);
     toast.success("You have been logged out!", toastProps);

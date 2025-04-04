@@ -7,7 +7,7 @@ export default function UnprotectedRoute({ children, unprotected = false }) {
   const userRole = authData?.user?.role;
 
   // Restore last visited page on refresh
-  const lastVisitedPath = sessionStorage.getItem("lastVisitedPath");
+  const lastVisitedPath = localStorage.getItem("lastVisitedPath");
 
   if (unprotected || !isAuthenticated) {
     return children; // Allow unauthenticated users

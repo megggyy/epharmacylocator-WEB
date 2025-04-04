@@ -35,6 +35,7 @@ export default function PharmacyOwnerNavbar() {
     };
     localStorage.removeItem("jwt");
     localStorage.removeItem("auth");
+    localStorage.removeItem("lastVisitedPath");
     dispatch({ type: "LOGOUT_USER" });
     toast.success("You have been logged out!", toastProps);
     navigate("/login");
