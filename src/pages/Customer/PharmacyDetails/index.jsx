@@ -66,23 +66,22 @@ const PharmacyDetails = () => {
         const stockData = response.data || [];
         const categoryMap = {};
 
-        stockData.forEach((stockItem) => {
-          const medicine = stockItem.medicine;
-          if (medicine && Array.isArray(medicine.category)) {
-            medicine.category.forEach((cat) => {
-              if (cat.name) {
-                categoryMap[cat.name] = (categoryMap[cat.name] || 0) + 1;
-              }
-            });
-          }
-        });
+stockData.forEach((stockItem) => {
+  const medicine = stockItem.medicine;
+  if (medicine && Array.isArray(medicine.category)) {
+    medicine.category.forEach((cat) => {
+      if (cat.name && cat._id) {
+        const key = cat._id; // group by ID
+        categoryMap[key] = categoryMap[key] || { name: cat.name, count: 0, _id: cat._id };
+        categoryMap[key].count += 1;
+      }
+    });
+  }
+});
 
-        const categoryList = Object.keys(categoryMap).map((categoryName) => ({
-          name: categoryName,
-          count: categoryMap[categoryName],
-        }));
+const categoryList = Object.values(categoryMap);
+setCategories(categoryList);
 
-        setCategories(categoryList);
       } catch (error) {
         console.error('Error fetching medicine categories:', error);
       }
@@ -152,15 +151,19 @@ const PharmacyDetails = () => {
       console.error("Pharmacy ID is missing!");
       return;
     }
-
-    if (!category?.name) {
-      console.error("Category name is missing!");
+  
+    if (!category?.name || !category?._id) {
+      console.error("Category data is incomplete!");
       return;
     }
-
-    const route = `/filter-medicines?category=${encodeURIComponent(category.name)}&pharmacyId=${id}`;
-    navigate(route);
+  
+    // Construct route with pharmacy ID included
+    const route = `/customer/pharmacyCategory?category=${encodeURIComponent(category.name)}&pharmacyId=${id}`;
+    console.log("Navigating to:", route);
+    navigate(route);    
   };
+  
+  
 
   useEffect(() => {
     if (search.trim() === '') {

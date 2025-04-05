@@ -1,27 +1,30 @@
-import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';  // Import useLocation to access query params
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import axios from 'axios';
-import { API_URL } from '../../../env';  // Import your API_URL
+import { API_URL } from '../../../env';
 
 const ViewPharmacyMedicine = () => {
-  const location = useLocation();  // Get the current location object
+  const location = useLocation();
   const [stock, setStock] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Extract query parameters from location.search
+  // Extract query parameters
   const queryParams = new URLSearchParams(location.search);
-  const id = queryParams.get('id');
   const pharmacyId = queryParams.get('pharmacyId');
+  const id = queryParams.get('id'); // The ID of the pharmacy stock
 
   useEffect(() => {
     const fetchStockDetails = async () => {
       try {
-        // Make sure id and pharmacyId are available
         if (id && pharmacyId) {
           const response = await axios.get(`${API_URL}medicine/read/${id}`);
-          if (response.data.pharmacy._id === pharmacyId) {
+          console.log('Fetched response:', response.data);
+
+          // Check if the pharmacyId from the URL matches the one in the response data
+          if (response.data.pharmacy && response.data.pharmacy._id === pharmacyId) {
             setStock(response.data);
           } else {
+            console.warn('Pharmacy ID mismatch or missing pharmacy data');
             setStock(null);
           }
         }
@@ -31,7 +34,7 @@ const ViewPharmacyMedicine = () => {
         setLoading(false);
       }
     };
-    
+
     if (id && pharmacyId) {
       fetchStockDetails();
     } else {
