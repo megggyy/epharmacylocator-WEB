@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom'; // Import useLocation to get the pharmacyId
 import axios from 'axios';
 import { API_URL } from '../../../env';
+import PulseSpinner from '../../../assets/common/spinner';
 
 const CustomerCategoryFilterMedications = () => {
   const navigate = useNavigate();
@@ -37,22 +38,12 @@ const CustomerCategoryFilterMedications = () => {
   return (
     <div className="min-h-screen bg-white">
       <div className="bg-white text-white py-4 px-6 flex items-center justify-between">
-        <button
-          onClick={() => navigate(-1)}
-          className="text-lg font-semibold text-primary-default"
-        >
-          &larr; Back
-        </button>
         <h1 className="text-xl font-bold text-primary-default">{name}</h1>
       </div>
 
       <div className="p-6">
         {isLoading ? (
-          <div className="flex justify-center items-center h-64">
-            <div className="spinner-border animate-spin inline-block w-8 h-8 border-4 border-blue-500 rounded-full" role="status">
-              <span className="hidden">Loading...</span>
-            </div>
-          </div>
+         <PulseSpinner/>
         ) : error ? (
           <div className="text-center">
             <p className="text-lg text-blue-700">There are no medicines in this category.</p>

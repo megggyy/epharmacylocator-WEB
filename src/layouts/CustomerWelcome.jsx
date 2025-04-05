@@ -251,56 +251,63 @@ export default function CustomerWelcome() {
 
 
 {/* Pharmacies Section */}
-<div className="max-w-7xl mx-auto mt-16">
-        <h2 className="text-2xl font-bold text-primary-default mb-8 text-center">Pharmacies</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {pharmacies.slice(0, 3).map((pharmacy) => (
-            <div
-              key={pharmacy._id}
-              className="bg-white rounded-lg shadow-lg overflow-hidden transition-transform transform hover:scale-105"
-            >
-              {/* Pharmacy Image */}
-              <div className="w-full aspect-square">
-                <img
-                  src={pharmacy.images?.[0] || "https://via.placeholder.com/300x200?text=Pharmacy"}
-                  alt={pharmacy.userInfo.name}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              {/* Pharmacy Info */}
-              <div className="p-6">
-                <h3 className="text-xl font-semibold text-primary-default mb-2">
-                  {pharmacy.userInfo.name}
-                </h3>
-                <p className="text-gray-600 text-sm mb-4">
-                  <strong>Location:</strong> {pharmacy.userInfo.barangay}, {pharmacy.userInfo.city}
-                </p>
-                <p className="text-gray-600 text-sm mb-4">
-                  <strong>Contact:</strong> {pharmacy.userInfo.contactNumber}
-                </p>
-                <Link to={`/customer/PharmacyDetails/${pharmacy._id}`}>
-                <button
-                  className="bg-primary-variant text-white px-4 py-2 rounded-md shadow hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300"
-                >
-                  View Details
-                </button>
-                </Link>
-              </div>
-            </div>
-          ))}
+<div className="max-w-7xl mx-auto mt-16 px-4">
+  <h2 className="text-3xl font-bold text-primary-default mb-8 text-center">Pharmacies</h2>
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+    {pharmacies.slice(0, 3).map((pharmacy) => (
+      <div
+        key={pharmacy._id}
+        className="bg-white rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-xl"
+      >
+        {/* Pharmacy Image */}
+        <div className="w-full h-64 bg-gray-200">
+          <img
+            src={pharmacy.images?.[0] || "https://via.placeholder.com/300x200?text=Pharmacy"}
+            alt={pharmacy.userInfo.name}
+            className="w-full h-full object-cover rounded-t-lg"
+          />
         </div>
-        <div className="flex justify-center mt-8">
-        <Link
-          to="/customer/pharmacies"
-          className="inline-block bg-primary-default text-white font-semibold py-3 px-8 rounded-lg shadow-md hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300"
-        >
-          See All Pharmacies
-        </Link>
+
+        {/* Pharmacy Info */}
+        <div className="p-6 space-y-4">
+          <h3 className="text-xl font-semibold text-primary-default">
+            {pharmacy.userInfo.name}
+          </h3>
+          <p className="text-gray-600 text-sm">
+            <strong>Location:</strong> {pharmacy.userInfo.barangay}, {pharmacy.userInfo.city}
+          </p>
+          <p className="text-gray-600 text-sm">
+            <strong>Contact:</strong> {pharmacy.userInfo.contactNumber}
+          </p>
+          <p className="text-gray-600 text-sm">
+          </p>
+
+          {/* View Details Button */}
+          <Link to={`/customer/PharmacyDetails/${pharmacy._id}`}>
+            <button
+              className="w-full bg-primary-variant text-white py-2 px-4 rounded-md shadow-md hover:bg-primary-variant-dark transition duration-300 focus:outline-none focus:ring-4 focus:ring-blue-300"
+            >
+              View Details
+            </button>
+          </Link>
         </div>
       </div>
+    ))}
+  </div>
+
+  {/* See All Pharmacies Button */}
+  <div className="flex justify-center mt-8">
+    <Link
+      to="/customer/pharmacies"
+      className="inline-block bg-primary-default text-white font-semibold py-3 px-8 rounded-lg shadow-md hover:bg-primary-variant-dark transition duration-300 focus:outline-none focus:ring-4 focus:ring-blue-300"
+    >
+      See All Pharmacies
+    </Link>
+  </div>
+</div>
+
 
    {/* Medicines Section */}
-{/* Medicines Section */}
 <div className="max-w-7xl mx-auto mt-16">
   <h2 className="text-2xl font-bold text-primary-default mb-8 text-center">Medicines</h2>
   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">

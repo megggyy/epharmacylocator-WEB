@@ -6,6 +6,7 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import axios from "axios";
 import { API_URL } from "../../../env";
+import PulseSpinner from "../../../assets/common/spinner";
 
 // Fix Leaflet Marker Icon issue
 delete L.Icon.Default.prototype._getIconUrl;
@@ -44,11 +45,7 @@ const MedicationDetails = () => {
   }, [name]);
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        <div className="text-xl text-blue-500">Loading...</div>
-      </div>
-    );
+    return <PulseSpinner />;
   }
 
   if (!medications || medications.length === 0) {
@@ -126,16 +123,12 @@ const MedicationDetails = () => {
                     <p className="text-green-600">{medication.stock} in stock</p>
                     <p className="text-black italic">
                       (Last updated on {medication.timeStamps ? formatDateTime(new Date(medication.timeStamps)) : 'No Date Available'})</p>
-
                   </div>
 
                   {/* Map Section */}
                   <div className="w-full h-64 rounded-lg overflow-hidden">
                     <MapContainer
-                      center={[
-                        parseFloat(location.latitude) || 0,
-                        parseFloat(location.longitude) || 0,
-                      ]}
+                      center={[parseFloat(location.latitude) || 0, parseFloat(location.longitude) || 0]}
                       zoom={15}
                       style={{ height: "100%", width: "100%" }}
                     >
@@ -145,16 +138,23 @@ const MedicationDetails = () => {
                         attribution="&copy; OpenStreetMap contributors"
                       />
                       <Marker
-                        position={[
-                          parseFloat(location.latitude) || 0,
-                          parseFloat(location.longitude) || 0,
-                        ]}
+                        position={[parseFloat(location.latitude) || 0, parseFloat(location.longitude) || 0]}
                       >
                         <Popup>
                           {userInfo.name || "Pharmacy"}
                         </Popup>
                       </Marker>
                     </MapContainer>
+                  </div>
+
+                  {/* View Pharmacy Button */}
+                  <div className="flex justify-center">
+                    <button
+                      onClick={() => navigate(`/customer/PharmacyDetails/${medication.pharmacy._id}`)} // Adjust this route as needed
+                      className="bg-primary-variant text-white py-2 px-6 rounded-lg hover:bg-blue-700"
+                    >
+                      View Pharmacy
+                    </button>
                   </div>
                 </div>
               );

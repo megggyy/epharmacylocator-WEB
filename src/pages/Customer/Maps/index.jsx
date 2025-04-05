@@ -7,6 +7,7 @@ import { jwtDecode } from "jwt-decode"; // Assuming you have jwt-decode installe
 import { toast } from "react-toastify";
 import L from "leaflet"; // Import Leaflet for custom marker icons
 import redpin from "@assets/redpinloc.png";
+import { useParams, useNavigate } from 'react-router-dom';
 
 const haversineDistance = (lat1, lon1, lat2, lon2) => {
   const toRad = (deg) => deg * (Math.PI / 180); // Converts degrees to radians
@@ -60,6 +61,7 @@ const TaguigCityMap = () => {
     longitudeDelta: 0.09,
   });
   
+  const navigate = useNavigate();
   const [pharmacies, setPharmacies] = useState([]);
   const [filteredPharmacies, setFilteredPharmacies] = useState([]);
   const [pharmacySuggestions, setPharmacySuggestions] = useState([]);
@@ -450,42 +452,54 @@ const TaguigCityMap = () => {
 
       {/* Left Popup Modal */}
       {selectedPharmacy && (
-        <div
-          className="absolute left-0 top-0 h-full w-80 bg-white shadow-lg p-4 z-50 overflow-y-auto"
-          style={{ zIndex: 9999 }} // Highest z-index for modal
+      <div
+        className="absolute left-0 top-0 h-full w-80 bg-white shadow-lg p-4 z-50 overflow-y-auto"
+        style={{ zIndex: 9999 }} // Highest z-index for modal
+      >
+        <button
+          className="absolute top-4 right-4 text-gray-500 hover:text-gray-800"
+          onClick={closeModal}
         >
-          <button
-            className="absolute top-4 right-4 text-gray-500 hover:text-gray-800"
-            onClick={closeModal}
-          >
-            ✕
-          </button>
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">
-            {selectedPharmacy.userInfo.name}
-          </h2>
-          <img
-            src={selectedPharmacy.images?.[0] || "default-image.jpg"}
-            alt={selectedPharmacy.userInfo.name}
-            className="w-full h-40 object-cover rounded-lg mb-4"
-          />
-          <p className="text-gray-600 mb-2">
-            <strong>Location:</strong>{" "}
-            {`${selectedPharmacy.userInfo.street}, ${selectedPharmacy.userInfo.barangay}, ${selectedPharmacy.userInfo.city}`}
-          </p>
-          <p className="text-gray-600 mb-2">
-            <strong>Contact:</strong> {selectedPharmacy.userInfo.contactNumber}
-          </p>
-          <p className="text-gray-600 mb-2">
-            <strong>Business Days:</strong> {selectedPharmacy.businessDays}
-          </p>
-          <p className="text-gray-600 mb-2">
-            <strong>Store Hours:</strong>{" "}
-            {`${selectedPharmacy.openingHour || "N/A"} - ${
-              selectedPharmacy.closingHour || "N/A"
-            }`}
-          </p>
-        </div>
-      )}
+          ✕
+        </button>
+        <h2 className="text-xl font-semibold text-gray-800 mb-4">
+          {selectedPharmacy.userInfo.name}
+        </h2>
+        <img
+          src={selectedPharmacy.images?.[0] || "default-image.jpg"}
+          alt={selectedPharmacy.userInfo.name}
+          className="w-full h-40 object-cover rounded-lg mb-4"
+        />
+        <p className="text-gray-600 mb-2">
+          <strong>Location:</strong>{" "}
+          {`${selectedPharmacy.userInfo.street}, ${selectedPharmacy.userInfo.barangay}, ${selectedPharmacy.userInfo.city}`}
+        </p>
+        <p className="text-gray-600 mb-2">
+          <strong>Contact:</strong> {selectedPharmacy.userInfo.contactNumber}
+        </p>
+        <p className="text-gray-600 mb-2">
+          <strong>Business Days:</strong> {selectedPharmacy.businessDays}
+        </p>
+        <p className="text-gray-600 mb-2">
+          <strong>Store Hours:</strong>{" "}
+          {`${selectedPharmacy.openingHour || "N/A"} - ${selectedPharmacy.closingHour || "N/A"}`}
+        </p>
+
+        {/* View Pharmacy Button */}
+        <button
+          className="w-full py-2 bg-primary-variant text-white rounded-lg mt-4 hover:bg-blue-700"
+          style={{ zIndex: 10000 }} // Ensure button is on top with z-index
+          onClick={() => {
+            closeModal(); // Close modal before navigation
+            navigate(`/customer/PharmacyDetails/${selectedPharmacy._id}`); // Navigate to the PharmacyDetails screen
+          }}
+        >
+          View Pharmacy
+        </button>
+      </div>
+    )}
+
+
     </div>
   );
 };

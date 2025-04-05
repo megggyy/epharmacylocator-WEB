@@ -3,6 +3,7 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { IoSearchOutline } from 'react-icons/io5';
 import { API_URL } from '../../../env';
+import PulseSpinner from '../../../assets/common/spinner';
 
 const FilterMedicinesByCategoryPerPharmacy = () => {
   const navigate = useNavigate();
@@ -50,11 +51,7 @@ const FilterMedicinesByCategoryPerPharmacy = () => {
   });
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-500"></div>
-      </div>
-    );
+    return <PulseSpinner />;
   }
 
   return (

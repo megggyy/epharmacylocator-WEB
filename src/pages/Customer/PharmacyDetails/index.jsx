@@ -260,12 +260,9 @@ setCategories(categoryList);
   };
 
 
+
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        <div className="text-2xl text-blue-600 font-semibold animate-pulse">Loading...</div>
-      </div>
-    );
+    return <PulseSpinner />;
   }
 
   if (!pharmacy) {
@@ -586,8 +583,6 @@ setCategories(categoryList);
     )}
   </div>
 )}
-
-
     </div>
   );
 };

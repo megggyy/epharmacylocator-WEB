@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { API_URL } from '../../../env';
+import PulseSpinner from '../../../assets/common/spinner';
 
 const ViewPharmacyMedicine = () => {
   const location = useLocation();
@@ -43,11 +44,7 @@ const ViewPharmacyMedicine = () => {
   }, [id, pharmacyId]);
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="text-3xl text-blue-600">Loading...</div>
-      </div>
-    );
+    return <PulseSpinner />;
   }
 
   if (!stock) {
