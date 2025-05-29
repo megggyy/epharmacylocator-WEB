@@ -82,6 +82,9 @@ import ReadMedicationScreen from "./pages/PharmacyOwner/Medicines/readMedicine";
 
 import ExpiringMedicationScreen from "./pages/PharmacyOwner/Medicines/expiringMedicines";
 import ListReviewsScreen from "./pages/PharmacyOwner/Reviews/listReviews";
+import PharmacyReports from "./pages/PharmacyOwner/Reports/pharmacyOwnerReports";
+import PharmacyTermsAndConditions from "./pages/PharmacyOwner/TermsAndConditions/termsAndConditions";
+import PharmacyFAQs from "./pages/PharmacyOwner/TermsAndConditions/FAQs";
 
 const MOBILE_BREAKPOINT = 767;
 const router = createBrowserRouter(
@@ -511,6 +514,30 @@ const router = createBrowserRouter(
           element={
             <ProtectedRoute userRole={["PharmacyOwner"]}>
               <PharmacyOwnerDashboard />
+            </ProtectedRoute>
+          }
+        />
+         <Route
+          path="reports"
+          element={
+            <ProtectedRoute userRoles={["PharmacyOwner"]}>
+              <PharmacyReports />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="TCs"
+          element={
+            <ProtectedRoute userRoles={["PharmacyOwner"]}>
+              <PharmacyTermsAndConditions />
+            </ProtectedRoute>
+          }
+        />
+         <Route
+          path="FAQs"
+          element={
+            <ProtectedRoute userRoles={["PharmacyOwner"]}>
+              <PharmacyFAQs />
             </ProtectedRoute>
           }
         />

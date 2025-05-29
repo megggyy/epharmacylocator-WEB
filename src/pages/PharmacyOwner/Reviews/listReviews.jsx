@@ -2,7 +2,13 @@ import React, { useState, useCallback, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faStar as solidStar, faStarHalfAlt, faArrowLeft  } from "@fortawesome/free-solid-svg-icons";
+import {
+  faStar as solidStar,
+  faStarHalfAlt,
+  faArrowLeft
+} from "@fortawesome/free-solid-svg-icons";
+import { faStar as regularStar } from "@fortawesome/free-regular-svg-icons";
+
 import { API_URL } from "../../../env";
 import PulseSpinner from "../../../assets/common/spinner";
 import AuthGlobal from "@/context/AuthGlobal";

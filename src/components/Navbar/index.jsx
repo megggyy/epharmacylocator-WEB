@@ -14,11 +14,25 @@ import {
 const Navbar = () => {
   const [openDropdown, setOpenDropdown] = useState(null); // Track the currently open dropdown
   const [userProfile, setUserProfile] = useState(null);
+  const [categories, setCategories] = useState([]);
   const { state, dispatch } = useContext(AuthGlobal);
   const navigate = useNavigate();
-
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [categorySearchQuery, setCategorySearchQuery] = useState("");
   const toggleDropdown = (dropdownName) => {
     setOpenDropdown((prev) => (prev === dropdownName ? null : dropdownName));
+  };
+
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    filterMedications(query, selectedCategory);
+  };
+
+  const handleCategorySelect = (categoryName) => {
+    setSelectedCategory(categoryName);
+    setShowCategoryDropdown(false);
+    filterMedications(searchQuery, categoryName);
   };
 
   useEffect(() => {
@@ -42,6 +56,11 @@ const Navbar = () => {
     } else {
       navigate("/login");
     }
+
+    // Fetch categories
+    axios.get(`${API_URL}medication-category`)
+      .then(response => setCategories(response.data))
+      .catch(error => console.error("Error fetching categories:", error));
 
     return () => {
       setUserProfile(null);
@@ -80,21 +99,35 @@ const Navbar = () => {
           <IoIosArrowDown className="hover:text-gray-300" />
         </button>
         {openDropdown === "medicines" && (
-          <div
-            className="absolute bg-white text-black py-2 mt-1 w-40 rounded-lg shadow-lg top-full left-0"
-            style={{ zIndex: 9999 }}
+  <div
+    className="absolute bg-white text-black py-2 mt-1 w-[600px] rounded-lg shadow-lg top-full left-0 z-10 max-h-96 overflow-y-auto"
+  >
+    <input
+      type="text"
+      className="w-full px-4 py-2 border-b border-gray-200 focus:outline-none"
+      placeholder="Search categories..."
+      value={categorySearchQuery}
+      onChange={(e) => setCategorySearchQuery(e.target.value)}
+    />
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
+      {categories
+        .filter((cat) =>
+          cat.name.toLowerCase().includes(categorySearchQuery.toLowerCase())
+        )
+        .map((category, index) => (
+          <Link
+            key={category._id}
+            to={`/medicines/category/${category._id}`}
+            className="block break-words px-4 py-2 bg-gray-50 hover:bg-gray-100 rounded text-center"
           >
-            <Link to="/medicines/category1" className="block px-4 py-2 hover:bg-gray-200">
-              Category 1
-            </Link>
-            <Link to="/medicines/category2" className="block px-4 py-2 hover:bg-gray-200">
-              Category 2
-            </Link>
-            <Link to="/medicines/category3" className="block px-4 py-2 hover:bg-gray-200">
-              Category 3
-            </Link>
-          </div>
-        )}
+            {category.name}
+          </Link>
+        ))}
+    </div>
+  </div>
+)}
+
+
       </div>
       <Link to="/customer/maps" className="hover:text-gray-300">
         Maps
@@ -125,15 +158,15 @@ const Navbar = () => {
             className="absolute bg-white text-black py-2 mt-1 w-40 rounded-lg shadow-lg top-full left-0"
             style={{ zIndex: 9999 }}
           >
-            <Link to="/medicines/category1" className="block px-4 py-2 hover:bg-gray-200">
-              Category 1
-            </Link>
-            <Link to="/medicines/category2" className="block px-4 py-2 hover:bg-gray-200">
-              Category 2
-            </Link>
-            <Link to="/medicines/category3" className="block px-4 py-2 hover:bg-gray-200">
-              Category 3
-            </Link>
+            {categories.map((category) => (
+              <Link 
+                key={category._id} 
+                to={`/medicines/category/${category._id}`} 
+                className="block px-4 py-2 hover:bg-gray-200"
+              >
+                {category.name}
+              </Link>
+            ))}
           </div>
         )}
       </div>

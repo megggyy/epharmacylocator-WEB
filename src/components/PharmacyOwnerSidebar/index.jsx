@@ -70,6 +70,11 @@ export default function PharmacyOwnerSidebar() {
         <ul className="space-y-1 px-4">
           {[
             {
+              icon: faClipboardList,
+              label: "Reports",
+              link: "/pharmacy-owner/reports",
+            },
+            {
               icon: faPills,
               label: "Medicines",
               link: "/pharmacy-owner/medicines",
@@ -162,7 +167,7 @@ export default function PharmacyOwnerSidebar() {
             {
               icon: faQuestionCircle,
               label: "FAQs",
-              link: "/pharmacy-owner/faqs",
+              link: "/pharmacy-owner/FAQs",
             },
           ].map((item, index) => (
             <li key={index}>

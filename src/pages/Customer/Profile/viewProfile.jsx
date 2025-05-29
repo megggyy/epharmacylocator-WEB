@@ -43,10 +43,6 @@ export default function CustomerViewProfile() {
     fetchUserData();
   }, []);
 
-  const address = `${userData.street || ''}, ${userData.barangay || ''}, ${userData.city || ''}`
-    .replace(/(, )+/g, ', ')
-    .trim();
-
   const profileImage =
     userData?.customerDetails?.images?.[0] && typeof userData.customerDetails.images[0] === 'string'
       ? userData.customerDetails.images[0]
@@ -117,7 +113,7 @@ export default function CustomerViewProfile() {
               <label className="block text-gray-600 mb-1">Address</label>
               <input
                 type="text"
-                value={address || 'N/A'}
+                value={userData.address || 'N/A'}
                 readOnly
                 className="w-full bg-gray-100 border rounded px-4 py-2"
               />
