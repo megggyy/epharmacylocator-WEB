@@ -16,6 +16,9 @@ import {
 } from "recharts";
 import axios from "axios";
 import { API_URL } from "../../../env";
+import ReactModal from 'react-modal';
+
+ReactModal.setAppElement('#root');
 
 const SummaryOfReports = () => {
   const [customersData, setCustomersData] = useState([]);
@@ -24,6 +27,7 @@ const SummaryOfReports = () => {
   const [chartData2, setChartData2] = useState([]);
   const [chartData3, setChartData3] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchCustomersData = async () => {
@@ -56,15 +60,6 @@ const SummaryOfReports = () => {
     };
 
     fetchCustomersData();
-
-    // Simulated most scanned prescriptions data
-    setScannedData([
-      { name: "Paracetamol", total: 120 },
-      { name: "Ibuprofen", total: 95 },
-      { name: "Amoxicillin", total: 80 },
-      { name: "Cetirizine", total: 75 },
-      { name: "Loratadine", total: 60 },
-    ]);
 
     const fetchMedicinesData = async () => {
       try {
@@ -123,11 +118,35 @@ const SummaryOfReports = () => {
           setIsLoading(false);
         }
       };
-    
+        const fetchScannedMedicines = async () => {
+    try {
+      const response = await axios.get(`${API_URL}customers/mostScannedMedicines`);
+      const result = response?.data;
+
+      if (result?.success) {
+        const topMedicines = result?.mostScannedMedicines
+          .map((item) => ({
+            name: item._id,
+            total: item.count
+          }))
+          .sort((a, b) => b.total - a.total) // descending
+          .slice(0, 5); // top 5 only
+
+        setScannedData(topMedicines);
+      }
+    } catch (error) {
+      console.error("Error fetching most scanned medicines:", error);
+    }
+  };
     fetchData();
     fetchPharmaciesData();
     fetchMedicinesData();
+    fetchScannedMedicines();  
   }, []);
+
+    const topScanned = [...scannedData]
+    .sort((a, b) => b.total - a.total)
+    .slice(0, 5);
 
   // Generates a random color in hexadecimal format
   const getRandomColor = () => {
@@ -169,16 +188,69 @@ const SummaryOfReports = () => {
           <h2 className="text-lg font-semibold mb-4">
             Most Scanned Prescriptions
           </h2>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={scannedData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="total" fill="#82ca9d" />
-            </BarChart>
-          </ResponsiveContainer>
+          <div onClick={() => setIsModalOpen(true)} style={{ cursor: 'pointer' }}>
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart data={scannedData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+            <CartesianGrid strokeDasharray="3 3" />
+           <XAxis 
+              dataKey="name" 
+              tickFormatter={(name) =>
+                name.length > 10 ? name.substring(0, 10) + "..." : name
+              }
+            />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            <Bar dataKey="total" fill="#82ca9d" />
+          </BarChart>
+        </ResponsiveContainer>
+        <p style={{ textAlign: "center", color: "gray", marginTop: 5 }}>Click chart to view top 5 medicines</p>
+          </div>
+                  <ReactModal
+                    isOpen={isModalOpen}
+                    onRequestClose={() => setIsModalOpen(false)}
+                    contentLabel="Top Scanned Medicines"
+                    style={{
+                      content: {
+                        maxWidth: '400px',
+                        maxHeight: '350px',
+                        margin: 'auto',
+                        padding: '20px',
+                        borderRadius: '8px',
+                        overflowY: 'auto',
+                        textAlign: 'center',
+                      },
+                      overlay: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                      },
+                    }}
+                  >
+                    <h2 className="text-xl font-bold mb-4">Top 5 Scanned Medicines</h2>
+                    <ul style={{ listStyle: 'none', paddingLeft: 0 }}>
+                      {topScanned.map((item, index) => (
+                        <li key={index} className="mb-2 text-base">
+                          {index + 1}. <strong>{item.name}</strong> ({item.total} times)
+                        </li>
+                      ))}
+                    </ul>
+                    <button
+                      onClick={() => setIsModalOpen(false)}
+                      style={{
+                        marginTop: '20px',
+                        padding: '10px 20px',
+                        backgroundColor: '#82ca9d',
+                        border: 'none',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        color: 'white',
+                      }}
+                    >
+                      Close
+                    </button>
+                  </ReactModal>
         </div>
 
         {/* Chart 3: Medicine Categories Pie Chart */}
@@ -211,7 +283,7 @@ const SummaryOfReports = () => {
 
         {/* Chart 4: Placeholder for Additional Chart */}
         <div className="bg-white shadow rounded-lg p-4">
-          <h2 className="text-lg font-semibold mb-4">Pharacies Per Barangay</h2>
+          <h2 className="text-lg font-semibold mb-4">Pharmacies Per Barangay</h2>
           <ResponsiveContainer width="100%" height={300}>
                 <BarChart
                       width={800} // Increased width

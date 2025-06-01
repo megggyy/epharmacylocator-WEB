@@ -67,7 +67,7 @@ import AdminChangePasswordScreen from "./pages/Admin/Profile/AdminChangePassword
 
 import AdminMedicationScreen from "./pages/Admin/Medicines/allMedicines";
 import AdminReadMedicationScreen from "./pages/Admin/Medicines/readMedicine";
-
+import AdminReports from "./pages/Admin/Reports/adminReports";
 
 
 // Pharmacy Owner pages
@@ -462,6 +462,14 @@ const router = createBrowserRouter(
           element={
             <ProtectedRoute userRoles={["Admin"]}>
               <SummaryOfReports />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="reports"
+          element={
+            <ProtectedRoute userRoles={["Admin"]}>
+              <AdminReports />
             </ProtectedRoute>
           }
         />

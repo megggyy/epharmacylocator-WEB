@@ -7,6 +7,7 @@ import {
   faChartArea,
   faChartPie,
   faChartLine,
+  faClipboardList
 } from "@fortawesome/free-solid-svg-icons";
 import logo from "@assets/epharmacy-logo.png";
 
@@ -34,6 +35,11 @@ export default function AdminSidebar() {
         </h6>
         <ul className="space-y-1 px-4">
           {[
+            {
+              icon: faClipboardList,
+              label: "Reports",
+              link: "/admin/reports",
+            },
             {
               icon: faChartArea,
               label: "Summary of Reports",

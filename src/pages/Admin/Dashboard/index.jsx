@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import ReactModal from 'react-modal';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faUsersBetweenLines,
@@ -12,44 +13,49 @@ import axios from "axios";
 import { API_URL } from "../../../env";
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
+ReactModal.setAppElement('#root');
+
 const Dashboard = () => {
   const [counts, setCounts] = useState({
     users: 0,
     pharmacies: 0,
     categories: 0,
     medicines: 0,
-    // scannedMedicines: 0,
+    scannedPrescriptions: 0,
     pendingPharmacies: 0
   });
 
   const [customersData, setCustomersData] = useState([]);
   const [scannedData, setScannedData] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [usersRes, pharmaciesRes, categoriesRes, medicinesRes] = await Promise.all([
-          axios.get(`${API_URL}users`),
-          axios.get(`${API_URL}pharmacies`),
-          axios.get(`${API_URL}medication-category`),
-          axios.get(`${API_URL}medicine`),
-        ]);
-
-        const pendingPharmacies = pharmaciesRes.data.filter((pharmacy) => pharmacy?.approved === false);
-
-        const uniqueMedicines = [...new Set(medicinesRes.data.map((med) => med.name))];
-
-        setCounts({
-          users: usersRes.data.length,
-          pharmacies: pharmaciesRes.data.length,
-          categories: categoriesRes.data.length,
-          medicines: uniqueMedicines.length,
-          pendingPharmacies: pendingPharmacies.length,
-        });
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
+      const fetchData = async () => {
+        try {
+          const [usersRes, pharmaciesRes, categoriesRes, medicinesRes, prescriptionRes] = await Promise.all([
+            axios.get(`${API_URL}users`),
+            axios.get(`${API_URL}pharmacies`),
+            axios.get(`${API_URL}medication-category`),
+            axios.get(`${API_URL}medicine`),
+            axios.get(`${API_URL}prescriptions`) 
+          ]);
+  
+          const pendingPharmacies = pharmaciesRes.data.filter((pharmacy) => pharmacy?.approved === false);
+  
+          const uniqueMedicines = [...new Set(medicinesRes.data.map((med) => med.name))];
+          const scannedPrescriptions = prescriptionRes.data?.totalPrescriptions || 0;
+          setCounts({
+            users: usersRes.data.length,
+            pharmacies: pharmaciesRes.data.length,
+            categories: categoriesRes.data.length,
+            medicines: uniqueMedicines.length,
+            pendingPharmacies: pendingPharmacies.length,
+            scannedPrescriptions
+          });
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        }
+      }; 
 
     const fetchCustomersData = async () => {
       try {
@@ -79,22 +85,39 @@ const Dashboard = () => {
       }
     };
     
-    
-    
+    const fetchScannedMedicines = async () => {
+    try {
+      const response = await axios.get(`${API_URL}customers/mostScannedMedicines`);
+      const result = response?.data;
+
+      if (result?.success) {
+        const topMedicines = result?.mostScannedMedicines
+          .map((item) => ({
+            name: item._id,
+            total: item.count
+          }))
+          .sort((a, b) => b.total - a.total) // descending
+          .slice(0, 5); // top 5 only
+
+        setScannedData(topMedicines);
+      }
+    } catch (error) {
+      console.error("Error fetching most scanned medicines:", error);
+    }
+  };
+
+    fetchScannedMedicines();  
     fetchData();
     fetchCustomersData();
 
-    // Simulated most scanned prescriptions data
-    setScannedData([
-      { name: "Paracetamol", total: 120 },
-      { name: "Ibuprofen", total: 95 },
-      { name: "Amoxicillin", total: 80 },
-      { name: "Cetirizine", total: 75 },
-      { name: "Loratadine", total: 60 },
-    ]);
+
   }, []);
   
-  
+  const topScanned = [...scannedData]
+  .sort((a, b) => b.total - a.total)
+  .slice(0, 5);
+
+
   return (
     <div className="bg-primary-t4 min-h-screen flex flex-col">
       {/* Header */}
@@ -154,7 +177,7 @@ const Dashboard = () => {
           >
             <FontAwesomeIcon icon={faBarcode} size="2x" />
             <div className="stat-title mt-2">Scanned Medicines</div>
-            <div className="stat-value text-lg">--</div>
+            <div className="stat-value text-lg">{counts.scannedPrescriptions}</div>
           </div>
 
           {/* Pending Pharmacies */}
@@ -185,20 +208,74 @@ const Dashboard = () => {
           </ResponsiveContainer>
         </div>
       
-              {/* Line Chart */}
-              <div className="bg-white shadow rounded-lg p-4">
-                <h2 className="text-lg font-semibold mb-4">Most Scanned Prescriptions</h2>
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={scannedData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Bar dataKey="total" fill="#82ca9d" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
+        {/* Line Chart */}
+          <div className="bg-white p-4 rounded shadow mt-6">
+            <h2 className="text-xl font-semibold mb-4">Most Scanned Medicines</h2>
+          <div onClick={() => setIsModalOpen(true)} style={{ cursor: 'pointer' }}>
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart data={scannedData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+            <CartesianGrid strokeDasharray="3 3" />
+           <XAxis 
+              dataKey="name" 
+              tickFormatter={(name) =>
+                name.length > 10 ? name.substring(0, 10) + "..." : name
+              }
+            />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            <Bar dataKey="total" fill="#82ca9d" />
+          </BarChart>
+        </ResponsiveContainer>
+        <p style={{ textAlign: "center", color: "gray", marginTop: 5 }}>Click chart to view top 5 medicines</p>
+          </div>
+          </div>
+        <ReactModal
+          isOpen={isModalOpen}
+          onRequestClose={() => setIsModalOpen(false)}
+          contentLabel="Top Scanned Medicines"
+          style={{
+            content: {
+              maxWidth: '400px',
+              maxHeight: '350px',
+              margin: 'auto',
+              padding: '20px',
+              borderRadius: '8px',
+              overflowY: 'auto',
+              textAlign: 'center',
+            },
+            overlay: {
+              backgroundColor: 'rgba(0, 0, 0, 0.5)',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+            },
+          }}
+        >
+          <h2 className="text-xl font-bold mb-4">Top 5 Scanned Medicines</h2>
+          <ul style={{ listStyle: 'none', paddingLeft: 0 }}>
+            {topScanned.map((item, index) => (
+              <li key={index} className="mb-2 text-base">
+                {index + 1}. <strong>{item.name}</strong> ({item.total} times)
+              </li>
+            ))}
+          </ul>
+          <button
+            onClick={() => setIsModalOpen(false)}
+            style={{
+              marginTop: '20px',
+              padding: '10px 20px',
+              backgroundColor: '#82ca9d',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer',
+              color: 'white',
+            }}
+          >
+            Close
+          </button>
+        </ReactModal>
+
             </div>
     </div>
     
