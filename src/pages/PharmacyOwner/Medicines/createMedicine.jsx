@@ -59,7 +59,7 @@ const CreateMedicines = () => {
     );
     setFilteredGeneric(filtered);
   };
-  
+
 
   const openModal = () => {
     setGenericModalVisible(true);
@@ -135,7 +135,7 @@ const CreateMedicines = () => {
     );
     setFilteredMedicines(filtered);
   };
-  
+
 
   const handleMedicineSelect = (index) => {
     setSelectedMedicineIndex(index);  // Set selected medicine index
@@ -236,16 +236,17 @@ const CreateMedicines = () => {
 
         // Convert displayed date back to ISO format
         let parsedDate = new Date(rawDate);
-        let isoDate = !isNaN(parsedDate) ? parsedDate.toISOString().split('T')[0] : rawDate;
+        let isoDate = rawDate.trim() === '' ? null : parsedDate.toISOString().split('T')[0];
 
-        if (stockValue && isoDate) {
+        if (stockValue) {
           stockEntries.push({ stock: stockValue, expirationDate: isoDate });
         }
+
       });
     }
 
     if (stockEntries.length === 0) {
-      toast.error('Please enter stock and expiration date.')
+      toast.error('Please enter stock')
       return;
     }
 
@@ -259,7 +260,7 @@ const CreateMedicines = () => {
         classification: selectedMedicine.classification,
         category: selectedMedicine.category,
         description: selectedMedicine.description,
-        expirationPerStock: stockEntries, // Use the collected stock & expiration data
+        expirationPerStock: stockEntries,
         pharmacy: state.user.userId,
       });
 
