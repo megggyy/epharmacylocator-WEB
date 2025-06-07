@@ -8,8 +8,10 @@ import {
   faBarcode,
   faClipboardCheck
 } from "@fortawesome/free-solid-svg-icons";
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import html2canvas from "html2canvas";
+import * as XLSX from 'xlsx';
 import moment from 'moment';
 import axios from 'axios';
 import DataTable from 'react-data-table-component';
@@ -40,6 +42,7 @@ const AdminReports = () => {
       scannedPrescriptions: 0,
       pendingPharmacies: 0
     });
+
 
 
   const fetchPharmacies = async () => {
@@ -133,14 +136,22 @@ const AdminReports = () => {
   }, [searchQuery, startDate, endDate, pharmacies]);
 
   //  charts tab
-   const [customersData, setCustomersData] = useState([]);
+    const [customersData, setCustomersData] = useState(null);
     const [scannedData, setScannedData] = useState([]);
-    const [chartData, setChartData] = useState([]);
-    const [chartData2, setChartData2] = useState([]);
-    const [chartData3, setChartData3] = useState([]);
+    const [chartData, setChartData] = useState(null);
+    const [chartData2, setChartData2] = useState(null);
+    const [chartData3, setChartData3] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
   
+    // 
+    const chartRef1 = useRef(null);
+    const chartRef2 = useRef(null);
+    const chartRef3 = useRef(null);
+    const chartRef4 = useRef(null);
+    const chartRef5 = useRef(null);
+
+    
     useEffect(() => {
       const fetchCustomersData = async () => {
         try {
@@ -279,8 +290,180 @@ const AdminReports = () => {
     { name: 'Expiry Date', selector: row => row.expiryDate, sortable: true },
   ];
 
+    // === PDF Export Function ===
+const handleExportPDF = async () => {
+  const doc = new jsPDF();
+  let y = 10;
+
+  doc.setFontSize(16);
+  doc.text("Admin Reports", 10, y);
+  y += 10;
+
+  doc.setFontSize(14);
+  doc.text("Overview", 10, y);
+  y += 8;
+
+  const overviewTableBody = [
+    ["Total Users", counts.users],
+    ["Total Pharmacies", counts.pharmacies],
+    ["Total Medicines", counts.medicines],
+    ["Total Categories", counts.categories],
+    ["Scanned Prescriptions", counts.scannedPrescriptions],
+    ["Pending Pharmacies", counts.pendingPharmacies],
+  ];
+
+  autoTable(doc, {
+    startY: y,
+    head: [["Metric", "Value"]],
+    body: overviewTableBody,
+    theme: "grid",
+  });
+
+  y = doc.lastAutoTable.finalY + 10;
+
+  doc.text("Expiring Pharmacies (within 30 days)", 10, y);
+  y += 8;
+
+  if (filteredPharmacies?.length > 0) {
+    const pharmacyTableBody = filteredPharmacies.map(ph => [
+      ph.pharmacyName,
+      ph.expiryDate || "N/A"
+    ]);
+
+    autoTable(doc, {
+      startY: y,
+      head: [["Pharmacy Name", "Expiry Date"]],
+      body: pharmacyTableBody,
+      theme: "grid",
+    });
+
+    y = doc.lastAutoTable.finalY + 10;
+  } else {
+    doc.setFontSize(12);
+    doc.text("No pharmacies with upcoming expiry.", 10, y);
+    y += 10;
+  }
+
+  doc.setFontSize(14);
+  doc.text("Charts Data", 10, y);
+  y += 8;
+
+  // Helper to capture chart with prepend workaround
+  const captureChart = async (ref) => {
+    if (!ref.current) return null;
+
+    const clone = ref.current.cloneNode(true);
+    clone.style.position = "absolute";
+    clone.style.left = "-9999px";
+    clone.style.top = "0";
+    document.body.prepend(clone);
+
+    await new Promise(resolve => setTimeout(resolve, 300)); // wait for layout
+    const canvas = await html2canvas(clone, { useCORS: true });
+    document.body.removeChild(clone);
+
+    return canvas.toDataURL("image/png");
+  };
+
+  if (customersData?.length > 0) {
+    doc.setFontSize(12);
+    doc.text("Monthly New Customers", 10, y);
+    y += 8;
+
+    autoTable(doc, {
+      startY: y,
+      head: [["Month", "Total"]],
+      body: customersData.map(({ month, total }) => [month, total]),
+      theme: "grid",
+    });
+
+    y = doc.lastAutoTable.finalY + 10;
+  }
+
+  const chartRefs = [chartRef1, chartRef2, chartRef3, chartRef4, chartRef5];
+  const chartTitles = [
+    "Monthly New Customers Chart",
+    "Most Scanned Prescriptions Chart",
+    "Medicine Categories Chart",
+    "Pharmacies Per Barangay Chart",
+    "Monthly Pharmacy Registration Chart"
+  ];
+
+  const chartDataGroups = [
+    null,
+    scannedData,
+    chartData,
+    chartData2,
+    chartData3
+  ];
+
+  const chartTableHeaders = [
+    null,
+    [["Medicine", "Scans"]],
+    [["Category", "Count"]],
+    [["Barangay", "Pharmacies"]],
+    [["Month", "Registrations"]]
+  ];
+
+  const chartTableBodies = [
+    null,
+    scannedData?.map(({ name, total }) => [name, total]),
+    chartData?.map(({ name, value }) => [name, value]),
+    chartData2?.map(({ name, population }) => [name, population]),
+    chartData3?.map(({ month, total }) => [month, total])
+  ];
+
+  for (let i = 0; i < chartRefs.length; i++) {
+    const title = chartTitles[i];
+    const chartDataGroup = chartDataGroups[i];
+    const chartRef = chartRefs[i];
+
+    if (chartDataGroup?.length > 0) {
+      doc.setFontSize(12);
+      doc.text(title.replace(" Chart", ""), 10, y);
+      y += 8;
+
+      autoTable(doc, {
+        startY: y,
+        head: chartTableHeaders[i],
+        body: chartTableBodies[i],
+        theme: "grid",
+      });
+
+      y = doc.lastAutoTable.finalY + 10;
+    }
+
+    const imgData = await captureChart(chartRef);
+    if (imgData) {
+      const imgWidth = 180;
+      const imgHeight = 120;
+
+      if (y + imgHeight > 280) {
+        doc.addPage();
+        y = 10;
+      }
+
+      doc.addImage(imgData, "PNG", 10, y, imgWidth, imgHeight);
+      y += imgHeight + 10;
+    }
+  }
+
+  doc.save("admin-report.pdf");
+};
+
+
   return (
     <div className="p-6">
+                <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
+            <h2 className="text-2xl font-bold">Admin Reports</h2>
+            <button
+              onClick={handleExportPDF}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              title="Export Pharmacy Report as PDF"
+            >
+              Export as PDF
+            </button>
+          </div>
       {/* Tabs */}
       <div className="flex border-b mb-4">
         {['overview', 'pharmacies', 'charts'].map((tab) => (
@@ -418,7 +601,8 @@ const AdminReports = () => {
       </h1>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Chart 1: Monthly New Customers */}
-        <div className="bg-white shadow rounded-lg p-4">
+        {customersData && (
+        <div ref={chartRef1} className="bg-white shadow rounded-lg p-4">
           <h2 className="text-lg font-semibold mb-4">Monthly New Customers</h2>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={customersData}>
@@ -431,9 +615,9 @@ const AdminReports = () => {
             </LineChart>
           </ResponsiveContainer>
         </div>
-
+    )}
         {/* Chart 2: Most Scanned Prescriptions */}
-        <div className="bg-white shadow rounded-lg p-4">
+        <div ref={chartRef2} className="bg-white shadow rounded-lg p-4">
           <h2 className="text-lg font-semibold mb-4">
             Most Scanned Prescriptions
           </h2>
@@ -503,7 +687,7 @@ const AdminReports = () => {
         </div>
 
         {/* Chart 3: Medicine Categories Pie Chart */}
-      <div className="bg-white shadow rounded-lg p-4">
+      <div ref={chartRef3} className="bg-white shadow rounded-lg p-4">
         <h2 className="text-lg font-semibold mb-4">Medicine Categories</h2>
         <ResponsiveContainer width="100%" height={550}> {/* increased from 300 to 400 */}
           {isLoading ? (
@@ -532,7 +716,7 @@ const AdminReports = () => {
 
 
         {/* Chart 4: Placeholder for Additional Chart */}
-    <div className="bg-white shadow rounded-lg p-4">
+    <div ref={chartRef4} className="bg-white shadow rounded-lg p-4">
       <h2 className="text-lg font-semibold mb-4">Pharmacies Per Barangay</h2>
       <ResponsiveContainer width="100%" height={550}> {/* increased height */}
         <BarChart
@@ -567,7 +751,7 @@ const AdminReports = () => {
 
 
         {/* Chart 5: Placeholder for Additional Chart */}
-        <div className="bg-white shadow rounded-lg p-4">
+        <div ref={chartRef5} className="bg-white shadow rounded-lg p-4">
           <h2 className="text-lg font-semibold mb-4">Monthly Pharmacy Registration</h2>
           <ResponsiveContainer width="100%" height={300}>
           <LineChart

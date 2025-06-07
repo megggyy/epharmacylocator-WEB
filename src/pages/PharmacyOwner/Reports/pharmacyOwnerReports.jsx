@@ -46,6 +46,10 @@ export default function PharmacyReports() {
   const chartRef1 = useRef(null);
   const chartRef2 = useRef(null);
 
+const address = pharmacy
+  ? `${pharmacy.street || ''}${pharmacy.street ? ', ' : ''}${pharmacy.barangay || ''}${pharmacy.barangay ? ', ' : ''}${pharmacy.city || 'N/A'}`
+  : '';
+
   // Fetch Pharmacy Details
   useEffect(() => {
     const fetchPharmacyDetails = async () => {
@@ -238,7 +242,7 @@ const fetchExpiringStock = async (pharmacyId) => {
     y += 8;
     doc.text(`Name: ${pharmacy.name}`, 10, y);
     y += 7;
-    doc.text(`Address: ${pharmacy.address}`, 10, y);
+    doc.text(`Address: ${address}`, 10, y);
     y += 7;
     doc.text(`Contact: ${pharmacy.contactNumber || "N/A"}`, 10, y);
     y += 10;
@@ -370,10 +374,12 @@ const fetchExpiringStock = async (pharmacyId) => {
     },
   ];
 
+ 
   return (
     <div className="p-6">
       {/* 🏪 Pharmacy Info */}
       {pharmacy && (
+        
         <div className="bg-white shadow rounded-md p-4 mb-6">
           {/* Flex container for name and button */}
           <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
