@@ -37,9 +37,7 @@ const CustomerSignup = () => {
   const [contactNumber, setContactNumber] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [street, setStreet] = useState("");
-  const [city, setCity] = useState("Taguig City");
-  const [barangay, setBarangay] = useState(null);
+  const [address, setAddress] = useState("");
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
   const [region, setRegion] = useState(null);
@@ -74,28 +72,60 @@ const CustomerSignup = () => {
     setLatitude(lat);
     setLongitude(lng);
     setRegion({ latitude: lat, longitude: lng });
+    reverseGeocode(lat, lng);
   };
-
+  
   const getCurrentLocation = () => {
     navigator.geolocation.getCurrentPosition((position) => {
       const { latitude, longitude } = position.coords;
       setLatitude(latitude);
       setLongitude(longitude);
       setRegion({ latitude, longitude });
+      reverseGeocode(latitude, longitude);
     });
   };
-
+  
+  const reverseGeocode = async (lat, lng) => {
+    try {
+      const response = await axios.get(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
+      );
+  
+      if (response.data && response.data.address) {
+        const addr = response.data.address;
+  
+        // Safely extract only the required fields
+        const parts = [
+          addr.road,
+          addr.neighbourhood,
+          addr.city_district,
+          addr.county,
+          addr.postcode,
+          addr.country,
+        ].filter(Boolean); // Remove undefined/null values
+  
+        const formattedAddress = parts.join(', ');
+        setAddress(formattedAddress);
+      } else {
+        setAddress('Unknown Location');
+      }
+    } catch (error) {
+      console.error("Failed to get address:", error);
+      toast.error("Unable to fetch address from coordinates.");
+    }
+  };
+  
+  
   const validate = () => {
     let errorMessages = {};
     if (!name) errorMessages.name = "NAME IS REQUIRED";
     if (!email) errorMessages.email = "EMAIL IS REQUIRED";
     if (!contactNumber) errorMessages.contactNumber = "CONTACT NUMBER IS REQUIRED";
     if (!password) errorMessages.password = "PASSWORD IS REQUIRED";
-    if (!street) errorMessages.street = "STREET IS REQUIRED";
     if (password.length < 8 && password.length > 0) errorMessages.password = "PASSWORD MUST BE AT LEAST 8 CHARACTERS";
     if (contactNumber.length !== 11) errorMessages.contactNumber = "CONTACT NUMBER MUST BE 11 DIGITS";
-    if (!barangay) errorMessages.barangay = "PLEASE SELECT YOUR BARANGAY";
     if (images.length === 0) errorMessages.images = "PLEASE UPLOAD AT LEAST ONE IMAGE";
+    if (!address) errorMessages.address = "ADDRESS IS REQUIRED";
     if (!agreedToTerms) errorMessages.terms = "YOU MUST AGREE TO THE TERMS AND CONDITIONS";
     return errorMessages;
   };
@@ -129,12 +159,10 @@ const CustomerSignup = () => {
     data.append("email", email);
     data.append("contactNumber", contactNumber);
     data.append("password", password);
-    data.append("street", street);
-    data.append("city", city);
-    data.append("barangay", barangay.value);
     data.append("region", JSON.stringify(region)); // Optional if needed
+    data.append("address", address);
     data.append("latitude", latitude);
-    data.append("longitude", longitude);
+    data.append("longitude", longitude);    
     data.append("isAdmin", false);
     data.append("role", "Customer");
   
@@ -256,61 +284,40 @@ const CustomerSignup = () => {
             <p className="text-xs text-red-500 mt-1">{errors.contactNumber}</p>
           )}
         </div>
-        <div className="relative flex flex-col">
-          <input
-            type={showPassword ? "text" : "password"}
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="bg-white border border-gray-300 rounded-md p-3 text-gray-700 w-full pr-10"
-          />
-          <button
-            onClick={() => setShowPassword(!showPassword)}
-            className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500"
-          >
-            <i className={`fas fa-${showPassword ? "eye-slash" : "eye"}`}></i>
-          </button>
-          {errors.password && (
-            <p className="text-xs text-red-500 mt-1">{errors.password}</p>
-          )}
-        </div>
-  
-        <div className="flex flex-col">
-          <input
-            type="text"
-            placeholder="Street"
-            value={street}
-            onChange={(e) => setStreet(e.target.value)}
-            className="bg-white border border-gray-300 rounded-md p-3 text-gray-700"
-          />
-          {errors.street && (
-            <p className="text-xs text-red-500 mt-1">{errors.street}</p>
-          )}
-        </div>
-  
-        <div className="flex flex-col">
-          <Select
-            options={barangays}
-            value={barangay}
-            onChange={setBarangay}
-            placeholder="Select your barangay"
-            className="text-gray-700"
-          />
-          {errors.barangay && (
-            <p className="text-xs text-red-500 mt-1">{errors.barangay}</p>
-          )}
-        </div>
-  
-        <div className="flex flex-col">
-          <input
-            type="text"
-            value="Taguig City"
-            readOnly
-            className="bg-white border border-gray-300 rounded-md p-3 text-gray-700"
-          />
-        </div>
+<div className="relative flex flex-col">
+  <input
+    type={showPassword ? "text" : "password"}
+    placeholder="Password"
+    value={password}
+    onChange={(e) => setPassword(e.target.value)}
+    className="bg-white border border-gray-300 rounded-md p-3 text-gray-700 w-full pr-10"
+  />
+  <button
+    onClick={() => setShowPassword(!showPassword)}
+    className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500"
+  >
+    <i className={`fas fa-${showPassword ? "eye-slash" : "eye"}`}></i>
+  </button>
+  {errors.password && (
+    <p className="text-xs text-red-500 mt-1">{errors.password}</p>
+  )}
+</div>
+
+<div className="flex flex-col md:col-span-2 mt-4">
+  <input
+    type="text"
+    placeholder="Address"
+    value={address}
+    onChange={(e) => setAddress(e.target.value)}
+    className="bg-white border border-gray-300 rounded-md p-3 text-gray-700"
+  />
+  {errors.address && (
+    <p className="text-xs text-red-500 mt-1">{errors.address}</p>
+  )}
+</div>
+
       </div>
-  
+      <br />
       {/* Split Layout: Map on the left and Image Upload on the right */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Left Side: Map and Location Button */}
