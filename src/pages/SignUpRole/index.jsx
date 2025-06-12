@@ -45,7 +45,7 @@ const RoleSelectionScreen = () => {
           <h2 className="text-2xl font-semibold mb-4">Sign up as Pharmacy Owner</h2>
           <button
             onClick={() =>
-              navigate('/PharmacyOwnerSignUp')
+              navigate('/checkPharmacyLicense')
             }
             className="bg-[#00A896] text-white font-bold py-3 px-8 rounded-lg hover:bg-[#007965] transition-colors"
           >

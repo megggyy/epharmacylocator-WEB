@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams, useLocation   } from 'react-router-dom';
 import Select from 'react-select';
 import { IoArrowBack, IoEye, IoEyeOff, IoClose } from "react-icons/io5";
 import DatePicker from "react-datepicker";
@@ -34,8 +34,13 @@ const CenterMapView = ({ latitude, longitude }) => {
 
 const PharmacyOwnerSignupScreen = () => {
   const navigate = useNavigate();
+   const location = useLocation();
+  const pharmacyName = location.state?.pharmacyName ?? null;
+  const licenseNumber = location.state?.licenseNumber ?? null;
+  const expiryDate = location.state?.expiryDate ?? null;
+  console.log("Pharmacy Name from state:", pharmacyName);
 
-  const [name, setName] = useState("");
+  const [name, setName] = useState(pharmacyName || "");
   const [email, setEmail] = useState("");
   const [contactNumber, setContactNumber] = useState("");
   const [password, setPassword] = useState("");
@@ -60,6 +65,18 @@ const PharmacyOwnerSignupScreen = () => {
   const [showClosingTime, setShowClosingTime] = useState(false);
   const [isTermsOpen, setIsTermsOpen] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+
+  function convertToISO(dateStr) {
+  const [day, monStr, yearSuffix] = dateStr.split("-");
+  const months = {
+    Jan: "01", Feb: "02", Mar: "03", Apr: "04",
+    May: "05", Jun: "06", Jul: "07", Aug: "08",
+    Sep: "09", Oct: "10", Nov: "11", Dec: "12",
+  };
+  const year = "20" + yearSuffix; // assume it's 20xx
+  const month = months[monStr];
+  return `${year}-${month}-${day.padStart(2, '0')}T00:00:00.000Z`;
+}
 
   const handleMapClick = (event) => {
     const { lat, lng } = event.latlng;
@@ -167,6 +184,8 @@ const PharmacyOwnerSignupScreen = () => {
     data.append("businessDays", businessDays);
     data.append("openingHour", openingHour.toISOString());
     data.append("closingHour", closingHour.toISOString());
+    if (licenseNumber) data.append("licenseNumber", licenseNumber);
+    if (expiryDate) data.append("expiryDate", convertToISO(expiryDate));
 
     // Append images to FormData
     images.forEach((image, index) => {
@@ -258,13 +277,14 @@ const PharmacyOwnerSignupScreen = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Name */}
           <div className="flex flex-col">
-            <input
-              type="text"
-              placeholder="Name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="bg-white border border-gray-300 rounded-md p-3"
-            />
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Pharmacy name"
+            className="..."
+            disabled
+          />
             {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name}</p>}
           </div>
 

@@ -21,6 +21,7 @@ import LoginScreen from "./pages/Login";
 import CustomerWelcome from "./layouts/CustomerWelcome";
 import PharmacyStatus from "./pages/PharmacyStatus";
 import CategoryFilterMedications from "./pages/FilterMedicineByCategory";
+import CheckLicense from "./pages/PharmacyOwnerSignUp/checkLicense";
 
 // customer pages
 import CustomerPharmacies from "./pages/Customer/Pharmacies";
@@ -151,6 +152,14 @@ const router = createBrowserRouter(
           element={
             <UnprotectedRoute>
               <PharmacyOwnerSignupScreen />
+            </UnprotectedRoute>
+          }
+        />
+      <Route
+          path="checkPharmacyLicense"
+          element={
+            <UnprotectedRoute>
+              <CheckLicense />
             </UnprotectedRoute>
           }
         />
