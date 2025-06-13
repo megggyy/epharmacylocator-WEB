@@ -263,36 +263,44 @@ const PrescriptionUpload = () => {
         </div>
 
         {/* Prescription Drawer */}
-        {isDrawerVisible && (
-         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-         <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md relative">
-           <button className="absolute top-2 right-2 text-gray-600 hover:text-gray-800" onClick={() => setIsDrawerVisible(false)}>
-             <IoClose size={24} />
-           </button>
-  
-              <h2 className="text-xl font-semibold text-center mb-4">Previous Prescriptions</h2>
-  
-              {loading ? (
-                <p className="text-center text-gray-500">Loading...</p>
-              ) : prescriptions.length > 0 ? (
-                <div className="grid grid-cols-2 gap-4">
-             {prescriptions.map((prescription) => (
-                <div 
-                    key={prescription._id} 
-                    className="bg-gray-100 p-2 rounded-lg cursor-pointer hover:bg-gray-200 transition"
-                    onClick={() => handleReuse(prescription)} // This triggers handleReuse
-                >
-                    <img src={prescription.originalImageUrl} alt="Prescription" className="w-full h-24 object-cover rounded-md" />
-                    <p className="text-xs text-gray-600 mt-2 text-center">Tap to reuse</p>
-                </div>
-                ))}
-                </div>
-              ) : (
-                <p className="text-center text-gray-500">No previous prescriptions found.</p>
-              )}
+{isDrawerVisible && (
+  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+    <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md max-h-[80vh] overflow-y-auto relative">
+      <button
+        className="absolute top-2 right-2 text-gray-600 hover:text-gray-800"
+        onClick={() => setIsDrawerVisible(false)}
+      >
+        <IoClose size={24} />
+      </button>
+
+      <h2 className="text-xl font-semibold text-center mb-4">Previous Prescriptions</h2>
+
+      {loading ? (
+        <p className="text-center text-gray-500">Loading...</p>
+      ) : prescriptions.length > 0 ? (
+        <div className="grid grid-cols-2 gap-4">
+          {prescriptions.map((prescription) => (
+            <div
+              key={prescription._id}
+              className="bg-gray-100 p-2 rounded-lg cursor-pointer hover:bg-gray-200 transition"
+              onClick={() => handleReuse(prescription)}
+            >
+              <img
+                src={prescription.originalImageUrl}
+                alt="Prescription"
+                className="w-full h-24 object-cover rounded-md"
+              />
+              <p className="text-xs text-gray-600 mt-2 text-center">Tap to reuse</p>
             </div>
-          </div>
-        )}
+          ))}
+        </div>
+      ) : (
+        <p className="text-center text-gray-500">No previous prescriptions found.</p>
+      )}
+    </div>
+  </div>
+)}
+
 
         {/* Cropper Modal */}
         {showCropModal && agreedToStore && (
