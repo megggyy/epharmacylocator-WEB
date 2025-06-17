@@ -25,7 +25,7 @@ const BarangaysScreen = () => {
 
   const fetchBarangays = useCallback(async () => {
     try {
-      const response = await axios.get(`${API_URL}barangays`);
+      const response = await axios.get(`${API_URL}barangays?includeDeleted=true`);
       setBarangayList(response.data);
       setBarangayFilter(response.data);
     } catch (error) {
@@ -44,13 +44,23 @@ const BarangaysScreen = () => {
     if (window.confirm("Are you sure you want to delete this barangay?")) {
       try {
         await axios.delete(`${API_URL}barangays/delete/${barangayId}`);
-        setBarangayList((prev) => prev.filter((barangay) => barangay._id !== barangayId));
-        setBarangayFilter((prev) => prev.filter((barangay) => barangay._id !== barangayId));
-        toast.success("Barangay deleted successfully");
+        toast.success("Barangay soft deleted successfully");
+        fetchBarangays();
       } catch (error) {
         console.error("Error deleting barangay:", error);
         toast.error("Failed to delete barangay");
       }
+    }
+  };
+
+  const handleRestore = async (barangayId) => {
+    try {
+      await axios.put(`${API_URL}barangays/restore/${barangayId}`);
+      toast.success("Barangay restored successfully");
+      fetchBarangays();
+    } catch (error) {
+      console.error("Error restoring barangay:", error);
+      toast.error("Failed to restore barangay");
     }
   };
 
@@ -69,21 +79,36 @@ const BarangaysScreen = () => {
       ),
     },
     {
+      name: "STATUS",
+      selector: (row) => (row.deleted ? "Deleted" : "Active"),
+      sortable: true,
+    },
+    {
       name: "ACTIONS",
       cell: (row) => (
         <div className="flex items-center space-x-4">
           <button
             className="text-blue-500 hover:underline"
             onClick={() => navigate(`/admin/barangays/edit/${row._id}`)}
+            disabled={row.deleted}
           >
             Edit
           </button>
-          <button
-            className="text-red-500 hover:underline"
-            onClick={() => handleDelete(row._id)}
-          >
-            Delete
-          </button>
+          {!row.deleted ? (
+            <button
+              className="text-red-500 hover:underline"
+              onClick={() => handleDelete(row._id)}
+            >
+              Delete
+            </button>
+          ) : (
+            <button
+              className="text-green-500 hover:underline"
+              onClick={() => handleRestore(row._id)}
+            >
+              Restore
+            </button>
+          )}
         </div>
       ),
     },
@@ -111,7 +136,7 @@ const BarangaysScreen = () => {
     <div className="min-h-screen bg-gray-100 p-6">
       <ToastContainer />
       {loading ? (
-          <PulseSpinner />
+        <PulseSpinner />
       ) : (
         <>
           <div className="bg-[#0B607E] text-white p-4 rounded-lg flex items-center justify-between">

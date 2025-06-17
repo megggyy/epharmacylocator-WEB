@@ -232,6 +232,15 @@ const fetchExpiringStock = async (pharmacyId) => {
     const doc = new jsPDF();
 
     let y = 10;
+    
+    // 🔹 Add timestamp
+    const now = new Date();
+    const formattedTimestamp = now.toLocaleString();
+    doc.setFontSize(10);
+    doc.text(`Generated on: ${formattedTimestamp}`, 10, y);
+    y += 6;
+
+    // 🔹 Report Title
     doc.setFontSize(16);
     doc.text(`Pharmacy Report - ${pharmacy.name}`, 10, y);
     y += 10;

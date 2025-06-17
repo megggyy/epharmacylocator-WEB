@@ -55,24 +55,24 @@ const AdminReports = () => {
       const currentDate = moment();
       const defaultEndDate = moment().add(30, 'days');
 
-      const merged = pharmacies.map(pharmacy => {
-        const match = expiryPharmacies.find(
-          e => e.pharmacyName.toLowerCase() === pharmacy.userInfo.name.toLowerCase()
-        );
+     const merged = pharmacies.map(pharmacy => {
+      const match = expiryPharmacies.find(
+        e => e.pharmacyName.toLowerCase() === pharmacy.userInfo.name.toLowerCase()
+      );
 
-        return {
-          pharmacyName: pharmacy.userInfo.name,
-          expiryDate: match?.expiryDate || null,
-        };
-      });
+      return {
+        pharmacyName: pharmacy.userInfo.name,
+        expiryDate: match?.expiryDate || null, // format: '22-May-25'
+      };
+    });
 
-      const filtered = merged.filter(pharmacy => {
-        if (!pharmacy.expiryDate) return false;
-        const expiryMoment = moment(pharmacy.expiryDate, 'MMMM D, YYYY', true);
-        return expiryMoment.isValid() &&
-          expiryMoment.isAfter(currentDate) &&
-          expiryMoment.isBefore(defaultEndDate);
-      });
+    const filtered = merged.filter(pharmacy => {
+      if (!pharmacy.expiryDate) return false;
+     const expiryMoment = moment(pharmacy.expiryDate, ['D-MMM-YY', 'DD-MMM-YY'], true);
+      return expiryMoment.isValid() &&
+        expiryMoment.isAfter(currentDate) &&
+        expiryMoment.isBefore(defaultEndDate);
+    });
 
       setPharmacies(merged);
       setFilteredPharmacies(filtered);
@@ -88,13 +88,15 @@ const AdminReports = () => {
 
     if (startDate && endDate) {
       filtered = filtered.filter(pharmacy => {
-        const expiryMoment = moment(pharmacy.expiryDate, 'MMMM D, YYYY', true);
-        return expiryMoment.isValid() && expiryMoment.isBetween(startDate, endDate, null, '[]');
+        const expiryMoment = moment(pharmacy.expiryDate, 'D-MMM-YY', true);
+        return expiryMoment.isValid() &&
+          expiryMoment.isBetween(moment(startDate), moment(endDate), null, '[]');
       });
     }
 
     setFilteredPharmacies(filtered);
   };
+
 
     useEffect(() => {
       const fetchData = async () => {
@@ -109,16 +111,16 @@ const AdminReports = () => {
   
           const pendingPharmacies = pharmaciesRes.data.filter((pharmacy) => pharmacy?.approved === false);
   
-          const uniqueMedicines = [...new Set(medicinesRes.data.map((med) => med.name))];
           const scannedPrescriptions = prescriptionRes.data?.totalPrescriptions || 0;
-          setCounts({
-            users: usersRes.data.length,
-            pharmacies: pharmaciesRes.data.length,
-            categories: categoriesRes.data.length,
-            medicines: uniqueMedicines.length,
-            pendingPharmacies: pendingPharmacies.length,
-            scannedPrescriptions
-          });
+            setCounts({
+          users: usersRes.data.length,
+          pharmacies: pharmaciesRes.data.length,
+          categories: categoriesRes.data.length,
+          medicines: medicinesRes.data.length, // <- ✅ Fix here
+          pendingPharmacies: pendingPharmacies.length,
+          scannedPrescriptions
+        });
+
         } catch (error) {
           console.error("Error fetching data:", error);
         }
@@ -290,10 +292,17 @@ const AdminReports = () => {
     { name: 'Expiry Date', selector: row => row.expiryDate, sortable: true },
   ];
 
-    // === PDF Export Function ===
-const handleExportPDF = async () => {
+  // === PDF Export Function ===
+  const handleExportPDF = async () => {
   const doc = new jsPDF();
   let y = 10;
+
+  // 🔹 Add timestamp
+  const now = new Date();
+  const formattedTimestamp = now.toLocaleString();
+  doc.setFontSize(10);
+  doc.text(`Generated on: ${formattedTimestamp}`, 10, y);
+  y += 6;
 
   doc.setFontSize(16);
   doc.text("Admin Reports", 10, y);
