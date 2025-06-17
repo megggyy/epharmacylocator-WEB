@@ -26,8 +26,9 @@ const BarangaysScreen = () => {
   const fetchBarangays = useCallback(async () => {
     try {
       const response = await axios.get(`${API_URL}barangays?includeDeleted=true`);
-      setBarangayList(response.data);
-      setBarangayFilter(response.data);
+      const reversedData = [...response.data].reverse(); // ✅ Reverse the list
+      setBarangayList(reversedData);
+      setBarangayFilter(reversedData);
     } catch (error) {
       console.error("Error fetching barangays:", error);
       toast.error("Failed to load barangays");
@@ -35,6 +36,7 @@ const BarangaysScreen = () => {
       setLoading(false);
     }
   }, []);
+
 
   useEffect(() => {
     fetchBarangays();

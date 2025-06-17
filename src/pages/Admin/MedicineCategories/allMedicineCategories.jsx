@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import PulseSpinner from "../../../assets/common/spinner";
 import DataTable from "react-data-table-component";
-import { ToastContainer, toast } from "react-toastify"; // Import toast and ToastContainer
-import "react-toastify/dist/ReactToastify.css"; // Import styles
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { API_URL } from "../../../env";
 
 const MedicationCategoriesScreen = () => {
@@ -25,35 +25,42 @@ const MedicationCategoriesScreen = () => {
     }
   };
 
-  const fetchCategories = useCallback(async () => {
-    try {
-      const response = await axios.get(`${API_URL}medication-category`);
-      setCategoriesList(response.data);
-      setCategoriesFilter(response.data);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching categories:", error);
-    }
-  }, []);
+const fetchCategories = useCallback(async () => {
+  try {
+    const response = await axios.get(
+      `${API_URL}medication-category?includeDeleted=true`
+    );
+    const reversedData = [...response.data].reverse(); // ✅ Reverse the list
+    setCategoriesList(reversedData);
+    setCategoriesFilter(reversedData);
+    setLoading(false);
+  } catch (error) {
+    console.error("Error fetching categories:", error);
+    toast.error("Failed to load categories");
+  }
+}, []);
+
 
   useEffect(() => {
     fetchCategories();
   }, [fetchCategories]);
 
-  const handleDelete = async (categoryId) => {
-    if (window.confirm("Are you sure you want to delete this category?")) {
+  const handleToggleDelete = async (category) => {
+    const isDeleted = category.deleted;
+    const action = isDeleted ? "restore" : "soft-delete";
+
+    const confirmMsg = isDeleted
+      ? "Are you sure you want to restore this category?"
+      : "Are you sure you want to delete this category?";
+
+    if (window.confirm(confirmMsg)) {
       try {
-        await axios.delete(`${API_URL}medication-category/delete/${categoryId}`);
-        setCategoriesList((prev) =>
-          prev.filter((category) => category._id !== categoryId)
-        );
-        setCategoriesFilter((prev) =>
-          prev.filter((category) => category._id !== categoryId)
-        );
-        toast.success("Category deleted successfully"); // Success toast
+        await axios.put(`${API_URL}medication-category/${action}/${category._id}`);
+        fetchCategories();
+        toast.success(`Category ${isDeleted ? "restored" : "deleted"} successfully`);
       } catch (error) {
-        console.error("Error deleting category:", error);
-        toast.error("Failed to delete category"); // Error toast
+        console.error(error);
+        toast.error("Failed to update category");
       }
     }
   };
@@ -66,30 +73,46 @@ const MedicationCategoriesScreen = () => {
       cell: (row) => (
         <button
           className="text-black hover:underline"
-          onClick={() => navigate(`/admin/medication-category/read/${row._id}`)} // Navigate to Read Barangay screen
+          onClick={() => navigate(`/admin/medication-category/read/${row._id}`)}
         >
           {row.name}
         </button>
       ),
     },
-
     {
-      name: "Actions",
+      name: "STATUS",
+      selector: (row) => (row.deleted ? "Deleted" : "Active"),
+      sortable: true,
+      cell: (row) => (
+        <span
+          className={`px-2 py-1 rounded-full text-xs font-semibold ${
+            row.deleted ? "bg-red-200 text-red-700" : "bg-green-200 text-green-700"
+          }`}
+        >
+          {row.deleted ? "Deleted" : "Active"}
+        </span>
+      ),
+    },
+    {
+      name: "ACTIONS",
       cell: (row) => (
         <div className="flex space-x-2">
           <button
             className="text-blue-500 hover:underline"
-            onClick={() =>
-              navigate(`/admin/medication-category/edit/${row._id}`)
-            }
+            onClick={() => navigate(`/admin/medication-category/edit/${row._id}`)}
+            disabled={row.deleted}
           >
             Edit
           </button>
           <button
-            className="text-red-500 hover:underline"
-            onClick={() => handleDelete(row._id)}
+            className={
+              row.deleted
+                ? "text-green-500 hover:underline"
+                : "text-red-500 hover:underline"
+            }
+            onClick={() => handleToggleDelete(row)}
           >
-            Delete
+            {row.deleted ? "Restore" : "Delete"}
           </button>
         </div>
       ),
@@ -119,7 +142,7 @@ const MedicationCategoriesScreen = () => {
       <ToastContainer />
       {loading ? (
         <div className="flex justify-center items-center h-64">
-          <PulseSpinner /> {/* Spinner */}
+          <PulseSpinner />
         </div>
       ) : (
         <>
@@ -148,24 +171,17 @@ const MedicationCategoriesScreen = () => {
           </div>
 
           {/* Data Table */}
-          {loading ? (
-            <div className="flex justify-center items-center h-64">
-              <PulseSpinner />
-            </div>
-          ) : (
-            <DataTable
-              columns={columns}
-              data={categoriesFilter}
-              customStyles={customStyles}
-              pagination
-              highlightOnHover
-            />
-          )}
+          <DataTable
+            columns={columns}
+            data={categoriesFilter}
+            customStyles={customStyles}
+            pagination
+            highlightOnHover
+          />
         </>
       )}
     </div>
   );
-
 };
 
 export default MedicationCategoriesScreen;

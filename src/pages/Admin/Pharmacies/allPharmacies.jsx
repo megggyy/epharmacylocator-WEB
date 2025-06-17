@@ -26,14 +26,16 @@ const PharmaciesScreen = () => {
   const fetchPharmacies = useCallback(async () => {
     try {
       const response = await axios.get(`${API_URL}pharmacies`);
-      setPharmaciesList(response.data);
-      setPharmaciesFilter(response.data);
+      const reversedData = [...response.data].reverse(); 
+      setPharmaciesList(reversedData);
+      setPharmaciesFilter(reversedData);
     } catch (error) {
       console.error("Error fetching pharmacies:", error);
     } finally {
       setLoading(false);
     }
   }, []);
+
 
   useEffect(() => {
     fetchPharmacies();

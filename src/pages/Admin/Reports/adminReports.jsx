@@ -330,7 +330,7 @@ const AdminReports = () => {
 
   y = doc.lastAutoTable.finalY + 10;
 
-  doc.text("Expiring Pharmacies (within 30 days)", 10, y);
+  doc.text("Expiring Pharmacies", 10, y);
   y += 8;
 
   if (filteredPharmacies?.length > 0) {
@@ -717,7 +717,7 @@ const AdminReports = () => {
                 ))}
               </Pie>
               <Tooltip />
-              <Legend layout="horizontal" verticalAlign="bottom" align="center" />
+            
             </PieChart>
           )}
         </ResponsiveContainer>

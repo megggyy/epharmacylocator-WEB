@@ -23,18 +23,21 @@ const UserTableScreen = () => {
     }
   };
 
-  const fetchUsers = useCallback(async () => {
-    try {
-      const response = await axios.get(`${API_URL}users`);
-      const customers = response.data.filter(user => user.role === 'Customer'); // Filter users with role 'customer'
-      setUserList(customers);
-      setUserFilter(customers);
-    } catch (error) {
-      console.error("Error fetching users:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+const fetchUsers = useCallback(async () => {
+  try {
+    const response = await axios.get(`${API_URL}users`);
+    const customers = response.data
+      .filter(user => user.role === 'Customer')
+      .reverse(); 
+    setUserList(customers);
+    setUserFilter(customers);
+  } catch (error) {
+    console.error("Error fetching users:", error);
+  } finally {
+    setLoading(false);
+  }
+}, []);
+
 
   useEffect(() => {
     fetchUsers();

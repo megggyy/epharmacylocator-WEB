@@ -16,56 +16,63 @@ const MedicationScreen = () => {
   const [medicationsFilter, setMedicationsFilter] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchMedications = useCallback(async () => {
-    try {
-      const response = await axios.get(`${API_URL}medicine/${state.user.userId}`);
-      setMedicationsList(response.data);
-      setMedicationsFilter(response.data);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching medications:", error);
-      setLoading(false);
-    }
+const fetchMedications = useCallback(async () => {
+  try {
+    const response = await axios.get(
+      `${API_URL}medicine/${state.user.userId}?includeDeleted=true`
+    );
 
-    fetchMedications();
+    const reversed = [...response.data].reverse(); // reverse the array order
 
-      const interval = setInterval(fetchMedications, 5000);
-  
-      return () => {
-        clearInterval(interval); 
-        fetchMedications()
-        setLoading(true);
-      };
-  }, [state.user.userId]);
+    setMedicationsList(reversed);
+    setMedicationsFilter(reversed);
+    setLoading(false);
+  } catch (error) {
+    console.error("Error fetching medications:", error);
+    setLoading(false);
+  }
+}, [state.user.userId]);
+
 
   useEffect(() => {
     fetchMedications();
   }, [fetchMedications]);
 
-  const searchMedications = (text) => {
-    if (text === "") {
-      setMedicationsFilter(medicationsList);
-    } else {
-      setMedicationsFilter(
-        medicationsList.filter((i) =>
-          [i.medicine?.genericName, i.medicine?.brandName] // Ensure you're accessing the correct structure
-            .some((field) => field?.toLowerCase().includes(text.toLowerCase()))
-        )
-      );
+    const searchMedications = (text) => {
+      if (text === "") {
+        setMedicationsFilter(medicationsList);
+      } else {
+        setMedicationsFilter(
+          medicationsList.filter((i) =>
+            [i.medicine?.genericName, i.medicine?.brandName].some((field) =>
+              field?.toLowerCase().includes(text.toLowerCase())
+            )
+          )
+        );
+      }
+    };
+
+
+  const handleToggleDelete = async (id, isDeleted) => {
+    const confirm = window.confirm(
+      isDeleted ? "Restore this medicine?" : "Delete this medicine?"
+    );
+    if (!confirm) return;
+
+    try {
+      const action = isDeleted ? "restore" : "soft-delete";
+      await axios.put(`${API_URL}medicine/${action}/${id}`);
+      toast.success(`Medicine ${isDeleted ? "restored" : "deleted"} successfully`);
+
+      // ✅ Await fetch and show loading
+      setLoading(true);
+      await fetchMedications();
+    } catch (err) {
+      console.error("Toggle delete error:", err);
+      toast.error("Failed to update medicine");
     }
   };
 
-  const handleDelete = async (medicationId) => {
-    try {
-      await axios.delete(`${API_URL}medicine/delete/${medicationId}`);
-      setMedicationsList(medicationsList.filter((med) => med._id !== medicationId));
-      setMedicationsFilter(medicationsFilter.filter((med) => med._id !== medicationId));
-      toast.success("Medication deleted successfully");
-    } catch (error) {
-      console.error("Error deleting medication:", error);
-      toast.error("Failed to delete medication");
-    }
-  };
 
   const columns = [
     {
@@ -85,46 +92,69 @@ const MedicationScreen = () => {
     },
     {
       name: "Stock",
-      selector: (row) => row.expirationPerStock.reduce((sum, exp) => sum + exp.stock, 0),
+      selector: (row) =>
+        row.expirationPerStock.reduce((sum, exp) => sum + exp.stock, 0),
       sortable: true,
     },
     {
-        name: "Actions",
-        cell: (row) => (
-          <div className="flex gap-2">
-            <button
-              className="bg-blue-500 text-white px-2 py-1 rounded"
-              onClick={() => navigate(`/pharmacy-owner/medicines/edit/${row._id}`)}
-            >
-              Edit
-            </button>
-            <button
-              className="bg-green-500 text-white px-2 py-1 rounded"
-              onClick={() => navigate(`/pharmacy-owner/medicines/read/${row._id}`)} // View Button
-            >
-              View
-            </button>
-            <button
-              className="bg-red-500 text-white px-2 py-1 rounded"
-              onClick={() => handleDelete(row._id)}
-            >
-              Delete
-            </button>
-          </div>
-        ),
-      },
-    ];
+      name: "Status",
+      selector: (row) => (row.deleted ? "Deleted" : "Active"),
+      cell: (row) => (
+        <span
+          className={`px-2 py-1 rounded-full text-xs font-semibold ${
+            row.deleted
+              ? "bg-red-200 text-red-700"
+              : "bg-green-200 text-green-700"
+          }`}
+        >
+          {row.deleted ? "Deleted" : "Active"}
+        </span>
+      ),
+    },
+    {
+      name: "Actions",
+      cell: (row) => (
+        <div className="flex gap-2">
+          <button
+            className="bg-blue-500 text-white px-2 py-1 rounded"
+            onClick={() =>
+              navigate(`/pharmacy-owner/medicines/edit/${row._id}`)
+            }
+            disabled={row.deleted}
+          >
+            Edit
+          </button>
+          <button
+            className="bg-green-500 text-white px-2 py-1 rounded"
+            onClick={() =>
+              navigate(`/pharmacy-owner/medicines/read/${row._id}`)
+            }
+          >
+            View
+          </button>
+          <button
+            className={`px-2 py-1 rounded ${
+              row.deleted
+                ? "bg-green-600 text-white"
+                : "bg-red-500 text-white"
+            }`}
+            onClick={() => handleToggleDelete(row._id, row.deleted)}
+          >
+            {row.deleted ? "Restore" : "Delete"}
+          </button>
+        </div>
+      ),
+    },
+  ];
 
   return (
     <div className="p-6">
       {loading ? (
-        <PulseSpinner /> // Replace with your spinner component
+        <PulseSpinner />
       ) : (
         <>
           <div className="flex justify-between items-center mb-4">
-            <div className="flex items-center gap-4">
-              <h1 className="text-2xl font-bold">Your Medicines</h1>
-            </div>
+            <h1 className="text-2xl font-bold">Your Medicines</h1>
             <div className="flex gap-4">
               <input
                 type="text"

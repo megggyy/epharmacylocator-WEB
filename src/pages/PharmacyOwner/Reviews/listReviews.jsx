@@ -22,18 +22,20 @@ const ListReviewsScreen = () => {
     const [averageRating, setAverageRating] = useState(0);
     const { state } = useContext(AuthGlobal);
 
-    const fetchFeedbacks = useCallback(async () => {
-        try {
-            const response = await axios.get(`${API_URL}feedbacks/pharmacy/${state.user.userId}`);
-            setFeedbacks(response.data);
-            calculateAverageRating(response.data);
-            setFilteredFeedbacks(response.data);
-        } catch (error) {
-            console.error("Error fetching feedback details:", error);
-        } finally {
-            setLoading(false);
-        }
-    }, [state.user.userId]);
+const fetchFeedbacks = useCallback(async () => {
+    try {
+        const response = await axios.get(`${API_URL}feedbacks/pharmacy/${state.user.userId}`);
+        const reversedData = [...response.data].reverse(); // Reverse to show newest first
+        setFeedbacks(reversedData);
+        calculateAverageRating(reversedData);
+        setFilteredFeedbacks(reversedData);
+    } catch (error) {
+        console.error("Error fetching feedback details:", error);
+    } finally {
+        setLoading(false);
+    }
+}, [state.user.userId]);
+
 
     useEffect(() => {
         fetchFeedbacks();

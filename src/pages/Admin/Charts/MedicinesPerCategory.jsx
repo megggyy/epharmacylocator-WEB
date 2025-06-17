@@ -65,7 +65,6 @@ const MedicinePieChart = () => {
               ))}
             </Pie>
             <Tooltip />
-            <Legend layout="horizontal" verticalAlign="bottom" align="center" />
           </PieChart>
         )}
       </div>

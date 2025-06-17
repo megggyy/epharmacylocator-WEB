@@ -20,14 +20,16 @@ const MedicationScreen = () => {
     try {
       setLoading(true);
       const response = await axios.get(`${API_URL}medicine`);
-      setMedicationsList(response.data);
-      setMedicationsFilter(response.data); // Ensure both lists are updated
+      const reversedMedications = response.data.reverse(); 
+      setMedicationsList(reversedMedications);
+      setMedicationsFilter(reversedMedications); 
     } catch (error) {
       console.error("Error fetching medications:", error);
     } finally {
       setLoading(false);
     }
   }, [state.user.userId]);
+
 
   useEffect(() => {
     fetchMedications();
