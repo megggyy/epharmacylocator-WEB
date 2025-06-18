@@ -24,7 +24,8 @@ const PharmacyDetails = () => {
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
   const [editingReview, setEditingReview] = useState(null);
-  const [showReviewForm, setShowReviewForm] = useState(true);
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [replies, setReplies] = useState({});
   const [shareCustomerInfo, setShareCustomerInfo] = useState(true);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('shop');
@@ -32,6 +33,7 @@ const PharmacyDetails = () => {
   const [filteredMedicines, setFilteredMedicines] = useState([]);
   const [categories, setCategories] = useState([]);
   const { state } = useContext(AuthGlobal);
+  
 
   const MapResize = () => {
     const map = useMap();
@@ -87,14 +89,27 @@ setCategories(categoryList);
       }
     };
 
-    const fetchFeedbacks = async () => {
-      try {
-        const response = await axios.get(`${API_URL}feedbacks/${id}`);
-        setFeedbacks(response.data);
-      } catch (error) {
-        console.error("Error fetching feedbacks:", error);
-      }
-    };
+  const fetchFeedbacks = async () => {
+    try {
+      const response = await axios.get(`${API_URL}feedbacks/${id}`);
+      const data = response.data;
+      setFeedbacks(data);
+    } catch (error) {
+      console.error("Error fetching feedbacks:", error?.response?.data || error.message);
+    }
+  };
+
+  const fetchReplies = async () => {
+  try {
+    const response = await axios.get(`${API_URL}feedbacks/fetchReplies`);
+    if (response.data.exists && response.data.replies) {
+      setReplies(response.data.replies);
+    }
+  } catch (error) {
+    console.error("Error fetching pharmacy replies:", error?.response?.data || error.message);
+  }
+};
+
 
     const fetchData = () => {
       Promise.all([
@@ -102,6 +117,7 @@ setCategories(categoryList);
         fetchMedicineStocks(),
         fetchCategoriesWithMedicines(),
         fetchFeedbacks(),
+        fetchReplies(),
       ]).finally(() => setLoading(false));
     };
     fetchData();
@@ -125,24 +141,16 @@ setCategories(categoryList);
   }, [medicationData]);
 
   useEffect(() => {
-    const fetchCustomerFeedbacks = async () => {
-      if (!state.user?.userId) {
-        setShowReviewForm(false);
-        return;
-      }
+  const fetchCustomerFeedbacks = async (id) => {
+    console.log(id);
+    try {
+      const response = await axios.get(`${API_URL}feedbacks/customer/${state.user.userId}?pharmacyId=${id}`);
+      setShowReviewForm(!(response.data?.exists ?? false));
+    } catch (error) {
+      console.error("Error fetching customer feedback:", error?.response?.data || error.message);
+    }
+  };
 
-      try {
-        const response = await axios.get(`${API_URL}feedbacks/customer/${state.user.userId}`);
-
-        if (response.data?.exists) {
-          setShowReviewForm(false);
-        } else {
-          setShowReviewForm(true);
-        }
-      } catch (error) {
-        console.error("Error fetching customer feedback:", error?.response?.data || error.message);
-      }
-    };
     fetchCustomerFeedbacks();
   }, [state.user?.userId]);
 
@@ -227,15 +235,18 @@ setCategories(categoryList);
   };
 
   const deleteReview = async (reviewId) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this review?");
+    if (!confirmDelete) return;
+
     try {
       const response = await axios.delete(`${API_URL}feedbacks/delete/${reviewId}`);
       if (response.status === 200) {
-        toast.success("Review deleted");
+        alert("REVIEW DELETED");
         setShowReviewForm(false);
       }
     } catch (error) {
       console.error("Delete error:", error);
-      toast.error("Failed to delete review");
+      alert("FAILED TO DELETE REVIEW");
     }
   };
 
@@ -472,117 +483,149 @@ setCategories(categoryList);
 
 
       {/* Reviews */}
-      {activeTab === "reviews" && (
-  <div className="bg-white p-8 rounded-2xl shadow-md">
-    <h2 className="text-2xl font-semibold mb-4 text-gray-800">Reviews</h2>
+  {activeTab === "reviews" && (
+    <div className="bg-white p-8 rounded-2xl shadow-md">
+      <h2 className="text-2xl font-semibold mb-4 text-gray-800">Reviews</h2>
 
-    {feedbacks?.length > 0 ? (
-  <ul className="space-y-6">
-    {feedbacks.map((feedback) => (
-      <li key={feedback._id} className="border border-gray-200 rounded-lg p-4 shadow-sm">
-        <div className="flex items-center justify-between mb-2">
-          <div className="font-semibold text-primary-default">
-            {feedback.name ? feedback.customer?.name : "Anonymous"}
-          </div>
-          <StarRating rating={feedback.rating} editable={false} />
-        </div>
-        <p className="text-gray-700">{feedback.comment}</p>
-        {feedback.customer?._id === state.user?.userId && (
-          <div className="flex gap-3 mt-3">
-            <button
-              onClick={() => updateReviewForm(feedback._id)}
-              className="text-blue-600 hover:underline text-sm"
+      {feedbacks?.length > 0 ? (
+        <ul className="space-y-6">
+          {feedbacks.map((feedback) => (
+            <li
+              key={feedback._id}
+              className="border border-gray-200 rounded-lg p-4 shadow-sm"
             >
-              Edit
-            </button>
-            <button
-              onClick={() => deleteReview(feedback._id)}
-              className="text-red-600 hover:underline text-sm"
-            >
-              Delete
-            </button>
-          </div>
+              <div className="flex items-center justify-between mb-2">
+                <div className="font-semibold text-primary-default">
+                  {feedback.name ? feedback.customer?.name : "Anonymous"}
+                </div>
+                <StarRating rating={feedback.rating} editable={false} />
+              </div>
+
+              <p className="text-gray-700">{feedback.comment}</p>
+
+              <p className="text-sm text-gray-500 mt-1">
+                {new Date(feedback.timestamp).toLocaleString("en-US", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                  hour: "numeric",
+                  minute: "2-digit",
+                  hour12: true,
+                })}
+              </p>
+
+              {replies[feedback._id] && replies[feedback._id].length > 0 && (
+                <div className="mt-4 p-3 bg-gray-100 rounded-md">
+                  <p className="font-semibold">Pharmacy Reply:</p>
+                  {replies[feedback._id].map((reply, i) => (
+                    <div key={i} className="mt-2">
+                      <p className="text-gray-800">{reply.comment}</p>
+                      <p className="text-sm text-gray-500">
+                        {new Date(reply.timestamp).toLocaleString("en-US", {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                          hour: "numeric",
+                          minute: "2-digit",
+                          hour12: true,
+                        })}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {feedback.customer?._id === state.user?.userId && (
+                <div className="flex gap-3 mt-3">
+                  <button
+                    onClick={() => updateReviewForm(feedback._id)}
+                    className="text-blue-600 hover:underline text-sm"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => deleteReview(feedback._id)}
+                    className="text-red-600 hover:underline text-sm"
+                  >
+                    Delete
+                  </button>
+                </div>
+              )}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="text-gray-600">No reviews yet.</p>
+      )}
+
+      {/* Display Add Review Button only if the user hasn't reviewed */}
+      {!feedbacks.some((feedback) => feedback.customer?._id === state.user?.userId) &&
+        !showReviewForm && (
+          <button
+            onClick={() => setShowReviewForm(true)}
+            className="mt-6 bg-primary-default text-white px-4 py-2 rounded-md hover:bg-primary-dark"
+          >
+            Add Review
+          </button>
         )}
-      </li>
-    ))}
-  </ul>
-) : (
-  <p className="text-gray-600">No reviews yet.</p>
-)}
 
+      {/* Review Form */}
+      {showReviewForm && (
+        <div className="mt-8">
+          <h3 className="text-lg font-semibold mb-2 text-gray-800">
+            {editingReview ? "Update Your Review" : "Leave a Review"}
+          </h3>
 
-{/* Display Add Review Button only if the user hasn't reviewed */}
-  {!feedbacks.some((feedback) => feedback.customer?._id === state.user?.userId) && !showReviewForm && (
-  <button
-    onClick={() => setShowReviewForm(true)}
-    className="mt-6 bg-primary-default text-white px-4 py-2 rounded-md hover:bg-primary-dark"
-  >
-    Add Review
-  </button>
-)}
+          <div className="mb-2">
+            <StarRating rating={rating} setRating={setRating} editable />
+          </div>
 
-
-    {/* Review Form */}
-    {showReviewForm && (
-      <div className="mt-8">
-        <h3 className="text-lg font-semibold mb-2 text-gray-800">
-          {editingReview ? "Update Your Review" : "Leave a Review"}
-        </h3>
-
-        <div className="mb-2">
-          <StarRating rating={rating} setRating={setRating} editable />
-        </div>
-
-        <textarea
-          className="w-full border border-gray-300 rounded-md p-2 mb-2"
-          rows="4"
-          placeholder="Write your comment here..."
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-        />
-
-        <div className="mb-2 flex items-center gap-2">
-          <input
-            type="checkbox"
-            checked={shareCustomerInfo}
-            onChange={() => {
-              setShareCustomerInfo(!shareCustomerInfo);
-            }}
-            className="w-4 h-4"
+          <textarea
+            className="w-full border border-gray-300 rounded-md p-2 mb-2"
+            rows="4"
+            placeholder="Write your comment here..."
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
           />
-          <label className="text-sm text-gray-600">Display my name</label>
-        </div>
 
-        <p className="text-gray-700 mb-2">
-          Posting as:{" "}
-          <span className="font-semibold">
-            {shareCustomerInfo ? (state.user?.name || "Anonymous") : "Anonymous"}
-          </span>
-        </p>
+          <div className="mb-2 flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={shareCustomerInfo}
+              onChange={() => {
+                setShareCustomerInfo(!shareCustomerInfo);
+              }}
+              className="w-4 h-4"
+            />
+            <label className="text-sm text-gray-600">Display my name</label>
+          </div>
 
-        <div className="flex gap-2">
-          <button
-            onClick={() => (editingReview ? updateReview() : addReview(pharmacy._id))}
-            className="bg-primary-default text-white px-4 py-2 rounded-md hover:bg-primary-dark"
-          >
-            {editingReview ? "Update Review" : "Submit Review"}
-          </button>
-          <button
-            onClick={() => {
-              setShowReviewForm(false);
-              setEditingReview(false);
-              setComment("");
-              setRating(0);
-            }}
-            className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400"
-          >
-            Cancel
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={() =>
+                editingReview ? updateReview() : addReview(pharmacy._id)
+              }
+              className="bg-primary-default text-white px-4 py-2 rounded-md hover:bg-primary-dark"
+            >
+              {editingReview ? "Update Review" : "Submit Review"}
+            </button>
+            <button
+              onClick={() => {
+                setShowReviewForm(false);
+                setEditingReview(false);
+                setComment("");
+                setRating(0);
+              }}
+              className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400"
+            >
+              Cancel
+            </button>
+          </div>
         </div>
-      </div>
-    )}
-  </div>
-)}
+      )}
+    </div>
+  )}
+
     </div>
   );
 };
