@@ -133,75 +133,99 @@ const MedicinePage = () => {
 
         {/* Medications Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {paginatedMedications.map((med) => (
-            <div
-              key={med._id}
-              className="bg-white p-5 rounded-lg shadow-md hover:shadow-lg transition transform hover:-translate-y-1"
-            >
-              <h3 className="text-lg font-semibold text-gray-800 mb-1">
-                {med.brandName}
-              </h3>
-              <p className="text-sm text-gray-600 italic">{med.genericName}</p>
-              <p className="text-sm text-gray-700">
-                💊 Dosage: {med.dosageStrength || "N/A"}
-              </p>
-              <p className="text-sm text-gray-700">
-                📌 Form: {med.dosageForm || "N/A"}
-              </p>
-              <p className="text-sm text-gray-700">
-                📂 Classification: {med.classification || "N/A"}
-              </p>
-              <p className="text-sm text-gray-700">
-                📋 Category: {med.categoryNames || "No Category"}
-              </p>
+      {paginatedMedications.map((med) => (
+        <div
+          key={med._id}
+          className="bg-white p-5 rounded-lg shadow-md hover:shadow-lg transition transform hover:-translate-y-1"
+        >
+          <h3 className="text-lg font-semibold text-gray-800 mb-1">
+            {med.brandName}
+          </h3>
+          <p className="text-sm text-gray-600 italic">{med.genericName}</p>
+          <p className="text-sm text-gray-700">
+            💊 Dosage: {med.dosageStrength || "N/A"}
+          </p>
+          <p className="text-sm text-gray-700">
+            📌 Form: {med.dosageForm || "N/A"}
+          </p>
+          <p className="text-sm text-gray-700">
+            📂 Classification: {med.classification || "N/A"}
+          </p>
+          <p className="text-sm text-gray-700">
+            📋 Category: {med.categoryNames || "No Category"}
+          </p>
 
-              <Link to={`/customer/MedicationDetails/${encodeURIComponent(med.genericName)}`}>
-                <button className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
-                  View Availability
-                </button>
-              </Link>
-            </div>
-          ))}
+          {/* ✅ Price */}
+          <p className="text-sm text-gray-700">
+            💰 Price: {med.price != null && med.price !== ""
+              ? `₱${parseFloat(med.price).toFixed(2)}`
+              : "Price not indicated"}
+          </p>
+
+          <Link to={`/customer/MedicationDetails/${encodeURIComponent(med.genericName)}`}>
+            <button className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+              View Availability
+            </button>
+          </Link>
+        </div>
+      ))}
+
         </div>
 
         {/* Pagination Controls */}
-        {totalPages > 1 && (
-          <div className="flex justify-center mt-6">
-            <button
-              className={`px-4 py-2 mx-1 text-sm font-medium text-white bg-blue-500 rounded-md ${
-                currentPage === 1 ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-600"
-              }`}
-              disabled={currentPage === 1}
-              onClick={() => setCurrentPage(currentPage - 1)}
-            >
-              Previous
-            </button>
+{/* Pagination Controls */}
+{totalPages > 1 && (
+  <div className="flex justify-center mt-6 flex-wrap gap-1">
+    <button
+      className={`px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-md ${
+        currentPage === 1 ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-600"
+      }`}
+      disabled={currentPage === 1}
+      onClick={() => setCurrentPage(currentPage - 1)}
+    >
+      Previous
+    </button>
 
-            {Array.from({ length: totalPages }, (_, i) => (
-              <button
-                key={i}
-                className={`px-4 py-2 mx-1 text-sm font-medium rounded-md ${
-                  currentPage === i + 1
-                    ? "bg-blue-600 text-white"
-                    : "bg-white text-blue-600 border border-blue-500 hover:bg-blue-100"
-                }`}
-                onClick={() => setCurrentPage(i + 1)}
-              >
-                {i + 1}
-              </button>
-            ))}
+    {(() => {
+      const visiblePages = 5; // max number of pagination buttons to show
+      let startPage = Math.max(1, currentPage - Math.floor(visiblePages / 2));
+      let endPage = startPage + visiblePages - 1;
 
-            <button
-              className={`px-4 py-2 mx-1 text-sm font-medium text-white bg-blue-500 rounded-md ${
-                currentPage === totalPages ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-600"
-              }`}
-              disabled={currentPage === totalPages}
-              onClick={() => setCurrentPage(currentPage + 1)}
-            >
-              Next
-            </button>
-          </div>
-        )}
+      if (endPage > totalPages) {
+        endPage = totalPages;
+        startPage = Math.max(1, endPage - visiblePages + 1);
+      }
+
+      return Array.from({ length: endPage - startPage + 1 }, (_, i) => {
+        const page = startPage + i;
+        return (
+          <button
+            key={page}
+            className={`px-4 py-2 text-sm font-medium rounded-md ${
+              currentPage === page
+                ? "bg-blue-600 text-white"
+                : "bg-white text-blue-600 border border-blue-500 hover:bg-blue-100"
+            }`}
+            onClick={() => setCurrentPage(page)}
+          >
+            {page}
+          </button>
+        );
+      });
+    })()}
+
+    <button
+      className={`px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-md ${
+        currentPage === totalPages ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-600"
+      }`}
+      disabled={currentPage === totalPages}
+      onClick={() => setCurrentPage(currentPage + 1)}
+    >
+      Next
+    </button>
+  </div>
+)}
+
       </main>
     </div>
   );

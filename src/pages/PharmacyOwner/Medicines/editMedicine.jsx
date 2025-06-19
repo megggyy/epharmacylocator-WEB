@@ -15,27 +15,34 @@ export default function EditMedicationScreen() {
   const [expirationDates, setExpirationDates] = useState({});
   const [category, setCategory] = useState("");
   const [isCategory, setIsCategory] = useState(true);
+  const [price, setPrice] = useState('');
 
   useEffect(() => {
-    const fetchMedication = async () => {
-      try {
-        const response = await axios.get(`${API_URL}medicine/read/${id}`);
-        setMedicationData(response.data);
+ const fetchMedication = async () => {
+  try {
+    const response = await axios.get(`${API_URL}medicine/read/${id}`);
+    setMedicationData(response.data);
 
-        const initialStocks = {};
-        const initialExpirations = {};
-        response.data.expirationPerStock.forEach((exp, index) => {
-          initialStocks[index] = exp.stock.toString();
-          const parsedDate = new Date(exp.expirationDate);
-          initialExpirations[index] = !isNaN(parsedDate) ? parsedDate : null;
-        });
+    const initialStocks = {};
+    const initialExpirations = {};
+    response.data.expirationPerStock.forEach((exp, index) => {
+      initialStocks[index] = exp.stock.toString();
+      const parsedDate = new Date(exp.expirationDate);
+      initialExpirations[index] = !isNaN(parsedDate) ? parsedDate : null;
+    });
 
-        setStocks(initialStocks);
-        setExpirationDates(initialExpirations);
-      } catch (error) {
-        console.error("Error fetching medication:", error.response?.data || error.message);
-      }
-    };
+    setStocks(initialStocks);
+    setExpirationDates(initialExpirations);
+    setPrice(
+      response.data.price !== undefined && response.data.price !== null
+        ? response.data.price.toString()
+        : ''
+    );
+  } catch (error) {
+    console.error("Error fetching medication:", error.response?.data || error.message);
+  }
+};
+
 
     if (id) fetchMedication();
   }, [id]);
@@ -56,19 +63,17 @@ export default function EditMedicationScreen() {
 
   const handleConfirm = async () => {
     const updatedData = Object.keys(stocks).map((index) => {
-      const rawDate = expirationDates[index]; // can be null or date string
-      const isoDate = rawDate
-        ? new Date(rawDate).toISOString().split("T")[0]
-        : null; // leave as null if empty
-    
+      const rawDate = expirationDates[index];
+      const isoDate = rawDate ? new Date(rawDate).toISOString().split("T")[0] : null;
       const stockValue = parseInt(stocks[index], 10) || 0;
-    
       return { expirationDate: isoDate, stock: stockValue };
     });
-    
 
     try {
-      await axios.put(`${API_URL}medicine/update/${id}`, { expirationPerStock: updatedData });
+      await axios.put(`${API_URL}medicine/update/${id}`, {
+        expirationPerStock: updatedData,
+        price: price.trim() === '' ? null : parseFloat(price),
+      });
       toast.success("The medication has been updated successfully.");
       navigate("/pharmacy-owner/medicines");
     } catch (error) {
@@ -176,6 +181,18 @@ export default function EditMedicationScreen() {
             readOnly
           />
         </div>
+
+    {/* Price Input */}
+    <div className="mb-4">
+      <label className="block text-black-700 font-bold mb-2">Price (₱)</label>
+      <input
+        type="number"
+        value={price}
+        onChange={(e) => setPrice(e.target.value)}
+        placeholder="Enter price"
+        className="w-full p-3 border rounded-lg"
+      />
+    </div>
 
         {/* Expiration Date + Stock (Dynamic Items) */}
         <div className="mb-4">

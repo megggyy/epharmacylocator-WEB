@@ -96,6 +96,12 @@ const FilterMedicinesByCategoryPerPharmacy = () => {
                   <p className="text-gray-700">Classification: {medDetails.classification || 'N/A'}</p>
                   <p className="text-gray-700">Category: {categoryNames}</p>
                   <p className="text-gray-700">Stock: {totalStock > 0 ? `${totalStock} in stock` : 'Out of Stock'}</p>
+                   {/* ✅ Price Display */}
+                    <p className="text-gray-700">
+                      Price: {item.price != null && item.price !== ''
+                        ? `₱${parseFloat(item.price).toFixed(2)}`
+                        : 'Price not indicated'}
+                    </p>
                   <p className="text-sm text-red-600 mt-2">
                     (Last updated on {item.timeStamps ? new Date(item.timeStamps).toLocaleString() : 'No Date Available'})
                   </p>

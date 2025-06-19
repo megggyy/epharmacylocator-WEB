@@ -26,6 +26,11 @@ const CreateMedicines = () => {
   const [expirationDates, setExpirationDates] = useState({});
   const [stockInputs, setStockInputs] = useState({});
   const { state } = useContext(AuthGlobal);
+  const [prices, setPrices] = useState({});
+
+  const handlePriceChange = (index, value) => {
+    setPrices((prev) => ({ ...prev, [index]: value }));
+  };
 
   useEffect(() => {
     fetchGenericNames()
@@ -260,6 +265,7 @@ const CreateMedicines = () => {
         classification: selectedMedicine.classification,
         category: selectedMedicine.category,
         description: selectedMedicine.description,
+        price: prices[index]?.trim() === '' ? null : parseFloat(prices[index]),
         expirationPerStock: stockEntries,
         pharmacy: state.user.userId,
       });
@@ -373,34 +379,45 @@ const CreateMedicines = () => {
               {selectedMedicineIndex === index && (
                 <div className="stock-section">
                   {(items[index] || []).map((subIndex) => (
-                    <div key={`${index}-${subIndex}`} className="stock-row">
-                      <div className="input-group">
-                        <label>Expiration Date</label>
-                        <DatePicker
-                          selected={expirationDates[`${index}-${subIndex}`] || null}
-                          onChange={(date) => handleExpirationChange(`${index}-${subIndex}`, null, date)}
-                          dateFormat="MMMM dd, yyyy"
-                          placeholderText="Select Date"
-                          className="input"
-                        />
-                      </div>
-                      <div className="input-group">
-                        <label>Stock</label>
-                        <input
-                          type="number"
-                          placeholder="Enter stock"
-                          value={stockInputs[`${index}-${subIndex}`] || ""}
-                          onChange={(e) => handleStockChange(`${index}-${subIndex}`, e.target.value)}
-                          className="input"
-                        />
-                      </div>
-                      <button
-                        onClick={() => removeItem(index, subIndex)}
-                        className="delete-btn"
-                      >
-                        ❌
-                      </button>
-                    </div>
+<div className="stock-row">
+  <div className="input-group">
+    <label>Expiration Date</label>
+    <DatePicker
+      selected={expirationDates[`${index}-${subIndex}`] || null}
+      onChange={(date) =>
+        handleExpirationChange(`${index}-${subIndex}`, null, date)
+      }
+      dateFormat="MMMM dd, yyyy"
+      placeholderText="Select Date"
+      className="input"
+    />
+  </div>
+  <div className="input-group">
+    <label>Stock</label>
+    <input
+      type="number"
+      placeholder="Enter stock"
+      value={stockInputs[`${index}-${subIndex}`] || ""}
+      onChange={(e) => handleStockChange(`${index}-${subIndex}`, e.target.value)}
+      className="input"
+    />
+  </div>
+  <div className="input-group">
+    <label>Price</label>
+    <input
+      type="number"
+      step="0.01"
+      placeholder="Enter price"
+      value={prices[index] || ""}
+      onChange={(e) => handlePriceChange(index, e.target.value)}
+      className="input"
+    />
+  </div>
+  <button onClick={() => removeItem(index, subIndex)} className="delete-btn">
+    ❌
+  </button>
+</div>
+
                   ))}
 
                   <button

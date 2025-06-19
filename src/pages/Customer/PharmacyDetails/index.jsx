@@ -439,6 +439,13 @@ setCategories(categoryList);
                         </p>
                       </div>
 
+                      {/* 💰 Price Section */}
+                  <p className="mt-2 text-sm text-gray-700 font-medium">
+                  💰 Price: {!isNaN(parseFloat(medication.price)) && medication.price !== null
+                    ? `₱${parseFloat(medication.price).toFixed(2)}`
+                    : "Price not indicated"}
+                </p>
+
                       {/* Last Updated */}
                       <p className="text-xs text-gray-400 mt-2">
                         (Stock updated on{" "}

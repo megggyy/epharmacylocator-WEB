@@ -107,6 +107,16 @@ export default function ReadMedicationScreen() {
           </p>
         </div>
 
+{/* ✅ Price Display */}
+<div className="mb-4">
+  <p className="font-semibold text-xl mb-2">Price:</p>
+  <p className="bg-gray-200 rounded-lg p-4 text-justify">
+    {medicationData.price != null && medicationData.price !== ''
+      ? `₱${parseFloat(medicationData.price).toFixed(2)}`
+      : 'Price not indicated'}
+  </p>
+</div>
+
         {/* Expiration Dates + Stock */}
         <div className="mb-4">
           <p className="font-semibold text-xl mb-2">Expiration & Stock:</p>

@@ -84,10 +84,19 @@ export default function ReadMedicationScreen() {
         <p className="label">Classification:</p>
         <p className="value">{medicine.classification || "N/A"}</p>
 
-        <p className="label">Category:</p>
-        <p className="value" onClick={handleCategoryClick}>
-          {isCategory ? category || "No Category" : medicine?.description || "No Description"}
-        </p>
+      <p className="label">Category:</p>
+      <p className="value" onClick={handleCategoryClick}>
+        {isCategory ? category || "No Category" : medicine?.description || "No Description"}
+      </p>
+
+      {/* ✅ Price Section */}
+      <p className="label">Price:</p>
+      <p className="value">
+        {medication.price != null && medication.price !== ""
+          ? `₱${parseFloat(medication.price).toFixed(2)}`
+          : "Price not indicated"}
+      </p>
+
       </div>
 
       <div className="pharmacy-container">
