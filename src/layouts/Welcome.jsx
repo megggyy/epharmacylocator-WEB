@@ -309,7 +309,7 @@ export default function CustomerWelcome() {
         <h3 className="text-lg font-semibold text-primary-default">{medication.brandName}</h3>
         <p className="text-gray-600 text-sm italic">({medication.genericName})</p>
         <p className="text-gray-500 text-sm">Category: {medication.category.map(cat => cat.name).join(" / ")}</p>
-        <Link to={`/MedicationDetails/${medication._id}`}>
+        <Link to={`/MedicationDetails/${medication.genericName}`}>
           <button className="mt-4 bg-primary-variant text-white px-4 py-2 rounded-lg shadow hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300">
             View Availability
           </button>

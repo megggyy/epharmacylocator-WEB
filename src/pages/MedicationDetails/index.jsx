@@ -6,6 +6,9 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import axios from "axios";
 import { API_URL } from "../../env";
+import PulseSpinner from "../../assets/common/spinner";
+import { IoPricetagOutline } from "react-icons/io5";
+
 
 // Fix Leaflet Marker Icon issue
 delete L.Icon.Default.prototype._getIconUrl;
@@ -33,7 +36,7 @@ const MedicationDetails = () => {
       axios
         .get(`${API_URL}medicine/available/${name}`)
         .then((response) => {
-          setMedications(response.data);
+          setMedications(response.data.data); // ✅ Access the actual array
           setLoading(false);
         })
         .catch((error) => {
@@ -44,11 +47,7 @@ const MedicationDetails = () => {
   }, [name]);
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        <div className="text-xl text-blue-500">Loading...</div>
-      </div>
-    );
+    return <PulseSpinner />;
   }
 
   if (!medications || medications.length === 0) {
@@ -66,8 +65,6 @@ const MedicationDetails = () => {
     return `${month} ${day}, ${year}`;
   };
 
-  const { name: medicationName } = medications[0];
-
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Header Section */}
@@ -78,7 +75,7 @@ const MedicationDetails = () => {
         >
           <IoArrowBack />
         </button>
-        <h1 className="text-2xl font-bold mx-auto">{medicationName}</h1>
+        <h1 className="text-2xl font-bold mx-auto text-primary-default">{name}</h1>
       </div>
 
       <div className="p-6 space-y-6">
@@ -128,16 +125,21 @@ const MedicationDetails = () => {
                     <p className="text-green-600">{medication.stock} in stock</p>
                     <p className="text-black italic">
                       (Last updated on {medication.timeStamps ? formatDateTime(new Date(medication.timeStamps)) : 'No Date Available'})</p>
-
                   </div>
+
+              <div className="flex items-center space-x-2">
+                <IoPricetagOutline size={18} className="text-gray-500" />
+                <p className="text-gray-700">
+                  {medication.price != null && medication.price !== ""
+                    ? `₱${parseFloat(medication.price).toFixed(2)}`
+                    : "Price not Indicated"}
+                </p>
+              </div>
 
                   {/* Map Section */}
                   <div className="w-full h-64 rounded-lg overflow-hidden">
                     <MapContainer
-                      center={[
-                        parseFloat(location.latitude) || 0,
-                        parseFloat(location.longitude) || 0,
-                      ]}
+                      center={[parseFloat(location.latitude) || 0, parseFloat(location.longitude) || 0]}
                       zoom={15}
                       style={{ height: "100%", width: "100%" }}
                     >
@@ -147,16 +149,23 @@ const MedicationDetails = () => {
                         attribution="&copy; OpenStreetMap contributors"
                       />
                       <Marker
-                        position={[
-                          parseFloat(location.latitude) || 0,
-                          parseFloat(location.longitude) || 0,
-                        ]}
+                        position={[parseFloat(location.latitude) || 0, parseFloat(location.longitude) || 0]}
                       >
                         <Popup>
                           {userInfo.name || "Pharmacy"}
                         </Popup>
                       </Marker>
                     </MapContainer>
+                  </div>
+
+                  {/* View Pharmacy Button */}
+                  <div className="flex justify-center">
+                    <button
+                      onClick={() => navigate(`/PharmacyDetails/${medication.pharmacy._id}`)} // Adjust this route as needed
+                      className="bg-primary-variant text-white py-2 px-6 rounded-lg hover:bg-blue-700"
+                    >
+                      View Pharmacy
+                    </button>
                   </div>
                 </div>
               );

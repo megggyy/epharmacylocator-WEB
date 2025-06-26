@@ -86,6 +86,8 @@ import ListReviewsScreen from "./pages/PharmacyOwner/Reviews/listReviews";
 import PharmacyReports from "./pages/PharmacyOwner/Reports/pharmacyOwnerReports";
 import PharmacyTermsAndConditions from "./pages/PharmacyOwner/TermsAndConditions/termsAndConditions";
 import PharmacyFAQs from "./pages/PharmacyOwner/TermsAndConditions/FAQs";
+import ViewPharmacyMedicineGuest from "./pages/ViewPharmacyMedicine";
+import FilterMedicinesByCategoryPerPharmacyGuest from "./pages/FilterMedicineByCategoryPerPharmacy";
 
 const MOBILE_BREAKPOINT = 767;
 const router = createBrowserRouter(
@@ -192,6 +194,22 @@ const router = createBrowserRouter(
           element={
             <UnprotectedRoute>
               <CategoryFilterMedications />
+            </UnprotectedRoute>
+          }
+        />
+           <Route
+          path="ViewPharmacyMedicine"
+          element={
+            <UnprotectedRoute>
+              <ViewPharmacyMedicineGuest />
+            </UnprotectedRoute>
+          }
+        />
+        <Route
+          path="pharmacyCategory"
+          element={
+            <UnprotectedRoute>
+              <FilterMedicinesByCategoryPerPharmacyGuest />
             </UnprotectedRoute>
           }
         />
