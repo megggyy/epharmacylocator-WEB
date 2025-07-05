@@ -20,7 +20,13 @@ export default function PharmacyOwnerSidebar() {
       {/* Logo and Admin Info */}
       <div className="px-6 py-4">
         <div className="flex flex-col items-center">
-          <img src={logo} alt="Admin Avatar" className="w-14 h-14 full mb-2" />
+          <NavLink to="/pharmacy-owner">
+            <img
+              src={logo}
+              alt="Admin Avatar"
+              className="w-14 h-14 cursor-pointer mb-2"
+              />
+            </NavLink>
         </div>
       </div>
 

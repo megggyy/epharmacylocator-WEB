@@ -103,23 +103,31 @@ export default function ReadMedicationScreen() {
         <h2>LIST OF PHARMACIES</h2>
       </div>
 
-      {pharmacy ? (
-        <div className="info-container">
+    {Array.isArray(medicationData) && medicationData.length > 0 ? (
+      medicationData.map((entry, idx) => (
+        <div key={idx} className="info-container mt-4">
           <div className="details-container">
             <p className="label">Name:</p>
-            <p className="value">{pharmacy.userInfo?.name || "N/A"}</p>
+            <p className="value">{entry.pharmacy?.userInfo?.name || "N/A"}</p>
 
             <p className="label">Location:</p>
             <p className="value">
-              {`${pharmacy.userInfo?.street}, ${pharmacy.userInfo?.barangay}, ${pharmacy.userInfo?.city}`}
+              {`${entry.pharmacy?.userInfo?.street}, ${entry.pharmacy?.userInfo?.barangay}, ${entry.pharmacy?.userInfo?.city}`}
             </p>
 
             <p className="label">Contact:</p>
-            <p className="value">{pharmacy.userInfo?.contactNumber || "N/A"}</p>
+            <p className="value">{entry.pharmacy?.userInfo?.contactNumber || "N/A"}</p>
 
             <p className="label">Availability:</p>
             <p className="value">
-              {pharmacy.businessDays || "N/A"} from {pharmacy.openingHour || "N/A"} - {pharmacy.closingHour || "N/A"}
+              {entry.pharmacy?.businessDays || "N/A"} from {entry.pharmacy?.openingHour || "N/A"} - {entry.pharmacy?.closingHour || "N/A"}
+            </p>
+
+            <p className="label">Price:</p>
+            <p className="value">
+              {entry.price != null && entry.price !== ""
+                ? `₱${parseFloat(entry.price).toFixed(2)}`
+                : "Price not indicated"}
             </p>
 
             <div className="expiration-stock">
@@ -127,16 +135,16 @@ export default function ReadMedicationScreen() {
               <p className="label">Stock:</p>
             </div>
 
-            {medication.expirationPerStock?.length > 0 ? (
-              medication.expirationPerStock.map((exp, index) => (
+            {entry.expirationPerStock?.length > 0 ? (
+              entry.expirationPerStock.map((exp, index) => (
                 <div key={index} className="expiration-stock">
                   <p className="value">
                     {exp?.expirationDate
                       ? new Date(exp.expirationDate).toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      })
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        })
                       : "No Expiration Date"}
                   </p>
                   <p className="value">{exp.stock}</p>
@@ -147,9 +155,10 @@ export default function ReadMedicationScreen() {
             )}
           </div>
         </div>
-      ) : (
-        <p className="value">No Pharmacy Data</p>
-      )}
+      ))
+    ) : (
+      <p className="value">No Pharmacy Data</p>
+    )}
     </div>
   );
 }

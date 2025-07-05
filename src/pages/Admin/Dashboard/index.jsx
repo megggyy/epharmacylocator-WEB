@@ -42,13 +42,12 @@ const Dashboard = () => {
   
           const pendingPharmacies = pharmaciesRes.data.filter((pharmacy) => pharmacy?.approved === false);
   
-          const uniqueMedicines = [...new Set(medicinesRes.data.map((med) => med.name))];
           const scannedPrescriptions = prescriptionRes.data?.totalPrescriptions || 0;
           setCounts({
             users: usersRes.data.length,
             pharmacies: pharmaciesRes.data.length,
             categories: categoriesRes.data.length,
-            medicines: uniqueMedicines.length,
+            medicines: medicinesRes.data.length,
             pendingPharmacies: pendingPharmacies.length,
             scannedPrescriptions
           });

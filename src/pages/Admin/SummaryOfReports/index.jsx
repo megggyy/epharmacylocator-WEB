@@ -275,7 +275,7 @@ const SummaryOfReports = () => {
                   ))}
                 </Pie>
                 <Tooltip />
-                <Legend layout="horizontal" verticalAlign="bottom" align="center" />
+                {/* <Legend layout="horizontal" verticalAlign="bottom" align="center" /> */}
               </PieChart>
             )}
           </ResponsiveContainer>

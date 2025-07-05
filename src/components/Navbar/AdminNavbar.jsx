@@ -24,9 +24,9 @@ export default function Navbar() {
     <div className="navbar bg-primary-t3 text-primary px-4 py-2 shadow-md flex justify-between items-center">
       {/* Logo and Title */}
       <div className="flex items-center space-x-2">
-        <Link to="/" className="flex items-center space-x-2">
-          <span className="text-lg font-bold text-primary">ePharmacy Locator</span>
-        </Link>
+      <Link to="/admin" className="flex items-center space-x-2">
+      <span className="text-lg font-bold text-primary">ePharmacy Locator</span>
+    </Link>
       </div>
 
       {/* Right Section */}

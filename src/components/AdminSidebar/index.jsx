@@ -20,11 +20,13 @@ export default function AdminSidebar() {
       {/* Logo and Admin Info */}
       <div className="px-6 py-4">
         <div className="flex flex-col items-center">
-          <img
-            src={logo}
-            alt="Admin Avatar"
-            className="w-14 h-14 full mb-2"
-          />
+          <NavLink to="/admin">
+            <img
+              src={logo}
+              alt="Admin Avatar"
+              className="w-14 h-14 cursor-pointer mb-2"
+            />
+          </NavLink>
         </div>
       </div>
 
@@ -124,37 +126,8 @@ export default function AdminSidebar() {
             </li>
           ))}
         </ul>
-
-    {/* Divider */}
     <hr className="my-4 border-primary-default" />
 
-    {/* Other Links */}
-    <h6 className="px-6 py-2 text-sm font-bold uppercase text-primary-t3">
-      Others
-    </h6>
-    <ul className="space-y-1 px-4">
-      {[
-        { label: "Settings", link: "/admin/settings" },
-        { label: "FAQs", link: "/admin/faqs" },
-        { label: "", link: "/admin/faqs" },
-      ].map((item, index) => (
-        <li key={index}>
-          <NavLink
-            to={item.link}
-            className={({ isActive }) =>
-              `flex items-center gap-3 py-2 px-4 rounded-lg transition-all ${
-                isActive
-                  ? "bg-primary-t2 text-black font-bold"
-                  : "hover:bg-primary-default text-white"
-              }`
-            }
-          >
-            <i className="fas fa-clipboard-list text-lg"></i>
-            <span>{item.label}</span>
-          </NavLink>
-        </li>
-      ))}
-    </ul>
       </div>
     </nav>
   );
