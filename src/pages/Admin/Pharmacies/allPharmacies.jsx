@@ -10,6 +10,7 @@ const PharmaciesScreen = () => {
   const [pharmaciesList, setPharmaciesList] = useState([]);
   const [pharmaciesFilter, setPharmaciesFilter] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [runningCheck, setRunningCheck] = useState(false); // 👈 added
 
   const searchPharmacies = (text) => {
     if (text === "") {
@@ -26,7 +27,7 @@ const PharmaciesScreen = () => {
   const fetchPharmacies = useCallback(async () => {
     try {
       const response = await axios.get(`${API_URL}pharmacies`);
-      const reversedData = [...response.data].reverse(); 
+      const reversedData = [...response.data].reverse();
       setPharmaciesList(reversedData);
       setPharmaciesFilter(reversedData);
     } catch (error) {
@@ -36,26 +37,21 @@ const PharmaciesScreen = () => {
     }
   }, []);
 
-
   useEffect(() => {
     fetchPharmacies();
   }, [fetchPharmacies]);
 
-  const handleDelete = async (pharmacyId) => {
-    if (window.confirm("Are you sure you want to delete this pharmacy?")) {
-      try {
-        await axios.delete(`${API_URL}pharmacies/delete/${pharmacyId}`);
-        setPharmaciesList((prev) =>
-          prev.filter((pharmacy) => pharmacy._id !== pharmacyId)
-        );
-        setPharmaciesFilter((prev) =>
-          prev.filter((pharmacy) => pharmacy._id !== pharmacyId)
-        );
-        alert("Pharmacy deleted successfully");
-      } catch (error) {
-        console.error("Error deleting pharmacy:", error);
-        alert("Failed to delete pharmacy");
-      }
+  // ✅ Handle Expiry Check Button
+  const handleRunExpiryCheck = async () => {
+    setRunningCheck(true);
+    try {
+      await axios.post(`${API_URL}pharmacies/run-expiry-check`);
+      alert("Expiry notifications sent to pharmacies.");
+    } catch (error) {
+      console.error("Error sending expiry alerts:", error);
+      alert("Failed to send expiry alerts.");
+    } finally {
+      setRunningCheck(false);
     }
   };
 
@@ -131,22 +127,34 @@ const PharmaciesScreen = () => {
             <h1 className="text-2xl font-bold">Pharmacies</h1>
           </div>
 
-          <div className="mt-6">
+          {/* 🟡 Search & Button Row */}
+          <div className="mt-6 flex flex-col md:flex-row items-stretch md:items-center gap-4">
             <input
               type="text"
               placeholder="Search Name"
-              className="border rounded-md p-2 w-full mb-4"
+              className="border rounded-md p-2 w-full md:w-1/2"
               onChange={(e) => searchPharmacies(e.target.value)}
             />
+            <button
+              onClick={handleRunExpiryCheck}
+              disabled={runningCheck}
+              className={`bg-[#0B607E] text-white px-4 py-2 rounded-md ${
+                runningCheck ? "opacity-50 cursor-not-allowed" : "hover:bg-[#094b61]"
+              }`}
+            >
+              {runningCheck ? "Sending..." : "Send Expiry Alerts"}
+            </button>
           </div>
 
-          <DataTable
-            columns={columns}
-            data={pharmaciesFilter}
-            customStyles={customStyles}
-            pagination
-            highlightOnHover
-          />
+          <div className="mt-4">
+            <DataTable
+              columns={columns}
+              data={pharmaciesFilter}
+              customStyles={customStyles}
+              pagination
+              highlightOnHover
+            />
+          </div>
         </>
       )}
     </div>
