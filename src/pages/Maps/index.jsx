@@ -16,7 +16,11 @@ const TaguigCityMap = () => {
       try {
         const response = await axios.get(`${API_URL}pharmacies`);
         const approvedPharmacies = response.data.filter(
-          (pharmacy) => pharmacy.approved === true
+          (pharmacy) =>
+            pharmacy.approved === true &&
+            pharmacy.location &&
+            !isNaN(parseFloat(pharmacy.location.latitude)) &&
+            !isNaN(parseFloat(pharmacy.location.longitude))
         );
         setPharmacies(approvedPharmacies);
       } catch (error) {
@@ -66,13 +70,20 @@ const TaguigCityMap = () => {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
 
-        {pharmacies.map((pharmacy) => (
+      {pharmacies.map((pharmacy) => {
+        const lat = parseFloat(pharmacy?.location?.latitude);
+        const lng = parseFloat(pharmacy?.location?.longitude);
+
+        // Skip if coordinates are invalid
+        if (isNaN(lat) || isNaN(lng)) {
+          console.warn("Invalid coordinates, skipping pharmacy:", pharmacy);
+          return null;
+        }
+
+        return (
           <Marker
             key={pharmacy.id}
-            position={[
-              parseFloat(pharmacy.location.latitude),
-              parseFloat(pharmacy.location.longitude),
-            ]}
+            position={[lat, lng]}
             icon={pharmacyIcon}
             eventHandlers={{
               click: () => handleMarkerClick(pharmacy),
@@ -84,7 +95,8 @@ const TaguigCityMap = () => {
               {pharmacy.userInfo.street}, {pharmacy.userInfo.city}
             </Popup>
           </Marker>
-        ))}
+        );
+      })}
       </MapContainer>
 
       {/* Left Popup Modal */}

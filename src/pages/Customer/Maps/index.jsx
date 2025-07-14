@@ -223,7 +223,11 @@ const TaguigCityMap = () => {
       try {
         const response = await axios.get(`${API_URL}pharmacies`);
         const approvedPharmacies = response.data.filter(
-          (pharmacy) => pharmacy.approved === true
+          (pharmacy) =>
+            pharmacy.approved === true &&
+            pharmacy.location &&
+            !isNaN(parseFloat(pharmacy.location.latitude)) &&
+            !isNaN(parseFloat(pharmacy.location.longitude))
         );
         setPharmacies(approvedPharmacies);
         setFilteredPharmacies(approvedPharmacies); // Default to show all pharmacies
@@ -402,44 +406,55 @@ const TaguigCityMap = () => {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         />
        <MapResize />
-       <MapCenterUpdater
-          position={
-            selectedPharmacy
-              ? [
-                  parseFloat(selectedPharmacy.location.latitude),
-                  parseFloat(selectedPharmacy.location.longitude),
-                ]
-              : [
-                  userLocation?.latitude || region.latitude,
-                  userLocation?.longitude || region.longitude,
-                ]
-          }
-        />
+      <MapCenterUpdater
+        position={
+          selectedPharmacy &&
+          selectedPharmacy.location &&
+          !isNaN(parseFloat(selectedPharmacy.location.latitude)) &&
+          !isNaN(parseFloat(selectedPharmacy.location.longitude))
+            ? [
+                parseFloat(selectedPharmacy.location.latitude),
+                parseFloat(selectedPharmacy.location.longitude),
+              ]
+            : [
+                userLocation?.latitude || region.latitude,
+                userLocation?.longitude || region.longitude,
+              ]
+        }
+      />
         {userLocation && (
           <Marker position={[userLocation.latitude, userLocation.longitude]}>
             <Popup>Your Location</Popup>
           </Marker>
         )}
 
-        {filteredPharmacies.map((pharmacy) => (
-          <Marker
-            key={pharmacy.id}
-            position={[
-              parseFloat(pharmacy.location.latitude),
-              parseFloat(pharmacy.location.longitude),
-            ]}
-            icon={pharmacyIcon} 
-            eventHandlers={{
-              click: () => handleMarkerClick(pharmacy),
-            }}
-          >
-            <Popup>
-              <strong>{pharmacy.userInfo.name}</strong>
-              <br />
-              {pharmacy.userInfo.street}, {pharmacy.userInfo.city}
-            </Popup>
-          </Marker>
-        ))}
+{filteredPharmacies.map((pharmacy) => {
+  const lat = parseFloat(pharmacy.location.latitude);
+  const lng = parseFloat(pharmacy.location.longitude);
+
+  if (isNaN(lat) || isNaN(lng)) {
+    console.warn("Skipping invalid pharmacy location:", pharmacy);
+    return null; // Skip rendering if location is invalid
+  }
+
+  return (
+    <Marker
+      key={pharmacy.id}
+      position={[lat, lng]}
+      icon={pharmacyIcon}
+      eventHandlers={{
+        click: () => handleMarkerClick(pharmacy),
+      }}
+    >
+      <Popup>
+        <strong>{pharmacy.userInfo.name}</strong>
+        <br />
+        {pharmacy.userInfo.street}, {pharmacy.userInfo.city}
+      </Popup>
+    </Marker>
+  );
+})}
+
       </MapContainer>
 
       <button
