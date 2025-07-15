@@ -10,19 +10,9 @@ const PharmaciesScreen = () => {
   const [pharmaciesList, setPharmaciesList] = useState([]);
   const [pharmaciesFilter, setPharmaciesFilter] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [runningCheck, setRunningCheck] = useState(false); // 👈 added
-
-  const searchPharmacies = (text) => {
-    if (text === "") {
-      setPharmaciesFilter(pharmaciesList);
-    } else {
-      setPharmaciesFilter(
-        pharmaciesList.filter((pharmacy) =>
-          pharmacy.userInfo.name.toLowerCase().includes(text.toLowerCase())
-        )
-      );
-    }
-  };
+  const [runningCheck, setRunningCheck] = useState(false);
+  const [searchText, setSearchText] = useState("");
+  const [statusFilter, setStatusFilter] = useState("All"); // ✅ Added
 
   const fetchPharmacies = useCallback(async () => {
     try {
@@ -41,7 +31,6 @@ const PharmaciesScreen = () => {
     fetchPharmacies();
   }, [fetchPharmacies]);
 
-  // ✅ Handle Expiry Check Button
   const handleRunExpiryCheck = async () => {
     setRunningCheck(true);
     try {
@@ -55,6 +44,37 @@ const PharmaciesScreen = () => {
     }
   };
 
+  // ✅ Combined Filtering Function
+  const filterPharmacies = (text, status) => {
+    let filtered = pharmaciesList;
+
+    if (text) {
+      filtered = filtered.filter((pharmacy) =>
+        pharmacy.userInfo.name.toLowerCase().includes(text.toLowerCase())
+      );
+    }
+
+    if (status === "Approved") {
+      filtered = filtered.filter((pharmacy) => pharmacy.approved === true);
+    } else if (status === "Pending") {
+      filtered = filtered.filter((pharmacy) => pharmacy.approved === false);
+    }
+
+    setPharmaciesFilter(filtered);
+  };
+
+  // ✅ Handle Search
+  const handleSearch = (text) => {
+    setSearchText(text);
+    filterPharmacies(text, statusFilter);
+  };
+
+  // ✅ Handle Status Filter
+  const handleStatusFilter = (status) => {
+    setStatusFilter(status);
+    filterPharmacies(searchText, status);
+  };
+
   const columns = [
     {
       name: "Permits",
@@ -65,7 +85,7 @@ const PharmaciesScreen = () => {
           className="w-10 h-10 object-cover rounded-full"
         />
       ),
-      sortable: true,
+      sortable: false,
       center: true,
     },
     {
@@ -127,14 +147,16 @@ const PharmaciesScreen = () => {
             <h1 className="text-2xl font-bold">Pharmacies</h1>
           </div>
 
-          {/* 🟡 Search & Button Row */}
+          {/* 🔍 Search and Status Filters */}
           <div className="mt-6 flex flex-col md:flex-row items-stretch md:items-center gap-4">
             <input
               type="text"
               placeholder="Search Name"
               className="border rounded-md p-2 w-full md:w-1/2"
-              onChange={(e) => searchPharmacies(e.target.value)}
+              value={searchText}
+              onChange={(e) => handleSearch(e.target.value)}
             />
+
             <button
               onClick={handleRunExpiryCheck}
               disabled={runningCheck}
@@ -144,6 +166,23 @@ const PharmaciesScreen = () => {
             >
               {runningCheck ? "Sending..." : "Send Expiry Alerts"}
             </button>
+          </div>
+
+          {/* 🟢 Toggle for Status */}
+          <div className="mt-4 flex gap-2">
+            {["All", "Approved", "Pending"].map((status) => (
+              <button
+                key={status}
+                className={`px-4 py-2 rounded-md border ${
+                  statusFilter === status
+                    ? "bg-[#0B607E] text-white"
+                    : "bg-white text-gray-800 hover:bg-gray-100"
+                }`}
+                onClick={() => handleStatusFilter(status)}
+              >
+                {status}
+              </button>
+            ))}
           </div>
 
           <div className="mt-4">
